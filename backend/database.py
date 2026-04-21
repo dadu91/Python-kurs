@@ -1,24 +1,22 @@
-from sqlalchemy.ext.declarative import declarative_base
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
+# Učitava DATABASE_URL iz tvog .env fajla
+load_dotenv()
 
-DATABASE_URL = "mysql+pymysql://root:helt1234@localhost:3306/python_kurs"
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-# salje SQL upite
+# Inicijalizacija baze
 engine = create_engine(DATABASE_URL)
-
-# konekcija sa bazom
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# base - roditelj za module
 Base = declarative_base()
 
-# database.py
-
+# Funkcija za dobijanje sesije (dependency injection)
 def get_db():
     db = SessionLocal()
     try:
-        yield db  # 'yield' predaje kontrolu kontroleru, ali ne gasi funkciju
+        yield db
     finally:
         db.close()
