@@ -17,8 +17,8 @@ Base = declarative_base()
 # database.py
 
 def get_db():
-    db = SessionLocal()  # SessionLocal je ono što smo definisali ranije
+    db = SessionLocal()
     try:
         yield db  # 'yield' predaje kontrolu kontroleru, ali ne gasi funkciju
     finally:
-        db.close()  # Ovo se izvršava tek KADA kontroler završi posao
+        db.close()
