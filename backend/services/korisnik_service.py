@@ -15,6 +15,15 @@ def get_korisnik_id(db: Session, user_id: int):
         )
     return korisnik
 
+def get_korisnik_username(db: Session, username: str):
+    korisnik = korisnik_repository.get_user_by_username(db, username)
+    if not korisnik:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Korisnik sa username-om {username} nije pronađen."
+        )
+    return korisnik
+
 def get_korisnik_mail(db: Session, mail: str):
     korisnik = korisnik_repository.get_user_by_mail(db, mail)
     if not korisnik:
@@ -24,11 +33,3 @@ def get_korisnik_mail(db: Session, mail: str):
         )
     return korisnik
 
-def get_korisnik_username(db: Session, username: str):
-    korisnik = korisnik_repository.get_user_by_username(db, username)
-    if not korisnik:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Korisnik sa username-om {username} nije pronađen."
-        )
-    return korisnik

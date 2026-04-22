@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from controllers.korisnik_controller import router as korisnik_router
-from backend.controllers.lekcija_controller import router as lekcija_router
+from controllers.lekcija_controller import router as lekcija_router
 
 app = FastAPI()
 
