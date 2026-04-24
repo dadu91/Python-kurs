@@ -13,5 +13,15 @@ def get_user_by_username(db: Session, username: str):
 def get_user_by_mail(db: Session, mail: str):
     return db.query(Korisnik).filter(Korisnik.mail == mail).first()
 
-def create_user():
-    pass
+# POST
+def create_user(db: Session, korisnik: Korisnik):
+    db.add(korisnik)
+    db.commit()
+    db.refresh(korisnik)
+    return korisnik
+
+# PUT
+def update_user(db: Session, korisnik: Korisnik):
+    db.commit()
+    db.refresh(korisnik)
+    return korisnik

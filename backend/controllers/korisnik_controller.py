@@ -4,7 +4,7 @@ from typing import List
 
 from database import get_db
 from services import korisnik_service
-from schemas.korisnik_schema import KorisnikOut
+from schemas.korisnik_schema import KorisnikOut, KorisnikCreate
 
 
 router = APIRouter(prefix="/korisnici", tags=["Korisnici"])
@@ -27,3 +27,7 @@ def nadji_korisnika_preko_usernamea(username: str, db: Session = Depends(get_db)
 def nadji_korisnika_preko_id(user_id: int, db: Session = Depends(get_db)):
     # Ovde zovemo tvoj pametni servis
     return korisnik_service.get_korisnik_id(db, user_id)
+
+@router.post("/", response_model=KorisnikOut)
+def kreiraj_korisnika(korisnik: KorisnikCreate, db: Session = Depends(get_db)):
+    return korisnik_service.create_korisnik(db, korisnik)
