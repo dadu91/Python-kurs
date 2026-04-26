@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from models.korisnik import Korisnik
 
+# GET
 def get_all_users(db: Session):
     return db.query(Korisnik).all()
 
@@ -25,3 +26,8 @@ def update_user(db: Session, korisnik: Korisnik):
     db.commit()
     db.refresh(korisnik)
     return korisnik
+
+# DELETE
+def delete_user(db: Session, korisnik: Korisnik):
+    db.delete(korisnik)
+    db.commit()

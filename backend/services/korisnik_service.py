@@ -70,9 +70,9 @@ def create_korisnik(db: Session, korisnik: KorisnikCreate):
     return korisnik_ret
 
 # PUT
-from schemas.korisnik_schema import KornisnikUpdate
+from schemas.korisnik_schema import KorisnikUpdate
 
-def update_korisnik(db: Session, korisnik: Korisnik, korisnik_update: KornisnikUpdate):
+def update_korisnik(db: Session, korisnik: Korisnik, korisnik_update: KorisnikUpdate):
     if korisnik_update.username is not None:
         korisnik.username = korisnik_update.username
     if korisnik_update.mail is not None:
@@ -87,3 +87,8 @@ def update_korisnik(db: Session, korisnik: Korisnik, korisnik_update: KornisnikU
             korisnik.password = security.hash_password(korisnik_update.password)
 
     return korisnik_repository.update_user(db, korisnik)
+
+# DELETE
+def delete_korisnik(db: Session, korisnik: Korisnik):
+    korisnik_repository.delete_user(db, korisnik)
+    

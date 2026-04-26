@@ -19,7 +19,7 @@ class KorisnikOut(KorisnikBase):
     class Config:
         from_attributes = True #Ovo omogućava Pydanticu da čita SQLAlchemy modele
 
-class KornisnikUpdate(BaseModel):
+class KorisnikUpdate(BaseModel):
     username: Optional[str] = None
     mail: Optional[EmailStr] = None
     password: Optional[str] = None

@@ -4,7 +4,7 @@ from typing import List
 
 from database import get_db
 from services import korisnik_service
-from schemas.korisnik_schema import KorisnikOut, KorisnikCreate
+from schemas.korisnik_schema import KorisnikOut, KorisnikCreate, KorisnikUpdate
 
 
 router = APIRouter(prefix="/korisnici", tags=["Korisnici"])
@@ -31,3 +31,11 @@ def nadji_korisnika_preko_id(user_id: int, db: Session = Depends(get_db)):
 @router.post("/", response_model=KorisnikOut)
 def kreiraj_korisnika(korisnik: KorisnikCreate, db: Session = Depends(get_db)):
     return korisnik_service.create_korisnik(db, korisnik)
+
+@router.put("/{user_id}", response_model=KorisnikOut)
+def izmijeni_korsnika(user_id: int, korisnik: KorisnikUpdate, db: Session = Depends(get_db)):
+    return korisnik_service.update_korisnik(db, korisnik_service.get_korisnik_id(db, user_id), korisnik)
+
+@router.delete("/{user_id}", status_code=204)
+def izbrisi_korisnika(user_id: int, db: Session = Depends(get_db)):
+    korisnik_service.delete_korisnik(db, korisnik_service.get_korisnik_id(db,user_id))
