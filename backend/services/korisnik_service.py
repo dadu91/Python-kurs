@@ -37,6 +37,8 @@ def get_korisnik_mail(db: Session, mail: str):
 # POST
 from utils import security
 from schemas.korisnik_schema import KorisnikCreate
+from models.progres import Progres
+from repositories import progres_repository
 
 def create_korisnik(db: Session, korisnik: KorisnikCreate):
     if not security.validiraj_sifru(korisnik.password):
@@ -67,6 +69,12 @@ def create_korisnik(db: Session, korisnik: KorisnikCreate):
     )
 
     korisnik_ret = korisnik_repository.create_user(db, novi_korisnik)
+
+    progres = Progres(
+        korisnik_id = novi_korisnik.id
+    )
+    progres_repository.create_progres(db, progres)
+
     return korisnik_ret
 
 # PUT

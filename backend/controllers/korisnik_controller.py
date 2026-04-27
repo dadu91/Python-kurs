@@ -6,14 +6,11 @@ from database import get_db
 from services import korisnik_service
 from schemas.korisnik_schema import KorisnikOut, KorisnikCreate, KorisnikUpdate
 
-
 router = APIRouter(prefix="/korisnici", tags=["Korisnici"])
 
 @router.get("/", response_model=List[KorisnikOut])
 def citaj_sve_korisnike(db: Session = Depends(get_db)):
     return korisnik_service.get_korisnik_all(db)
-
-
 
 @router.get("/pretraga/mail", response_model=KorisnikOut)
 def nadji_korisnika_preko_maila(mail: str, db: Session = Depends(get_db)):
