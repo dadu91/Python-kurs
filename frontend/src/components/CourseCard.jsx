@@ -1,28 +1,39 @@
-import { Bookmark } from "lucide-react";
-function CourseCard({ badge, title, progress, theme }) {
-  return (
-    <div className={`course-card ${theme}`}>
-      <div className="course-top">
-        <span className="course-badge">{badge}</span>
-        <Bookmark size={18}></Bookmark>
-      </div>
+function CourseCard({ badge, title, progress, type }) {
+  const themeMap = {
+    intro: "blue",
+    loops: "orange",
+    tasks: "purple"
+  };
 
+  const themeClass = themeMap[type] || "blue";
+
+  // progress parsing (8/24 → %)
+  const [done, total] = progress.split("/").map(Number);
+  const percent = (done / total) * 100;
+
+  return (
+    <div className={`course-card ${themeClass}`}>
+      
+      {/* 🔹 BADGE */}
+      <span className="course-badge">{badge}</span>
+
+      {/* 🔹 TITLE */}
       <h3>{title}</h3>
 
-      <div className="course-progress-info">
-        <span>Napredak</span>
-        <span>{progress}</span>
+      {/* 🔹 LABEL + PROGRESS */}
+      <p>Napredak</p>
+      <p>{progress}</p>
+
+      {/* 🔹 PROGRESS BAR */}
+      <div className="progress-bar">
+        <div
+          className="progress-fill"
+          style={{ width: `${percent}%` }}
+        />
       </div>
 
-      <div className="progress-line">
-        <div className="progress-fill"></div>
-      </div>
-
-      <div className="course-footer">
-        <div className="avatars">
-        </div>
-        <button className="continue-btn">Nastavi</button>
-      </div>
+      {/* 🔹 BUTTON */}
+      <button>Nastavi</button>
     </div>
   );
 }
