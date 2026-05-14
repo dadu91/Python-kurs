@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models.lekcija_model import Lekcija
+from models.lekcija import Lekcija
 
 
 def get_all_lekcije(db: Session):

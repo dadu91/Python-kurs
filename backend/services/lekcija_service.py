@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status
 
-from models.lekcija_model import Lekcija
+from models.lekcija import Lekcija
 from repositories import lekcija_repository
 from schemas.lekcija_schema import LekcijaCreate, LekcijaUpdate
 

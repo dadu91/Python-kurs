@@ -3,8 +3,9 @@ from repositories import korisnik_repository
 from fastapi import HTTPException, status
 from models.korisnik import Korisnik
 
+# GET
 def get_korisnik_all(db: Session):
-    return db.query(Korisnik).all()
+    return korisnik_repository.get_all_users(db)
 
 def get_korisnik_id(db: Session, user_id: int):
     korisnik = korisnik_repository.get_user_by_id(db, user_id)
@@ -20,7 +21,7 @@ def get_korisnik_username(db: Session, username: str):
     if not korisnik:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Korisnik sa username-om {username} nije pronađen."
+            detail=f"Korisnik sa username-om {username} nije pronadjen."
         )
     return korisnik
 
@@ -32,7 +33,6 @@ def get_korisnik_mail(db: Session, mail: str):
             detail=f"Korisnik sa mail-om {mail} nije pronađen."
         )
     return korisnik
-
 
 # POST
 from utils import security

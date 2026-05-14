@@ -6,7 +6,7 @@ from database import get_db
 from services import korisnik_service
 from schemas.korisnik_schema import KorisnikOut, KorisnikCreate, KorisnikUpdate
 
-router = APIRouter(prefix="/korisnici", tags=["Korisnici"])
+router = APIRouter(prefix="/korisnik", tags=["Korisnik"])
 
 @router.get("/", response_model=List[KorisnikOut])
 def citaj_sve_korisnike(db: Session = Depends(get_db)):

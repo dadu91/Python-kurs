@@ -24,7 +24,7 @@ CREATE TABLE zadatak (
     FOREIGN KEY (lekcija_id) REFERENCES lekcija(id) ON DELETE CASCADE
 );
 
-CREATE TABLE zavrsene_lekcije (
+CREATE TABLE zavrsena_lekcija (
 	id INT AUTO_INCREMENT PRIMARY KEY,
     lekcija_id INT NOT NULL,
     korisnik_id INT NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE greska (
     opis TEXT
 );
 
-CREATE TABLE zadatak_Korisnik (
+CREATE TABLE zadatak_korisnik (
     id INT AUTO_INCREMENT PRIMARY KEY,
     zadatak_id INT NOT NULL,
     korisnik_id INT NOT NULL,
