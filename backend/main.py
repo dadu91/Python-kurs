@@ -5,6 +5,7 @@ from controllers.progres_controller import router as progres_router
 from controllers.greska_controller import router as greska_router
 from controllers.zavrsena_lekcija_controller import router as zavrsena_lekcija_router
 from controllers.zadatak_korisnik_controller import router as zadatak_korisnik_router
+from controllers.auth_controller import router as auth_router
 
 app = FastAPI()
 
@@ -15,6 +16,7 @@ app.include_router(progres_router)
 app.include_router(greska_router)
 app.include_router(zavrsena_lekcija_router)
 app.include_router(zadatak_korisnik_router)
+app.include_router(auth_router)
 
 @app.get("/")
 def home():
