@@ -7,6 +7,16 @@ class LekcijaBase(BaseModel):
     opis: str | None = None
 
 
+class LekcijaCreate(LekcijaBase):
+    pass
+
+
+class LekcijaUpdate(BaseModel):
+    naziv: str | None = None
+    redosljed: int | None = None
+    opis: str | None = None
+
+
 class LekcijaOut(LekcijaBase):
     id: int
 

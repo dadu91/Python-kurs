@@ -1202,3 +1202,148 @@ body {
     font-size: 32px;
   }
 }
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ff6b35;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-bottom: 25px;
+  margin-top: 15px;
+}
+
+.add-btn:hover {
+  opacity: 0.9;
+}
+
+.add-form {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.add-form input {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.action-buttons .filter-btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.action-buttons .filter-btn:first-child {
+  background: #e8f0fe;
+  color: #1a73e8;
+}
+
+.action-buttons .filter-btn:first-child:hover {
+  background: #1a73e8;
+  color: white;
+}
+
+.action-buttons .filter-btn:last-child {
+  background: #fce8e8;
+  color: #d93025;
+}
+
+.action-buttons .filter-btn:last-child:hover {
+  background: #d93025;
+  color: white;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.15s ease;
+}
+
+.modal-box {
+  background: white;
+  border-radius: 24px;
+  padding: 32px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  animation: fadeIn 0.15s ease;
+}
+
+.modal-box h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.modal-box p {
+  color: #6b7280;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.modal-confirm {
+  border: none;
+  background: #d93025;
+  color: white;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.modal-confirm:hover {
+  opacity: 0.85;
+}
+
+.modal-cancel {
+  border: 1px solid #d1d5db;
+  background: white;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-cancel:hover {
+  background: #f3f4f6;
+}

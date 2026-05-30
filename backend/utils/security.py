@@ -18,5 +18,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
+# provjera da li se hashovani password poklapa sa onim koji korisnik unese
 def verify_password(plain: str, hashed: str) -> bool:
     return pwd_context.verify(plain, hashed)

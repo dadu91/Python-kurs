@@ -9,4 +9,5 @@ class Korisnik(Base):
     username = Column(String(50), unique=True, nullable=False)
     mail = Column(String(100), unique=True, nullable=False)
     password = Column(String(100), nullable=False)
+    uloga = Column(String(20), default="korisnik")
     datum_reg = Column(DateTime, server_default=func.now())

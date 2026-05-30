@@ -14,7 +14,13 @@ class KorisnikCreate(KorisnikBase):
 # sema za prikaz
 class KorisnikOut(KorisnikBase):
     id: int
+    uloga: str
     datum_reg: datetime
 
     class Config:
         from_attributes = True #Ovo omogućava Pydanticu da čita SQLAlchemy modele
+
+class KorisnikUpdate(BaseModel):
+    username: Optional[str] = None
+    mail: Optional[EmailStr] = None
+    password: Optional[str] = None

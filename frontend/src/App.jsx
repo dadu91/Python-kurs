@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import { useState } from "react";
 import Profile from "./pages/Profile";
 import Progress from "./pages/Progress"
+import Admin from "./pages/Admin";
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/napredak" element={<Progress />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </BrowserRouter>
   );
