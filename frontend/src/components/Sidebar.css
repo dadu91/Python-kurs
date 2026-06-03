@@ -1,0 +1,141 @@
+.sidebar {
+  width: 82px;
+  background: #ffffff;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 18px 12px;
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.expanded {
+  width: 200px;
+}
+
+.sidebar-logo,
+.sidebar-bottom {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.label {
+  opacity: 0;
+  transform: translateX(-6px);
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.sidebar.expanded .label {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.side-icon {
+  width: 100%;
+  height: 46px;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 13px;
+  gap: 12px;
+  color: #111827;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.side-icon svg {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.side-icon:hover {
+  background: #f3f4f6;
+  color: #ff6a3d;
+  transform: scale(1.03);
+}
+
+.side-icon.active {
+  background: #ff6a3d;
+  color: white;
+  justify-content: flex-start;
+  padding-left: 12px;
+}
+
+.side-icon.active::before {
+  content: "";
+  position: absolute;
+  left: -12px;
+  width: 4px;
+  height: 60%;
+  background: #ff6a3d;
+  border-radius: 4px;
+}
+
+.icon-wrap {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100% !important;
+    flex-direction: row;
+    height: auto;
+    border-radius: 16px;
+    padding: 10px 16px;
+    justify-content: space-around;
+  }
+
+  .sidebar.expanded {
+    width: 100% !important;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  .label {
+    display: none !important;
+  }
+
+  .logout {
+    width: auto;
+  }
+
+  .side-icon {
+    padding-left: 0;
+    justify-content: center;
+    width: 46px;
+  }
+
+  .side-icon.active::before {
+    display: none;
+  }
+}

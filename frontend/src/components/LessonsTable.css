@@ -1,0 +1,59 @@
+.lessons-box {
+  background: #f4f4f4;
+  border-radius: 24px;
+  padding: 22px;
+}
+
+.lessons-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.lessons-header h2 {
+  font-size: 28px;
+}
+
+.lessons-header a {
+  color: #ff6a3d;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.lessons-table {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.table-head,
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 100px;
+  gap: 18px;
+  align-items: center;
+}
+
+.table-head {
+  color: #8a8a8a;
+  font-size: 14px;
+  padding-bottom: 8px;
+}
+
+.table-row {
+  background: transparent;
+  border-top: 1px solid #e5e5e5;
+  padding-top: 14px;
+}
+
+.table-row h4 {
+  font-size: 16px;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.table-row p {
+  font-size: 13px;
+  color: #8a8a8a;
+}

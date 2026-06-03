@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Home, BookOpen, Trophy, User, Settings, AlertCircle, LogOut } from "lucide-react";
+import "./Sidebar.css";
 import { useNavigate } from "react-router-dom";
 
 function Sidebar({ activeTab, setActiveTab }) {

@@ -1,3 +1,5 @@
+import "./PromoCard.css";
+
 function PromoCard() {
   return (
     <aside className="promo-card">

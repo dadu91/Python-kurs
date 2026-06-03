@@ -6,6 +6,9 @@ class ProgresBase(BaseModel):
     nivo: int
     bodovi: int
 
+class ProgresCreate(BaseModel):
+    korisnik_id: int
+
 class ProgresOut(ProgresBase):
     id: int
     korisnik_id: int

@@ -1,0 +1,59 @@
+.promo-card {
+  background: #c7ec34;
+  border-radius: 24px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.promo-small {
+  font-size: 14px;
+  color: #4a4a4a;
+  margin-bottom: 12px;
+}
+
+.promo-tag {
+  display: inline-block;
+  background: #111;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+.promo-card h2 {
+  font-size: 40px;
+  line-height: 1.1;
+  color: #151515;
+  margin-bottom: 18px;
+}
+
+.promo-text {
+  font-size: 14px;
+  color: #4a4a4a;
+  margin-bottom: 14px;
+}
+
+.promo-avatars {
+  margin-bottom: 20px;
+}
+
+.extra {
+  background: white;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.details-btn {
+  border: none;
+  background: #ff6037;
+  color: white;
+  padding: 14px 18px;
+  border-radius: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}

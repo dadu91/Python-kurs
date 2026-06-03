@@ -1,48 +1,26 @@
 import { useState } from "react";
-import { ChevronDown, PlayCircle, CheckCircle2 } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import "./LearningPath.css";
 
-function LearningPath() {
+function LearningPath({ lekcije = [] }) {
   const [openIndex, setOpenIndex] = useState(0);
-
-  const data = [
-    {
-      title: "Uvod u Python",
-      duration: "43 min",
-      steps: [
-        { title: "Šta je Python?", time: "4 min", done: true },
-        { title: "Prednosti i mane Python-a", time: "3 min", done: false },
-        { title: "Preuzimanje i instalacija", time: "13 min", video: true },
-      ],
-    },
-    {
-      title: "Osnove Python-a",
-      duration: "1h 36min",
-      steps: [],
-    },
-    {
-      title: "Kontrola toka",
-      duration: "1h 26min",
-      steps: [],
-    },
-  ];
+  const navigate = useNavigate();
 
   return (
     <div className="learning-path">
-      {data.map((module, index) => (
-        <div key={index} className="module">
-
-          {/* HEADER */}
+      {lekcije.map((lekcija, index) => (
+        <div key={lekcija.id} className="module">
           <div
             className="module-header"
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
           >
             <div className="module-left">
-              <div className="module-number">{index + 1}</div>
-              <h4>{module.title}</h4>
+              <div className="module-number">{lekcija.redosljed}</div>
+              <h4>{lekcija.naziv}</h4>
             </div>
 
             <div className="module-right">
-              <span>{module.duration}</span>
               <ChevronDown
                 size={18}
                 className={openIndex === index ? "rotate" : ""}
@@ -51,7 +29,6 @@ function LearningPath() {
             </div>
           </div>
 
-          {/* STEPS — uvijek u DOM-u, animira se kroz CSS */}
           <div
             className="steps"
             style={{
@@ -61,23 +38,22 @@ function LearningPath() {
               transition: "max-height 0.35s ease, opacity 0.25s ease",
             }}
           >
-            {module.steps.map((step, i) => (
-              <div key={i} className="step">
-                <div className="step-left">
-                  {step.done ? (
-                    <CheckCircle2 size={18} className="done" />
-                  ) : step.video ? (
-                    <PlayCircle size={18} className="video" />
-                  ) : (
-                    <div className="dot" />
-                  )}
-                  <p>{step.title}</p>
-                </div>
-                <span className="time">{step.time}</span>
+            <div className="step">
+              <div className="step-left">
+                <div className="dot" />
+                <p>{lekcija.opis}</p>
               </div>
-            ))}
+            </div>
+            <div className="step">
+              <button
+                className="continue-btn"
+                style={{ marginLeft: "18px" }}
+                onClick={() => navigate(`/lekcije/${lekcija.id}`)}
+              >
+                Počni lekciju
+              </button>
+            </div>
           </div>
-
         </div>
       ))}
     </div>

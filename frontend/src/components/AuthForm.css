@@ -1,0 +1,28 @@
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-form input {
+  padding: 14px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  outline: none;
+  font-size: 16px;
+}
+
+.auth-form input:focus {
+  border-color: #ff6a3d;
+}
+
+.auth-form button {
+  border: none;
+  background: #ff6a3d;
+  color: white;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}

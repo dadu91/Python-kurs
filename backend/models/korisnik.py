@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.sql import func
-from database import Base # Proveri da li je putanja do database.py tačna
+from database import Base
 
 class Korisnik(Base):
     __tablename__ = "korisnik"

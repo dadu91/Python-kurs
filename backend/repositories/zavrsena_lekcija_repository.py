@@ -9,7 +9,7 @@ def get_zavrsena_lekcija_by_id(db: Session, id: int):
     return db.query(ZavrsenaLekcija).filter(ZavrsenaLekcija.id == id).first()
 
 def get_zavrsena_lekcija_by_korisnik_id(db: Session, korisnik_id: int):
-    return db.query(ZavrsenaLekcija).filter(ZavrsenaLekcija.korisnik_id == korisnik_id).first()
+    return db.query(ZavrsenaLekcija).filter(ZavrsenaLekcija.korisnik_id == korisnik_id).all()
 
 def get_zavrsena_lekcija_by_lekcija_id(db: Session, lekcija_id: int):
     return db.query(ZavrsenaLekcija).filter(ZavrsenaLekcija.lekcija_id == lekcija_id).first()

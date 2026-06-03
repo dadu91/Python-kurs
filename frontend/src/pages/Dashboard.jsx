@@ -1,21 +1,77 @@
+import "./Dashboard.css";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import CourseCard from "../components/CourseCard";
 import LearningPath from "../components/LearningPath";
-import PromoCard from "../components/PromoCard"; // možeš ga uključiti kasnije
-import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useSearchParams, useNavigate } from "react-router-dom";
+
+const typeMap = { 1: "intro", 2: "loops", 3: "tasks" };
+
+function getUsername() {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.sub || null;
+  } catch {
+    return null;
+  }
+}
 
 function Dashboard() {
-
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "lessons");
+  const navigate = useNavigate();
 
-  const [stats] = useState({
-    total: 120,
-    lessons: 5,
-    average: 24
-  });
+  const [lekcije, setLekcije] = useState([]);
+  const [stats, setStats] = useState({ bodovi: 0, zavrseneLekcije: 0, nivo: 1 });
+  const [trenutnaLekcija, setTrenutnaLekcija] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const username = getUsername();
+
+    if (!token) { navigate("/login"); return; }
+
+    // Dohvati lekcije
+    fetch("http://localhost:8000/lekcije/", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then(setLekcije)
+      .catch(() => {});
+
+    // Dohvati korisnika pa progres i završene lekcije
+    if (!username) return;
+    fetch(`http://localhost:8000/korisnik/pretraga/username?username=${username}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((korisnik) => {
+        fetch(`http://localhost:8000/progres/po-korisniku/${korisnik.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then((res) => res.ok ? res.json() : null)
+          .then((progres) => {
+            if (progres) setStats((prev) => ({ ...prev, bodovi: progres.bodovi, nivo: progres.nivo }));
+          })
+          .catch(() => {});
+
+        fetch(`http://localhost:8000/zavrsena_lekcija/po-korisnik-id/${korisnik.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then((res) => res.ok ? res.json() : null)
+          .then((data) => {
+            if (data && Array.isArray(data)) {
+              setStats((prev) => ({ ...prev, zavrseneLekcije: data.length }));
+              if (data.length > 0) setTrenutnaLekcija(data[data.length - 1]);
+            }
+          })
+          .catch(() => {});
+      })
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="page-bg">
@@ -27,7 +83,6 @@ function Dashboard() {
 
           <h1 className="page-title">Pregled učenja</h1>
 
-          {/* 🔹 TAB BUTTONI */}
           <div className="filter-row">
             <button
               onClick={() => setActiveTab("lessons")}
@@ -35,14 +90,12 @@ function Dashboard() {
             >
               Broj završenih lekcija
             </button>
-
             <button
               onClick={() => setActiveTab("points")}
               className={`filter-btn ${activeTab === "points" ? "active" : ""}`}
             >
               Ukupni bodovi
             </button>
-
             <button
               onClick={() => setActiveTab("current")}
               className={`filter-btn ${activeTab === "current" ? "active" : ""}`}
@@ -52,115 +105,78 @@ function Dashboard() {
           </div>
 
           <div className="tab-content" key={activeTab}>
-            {activeTab === "profile" && (
-              <div>
-                <h1 className="page-title">Profil</h1>
-                <p>Ovdje će biti profil...</p>
-              </div>
-            )}
 
-            {activeTab === "errors" && (
-              <div>
-                <h1 className="page-title">Greške</h1>
-                <p>Ovdje će biti greške...</p>
-              </div>
-            )}
-
-            {activeTab === "settings" && (
-              <div>
-                <h3 className="page-title">Podešavanja</h3>
-                <p>Ovdje će biti podešavanja...</p>
-              </div>
-            )}
-
-            {/* 🔥 LESSONS TAB */}
             {activeTab === "lessons" && (
               <>
-                {/* 🔹 COURSE CARDS */}
                 <div className="top-cards">
-                  <CourseCard
-                    badge="Lekcija 1"
-                    title="Uvod u Python"
-                    progress="8/24"
-                    type="intro"
-                  />
-                  <CourseCard
-                    badge="Lekcija 2"
-                    title="Petlje"
-                    progress="15/30"
-                    type="loops"
-                  />
-                  <CourseCard
-                    badge="Lekcija 3"
-                    title="Zadaci"
-                    progress="18/22"
-                    type="tasks"
-                  />
+                  {lekcije.map((l) => (
+                    <CourseCard
+                      key={l.id}
+                      id={l.id}
+                      badge={`Lekcija ${l.redosljed}`}
+                      title={l.naziv}
+                      progress={`0/1`}
+                      type={typeMap[l.id] || "intro"}
+                    />
+                  ))}
                 </div>
 
-                {/* 🔥 GLAVNI GRID */}
                 <div className="content-grid">
-
-                  {/* 🔹 LIJEVO - LEARNING PATH */}
                   <div className="left-section">
                     <div className="lessons-section">
                       <h2>Sve lekcije</h2>
-                      <LearningPath />
+                      <LearningPath lekcije={lekcije} />
                     </div>
                   </div>
-
-                  {/* 🔹 DESNO - PRAZNO (ili PromoCard kad budeš htjela) */}
-                  <div className="right-section">
-                    {/* <PromoCard /> */}
-                  </div>
-
+                  <div className="right-section" />
                 </div>
               </>
             )}
 
-            {/* 🔹 POINTS TAB */}
             {activeTab === "points" && (
               <div className="stats-box">
                 <h3>Statistika</h3>
-
                 <div className="stats-grid">
                   <div className="stat-card blue big">
                     <span className="stat-top">Ukupni bodovi</span>
-                    <h2>{stats.total}</h2>
-                    <p className="stat-extra">Danas: +12</p>
+                    <h2>{stats.bodovi}</h2>
                   </div>
-
                   <div className="stat-card orange">
                     <p>Završene lekcije</p>
-                    <h2>{stats.lessons}</h2>
+                    <h2>{stats.zavrseneLekcije}</h2>
                   </div>
-
                   <div className="stat-card purple">
-                    <p>Prosjek bodova</p>
-                    <h2>{stats.average}</h2>
+                    <p>Nivo</p>
+                    <h2>{stats.nivo}</h2>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* 🔹 CURRENT TAB */}
             {activeTab === "current" && (
               <div className="course-card purple large">
                 <div className="course-top">
                   <span className="course-badge">Trenutna lekcija</span>
                 </div>
-
-                <h3>Petlje u Pythonu</h3>
-
-                <p className="course-desc">
-                  Nastavi gdje si stao i završi lekciju
-                </p>
-
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: "60%" }} />
-                </div>
-
-                <button className="continue-btn">Nastavi lekciju</button>
+                {trenutnaLekcija ? (
+                  <>
+                    <h3>
+                      {lekcije.find((l) => l.id === trenutnaLekcija.lekcija_id)?.naziv || "—"}
+                    </h3>
+                    <p className="course-desc">Nastavi gdje si stao i završi lekciju</p>
+                    <div className="progress-bar">
+                      <div className="progress-fill" style={{ width: "60%" }} />
+                    </div>
+                    <button
+                      className="continue-btn"
+                      onClick={() => navigate(`/lekcije/${trenutnaLekcija.lekcija_id}`)}
+                    >
+                      Nastavi lekciju
+                    </button>
+                  </>
+                ) : (
+                  <p className="course-desc">Još nisi završio nijednu lekciju.</p>
+                )}
               </div>
             )}
 

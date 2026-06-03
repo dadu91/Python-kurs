@@ -1,22 +1,28 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import { useState } from "react";
 import Profile from "./pages/Profile";
-import Progress from "./pages/Progress"
-import Admin from "./pages/Admin";
+import Progress from "./pages/Progress";
+import Lesson from "./pages/Lesson";
+
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem("token");
+  if (!token) return <Navigate to="/login" replace />;
+  return children;
+}
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/napredak" element={<Progress />} />
-        <Route path="/admin" element={<Admin />} />
+
+        <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+        <Route path="/napredak" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
+        <Route path="/lekcije/:id" element={<ProtectedRoute><Lesson /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );

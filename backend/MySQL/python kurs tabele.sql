@@ -1,3 +1,6 @@
+DROP DATABASE python_kurs;
+
+
 CREATE DATABASE python_kurs;
 USE python_kurs;
 
@@ -6,6 +9,7 @@ CREATE TABLE korisnik (
     username VARCHAR(50) NOT NULL UNIQUE,
 	password VARCHAR(100) NOT NULL,
     mail VARCHAR(100) NOT NULL UNIQUE,
+    uloga VARCHAR(20) DEFAULT 'korisnik',
     datum_reg DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -60,3 +64,5 @@ CREATE TABLE zadatak_korisnik (
     FOREIGN KEY (korisnik_id) REFERENCES korisnik(id) ON DELETE CASCADE,
     FOREIGN KEY (greska_id) REFERENCES greska(id) ON DELETE SET NULL
 );
+
+select * from korisnik;

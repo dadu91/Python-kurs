@@ -1,3 +1,4 @@
+import "./Progress.css";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import { useState } from "react";

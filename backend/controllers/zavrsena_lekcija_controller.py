@@ -19,7 +19,7 @@ def citaj_sve_zavrsene_lekcije(db: Session = Depends(get_db), current_user: Kori
 def citaj_zavrsenu_lekciju_preko_id(id: int, db: Session = Depends(get_db), current_user: Korisnik = Depends(get_current_user)):
     return zavrsena_lekcija_service.get_zavrsena_lekcija_id(db, id)
 
-@router.get("/po-korisnik-id/{korisnik_id}", response_model=ZavrsenaLekcijaOut)
+@router.get("/po-korisnik-id/{korisnik_id}", response_model=List[ZavrsenaLekcijaOut])
 def citaj_zavrsenu_lekciju_preko_korisnik_id(korisnik_id:int, db: Session = Depends(get_db), current_user: Korisnik = Depends(get_current_user)):
     return zavrsena_lekcija_service.get_zavrsena_lekcija_korisnik_id(db, korisnik_id)
 

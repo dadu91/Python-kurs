@@ -1,0 +1,48 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.brand, .brand-accent {
+  font-family: 'Oxanium', sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #e8eaf6, #c5cae9);
+  min-height: 100vh;
+}
+
+.page-bg {
+  min-height: 100vh;
+  padding: 36px;
+}
+
+.dashboard-shell {
+  max-width: 1280px;
+  margin: 0 auto;
+  background: #f6f6f6;
+  border-radius: 28px;
+  padding: 18px;
+  display: flex;
+  gap: 18px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
+.dashboard-main {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 26px;
+}
+
+@media (max-width: 768px) {
+  .page-bg {
+    padding: 10px;
+  }
+
+  .dashboard-shell {
+    flex-direction: column;
+  }
+}

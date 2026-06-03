@@ -1,3 +1,5 @@
+import "./LessonsTable.css";
+
 function LessonsTable() {
   const lessons = [
     {

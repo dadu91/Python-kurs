@@ -17,13 +17,7 @@ def get_zavrsena_lekcija_id(db: Session, id: int):
     return zavrsena_lekcija
 
 def get_zavrsena_lekcija_korisnik_id(db: Session, korisnik_id: int):
-    zavrsena_lekcija = zavrsena_lekcija_repository.get_zavrsena_lekcija_by_korisnik_id(db, korisnik_id)
-    if not zavrsena_lekcija:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Zavrsena lekcija sa korisnik ID-em {korisnik_id} nije pronadjena."
-        )
-    return zavrsena_lekcija
+    return zavrsena_lekcija_repository.get_zavrsena_lekcija_by_korisnik_id(db, korisnik_id)
 
 def get_zavrsena_lekcija_lekcija_id(db: Session, lekcija_id: int):
     zavrsena_lekcija = zavrsena_lekcija_repository.get_zavrsena_lekcija_by_lekcija_id(db, lekcija_id)

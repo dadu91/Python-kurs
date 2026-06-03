@@ -1,10 +1,28 @@
 import { Search, User, Award } from "lucide-react";
+import "./Topbar.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+function getUsername() {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.sub || null;
+  } catch {
+    return null;
+  }
+}
 
 function Topbar() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const username = getUsername();
+
+  const handleOdjava = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
   return (
     <div className="topbar">
@@ -18,7 +36,6 @@ function Topbar() {
           <button><Search size={18} /></button>
         </div>
 
-        {/* BADGE IKONICA */}
         <div
           className="topbar-badge"
           onClick={() => navigate("/napredak")}
@@ -33,8 +50,8 @@ function Topbar() {
             <User />
           </div>
           <div>
-            <p className="user-name">user</p>
-            <span className="user-handle">@user</span>
+            <p className="user-name">{username || "Gost"}</p>
+            <span className="user-handle">@{username || "gost"}</span>
           </div>
 
           {open && (
@@ -42,7 +59,7 @@ function Topbar() {
               <button onClick={() => navigate("/profile")}>Profil</button>
               <button onClick={() => navigate("/napredak")}>Moj napredak</button>
               <hr />
-              <button onClick={() => navigate("/login")}>Odjava</button>
+              <button onClick={handleOdjava}>Odjava</button>
             </div>
           )}
         </div>
