@@ -4,17 +4,17 @@ import CourseCard from "../components/CourseCard";
 import LearningPath from "../components/LearningPath";
 import PromoCard from "../components/PromoCard"; // možeš ga uključiti kasnije
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 function Dashboard() {
-
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") || "lessons");
 
   const [stats] = useState({
     total: 120,
     lessons: 5,
-    average: 24
+    average: 24,
   });
 
   return (
@@ -27,7 +27,6 @@ function Dashboard() {
 
           <h1 className="page-title">Pregled učenja</h1>
 
-          {/* 🔹 TAB BUTTONI */}
           <div className="filter-row">
             <button
               onClick={() => setActiveTab("lessons")}
@@ -73,24 +72,27 @@ function Dashboard() {
               </div>
             )}
 
-            {/* 🔥 LESSONS TAB */}
             {activeTab === "lessons" && (
               <>
-                {/* 🔹 COURSE CARDS */}
                 <div className="top-cards">
                   <CourseCard
+                    id={1}
                     badge="Lekcija 1"
                     title="Uvod u Python"
                     progress="8/24"
                     type="intro"
                   />
+
                   <CourseCard
+                    id={2}
                     badge="Lekcija 2"
                     title="Petlje"
-                    progress="15/30"
+                    progress="0/3"
                     type="loops"
                   />
+
                   <CourseCard
+                    id={3}
                     badge="Lekcija 3"
                     title="Zadaci"
                     progress="18/22"
@@ -98,10 +100,7 @@ function Dashboard() {
                   />
                 </div>
 
-                {/* 🔥 GLAVNI GRID */}
                 <div className="content-grid">
-
-                  {/* 🔹 LIJEVO - LEARNING PATH */}
                   <div className="left-section">
                     <div className="lessons-section">
                       <h2>Sve lekcije</h2>
@@ -109,16 +108,13 @@ function Dashboard() {
                     </div>
                   </div>
 
-                  {/* 🔹 DESNO - PRAZNO (ili PromoCard kad budeš htjela) */}
                   <div className="right-section">
                     {/* <PromoCard /> */}
                   </div>
-
                 </div>
               </>
             )}
 
-            {/* 🔹 POINTS TAB */}
             {activeTab === "points" && (
               <div className="stats-box">
                 <h3>Statistika</h3>
@@ -143,7 +139,6 @@ function Dashboard() {
               </div>
             )}
 
-            {/* 🔹 CURRENT TAB */}
             {activeTab === "current" && (
               <div className="course-card purple large">
                 <div className="course-top">
@@ -153,17 +148,21 @@ function Dashboard() {
                 <h3>Petlje u Pythonu</h3>
 
                 <p className="course-desc">
-                  Nastavi gdje si stao i završi lekciju
+                  Nastavi lekciju o petljama, uradi mini provjere i završni zadatak.
                 </p>
 
                 <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: "60%" }} />
+                  <div className="progress-fill" style={{ width: "0%" }} />
                 </div>
 
-                <button className="continue-btn">Nastavi lekciju</button>
+                <button
+                  className="continue-btn"
+                  onClick={() => navigate("/lekcije/2")}
+                >
+                  Nastavi lekciju
+                </button>
               </div>
             )}
-
           </div>
         </main>
       </div>
