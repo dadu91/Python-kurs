@@ -2,6 +2,7 @@ import Sidebar from "../components/AdminSidebar";
 import Topbar from "../components/Topbar";
 import { useState, useEffect } from "react";
 import { PlusCircle } from "lucide-react";
+import "./Admin.css";
 
 function Admin() {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -50,6 +51,7 @@ function Admin() {
     })
       .then((res) => {
         if (res.status === 403) throw new Error("Nemaš admin pristup");
+        if (!res.ok) throw new Error("Greška pri učitavanju korisnika");
         return res.json();
       })
       .then(setKorisnici)

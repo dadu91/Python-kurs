@@ -1,9 +1,9 @@
 import "./Profile.css";
 import Sidebar from "../components/Sidebar";
+import AdminSidebar from "../components/AdminSidebar";
 import Topbar from "../components/Topbar";
 import { useState, useEffect } from "react";
-import { User } from "lucide-react";
-import { Camera } from "lucide-react";
+import { User, Camera, X, Users, BookOpen, ClipboardList, ShieldCheck } from "lucide-react";
 
 const badges = [
   { icon: "🏆", label: "Prva lekcija", earned: true },
@@ -27,15 +27,21 @@ function getUsername() {
 function Profile() {
   const [activeTab, setActiveTab] = useState("profile");
   const [editing, setEditing] = useState(false);
-  const [avatar, setAvatar] = useState(null);
+  const [uloga, setUloga] = useState("");
+
+  const [avatar, setAvatar] = useState(
+    localStorage.getItem("profileImage") || null
+  );
+
   const [profile, setProfile] = useState({ name: "", username: "", email: "" });
-  const [form, setForm] = useState({ ...profile });
+  const [form, setForm] = useState({ name: "", username: "", email: "", password: "" });
+
   const [stats, setStats] = useState({ bodovi: 0, zavrseneLekcije: 0, nivo: 1 });
+  const [adminStats, setAdminStats] = useState({ korisnici: 0, lekcije: 0, zadaci: 0 });
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const username = getUsername();
-
     if (!username) return;
 
     fetch(`http://localhost:8000/korisnik/pretraga/username?username=${username}`, {
@@ -43,98 +49,113 @@ function Profile() {
     })
       .then((res) => res.json())
       .then((korisnik) => {
-        const p = {
-          name: korisnik.username,
-          username: `@${korisnik.username}`,
-          email: korisnik.mail,
-        };
+        const p = { name: korisnik.username, username: `@${korisnik.username}`, email: korisnik.mail };
         setProfile(p);
-        setForm(p);
+        setForm({ ...p, password: "" });
+        setUloga(korisnik.uloga || "");
 
-        // Dohvati progres
-        fetch(`http://localhost:8000/progres/po-korisniku/${korisnik.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-          .then((res) => res.ok ? res.json() : null)
-          .then((progres) => {
-            if (progres) setStats((prev) => ({ ...prev, bodovi: progres.bodovi, nivo: progres.nivo }));
-          })
-          .catch(() => {});
+        if (korisnik.uloga === "admin") {
+          // Dohvati admin statistiku
+          fetch("http://localhost:8000/admin/korisnici", { headers: { Authorization: `Bearer ${token}` } })
+            .then((res) => res.ok ? res.json() : [])
+            .then((data) => setAdminStats((prev) => ({ ...prev, korisnici: Array.isArray(data) ? data.length : 0 })))
+            .catch(() => {});
 
-        // Dohvati broj završenih lekcija
-        fetch(`http://localhost:8000/zavrsena_lekcija/po-korisnik-id/${korisnik.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-          .then((res) => res.ok ? res.json() : null)
-          .then((data) => {
-            if (data) setStats((prev) => ({ ...prev, zavrseneLekcije: Array.isArray(data) ? data.length : 1 }));
-          })
-          .catch(() => {});
+          fetch("http://localhost:8000/lekcije/", { headers: { Authorization: `Bearer ${token}` } })
+            .then((res) => res.ok ? res.json() : [])
+            .then((data) => setAdminStats((prev) => ({ ...prev, lekcije: Array.isArray(data) ? data.length : 0 })))
+            .catch(() => {});
+        } else {
+          fetch(`http://localhost:8000/progres/po-korisniku/${korisnik.id}`, { headers: { Authorization: `Bearer ${token}` } })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((progres) => { if (progres) setStats((prev) => ({ ...prev, bodovi: progres.bodovi, nivo: progres.nivo })); })
+            .catch(() => {});
+
+          fetch(`http://localhost:8000/zavrsena_lekcija/po-korisnik-id/${korisnik.id}`, { headers: { Authorization: `Bearer ${token}` } })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => { if (data) setStats((prev) => ({ ...prev, zavrseneLekcije: Array.isArray(data) ? data.length : 1 })); })
+            .catch(() => {});
+        }
       })
       .catch(() => {});
   }, []);
 
-  const handleSave = () => {
-    setProfile(form);
+  const handleSave = async () => {
+    const token = localStorage.getItem("token");
+    const username = getUsername();
+    const res = await fetch(`http://localhost:8000/korisnik/pretraga/username?username=${username}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const korisnik = await res.json();
+    const body = { username: form.name, mail: form.email };
+    if (form.password) body.password = form.password;
+
+    await fetch(`http://localhost:8000/korisnik/${korisnik.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body),
+    });
+
+    setProfile({ name: form.name, username: `@${form.name}`, email: form.email });
     setEditing(false);
   };
 
   const handleImage = (e) => {
     const file = e.target.files[0];
-    if (file) setAvatar(URL.createObjectURL(file));
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatar(reader.result);
+        localStorage.setItem("profileImage", reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
-  const earnedBadges = badges.filter((b) => b.earned);
+  const handleRemoveImage = () => {
+    setAvatar(null);
+    localStorage.removeItem("profileImage");
+  };
 
   return (
     <div className="page-bg">
       <div className="dashboard-shell">
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        {uloga === "admin" ? (
+          <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        ) : (
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        )}
 
         <main className="dashboard-main">
           <Topbar />
-
           <h1 className="page-title">Profil</h1>
 
           <div className="profile-card">
             <div className="profile-left">
               <div className="profile-avatar">
-                {avatar ? (
-                  <img src={avatar} alt="avatar" />
-                ) : (
-                  <User size={48} />
-                )}
+                {avatar ? <img src={avatar} alt="avatar" /> : <User size={48} />}
                 {editing && (
-                  <label className="avatar-upload">
-                    <Camera size={18} />
-                    <input type="file" accept="image/*" onChange={handleImage} style={{ display: "none" }} />
-                  </label>
+                  <>
+                    <label className="avatar-upload">
+                      <Camera size={18} />
+                      <input type="file" accept="image/*" onChange={handleImage} style={{ display: "none" }} />
+                    </label>
+                    {avatar && (
+                      <button className="avatar-remove" onClick={handleRemoveImage} title="Ukloni sliku">
+                        <X size={14} />
+                      </button>
+                    )}
+                  </>
                 )}
-              </div>
-              <div className="avatar-badges">
-                {earnedBadges.map((b, i) => (
-                  <span key={i} title={b.label}>{b.icon}</span>
-                ))}
               </div>
             </div>
 
             {editing ? (
               <div className="profile-form">
-                <input
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Ime"
-                />
-                <input
-                  value={form.username}
-                  onChange={(e) => setForm({ ...form, username: e.target.value })}
-                  placeholder="Korisničko ime"
-                />
-                <input
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="Email"
-                />
+                <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Ime" />
+                <input value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} placeholder="Korisničko ime" />
+                <input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="Email" />
+                <input type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} placeholder="Nova lozinka (ostavi prazno ako ne mijenjаš)" />
                 <div className="profile-btns">
                   <button className="save-btn" onClick={handleSave}>Sačuvaj</button>
                   <button className="cancel-btn" onClick={() => setEditing(false)}>Otkaži</button>
@@ -145,40 +166,73 @@ function Profile() {
                 <h2>{profile.name || "—"}</h2>
                 <p>{profile.username || "—"}</p>
                 <p>{profile.email || "—"}</p>
-                <button className="edit-btn" onClick={() => setEditing(true)}>
-                  Izmijeni profil
-                </button>
+                <button className="edit-btn" onClick={() => setEditing(true)}>Izmijeni profil</button>
               </div>
             )}
           </div>
 
-          <div className="stats-grid" style={{ marginTop: "24px" }}>
-            <div className="stat-card blue">
-              <span className="stat-top">Ukupni bodovi</span>
-              <h2>{stats.bodovi}</h2>
-            </div>
-            <div className="stat-card orange">
-              <p>Završene lekcije</p>
-              <h2>{stats.zavrseneLekcije}</h2>
-            </div>
-            <div className="stat-card purple">
-              <p>Nivo</p>
-              <h2>{stats.nivo}</h2>
-            </div>
-          </div>
-
-          <div className="progress-section" style={{ marginTop: "24px" }}>
-            <h2 className="section-title">Dostignuća</h2>
-            <div className="badges-grid">
-              {badges.map((b, i) => (
-                <div className={`badge-card ${b.earned ? "earned" : "locked"}`} key={i}>
-                  <span className="badge-icon">{b.icon}</span>
-                  <span className="badge-label">{b.label}</span>
-                  {!b.earned && <span className="badge-lock">🔒</span>}
+          {/* ADMIN STATS */}
+          {uloga === "admin" && (
+            <div style={{ marginTop: "24px" }}>
+              <h2 className="section-title">Pregled sistema</h2>
+              <div className="stats-grid">
+                <div className="stat-card blue big">
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <Users size={28} />
+                    <span className="stat-top">Ukupno korisnika</span>
+                  </div>
+                  <h2>{adminStats.korisnici}</h2>
                 </div>
-              ))}
+                <div className="stat-card orange">
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <BookOpen size={22} />
+                    <p>Ukupno lekcija</p>
+                  </div>
+                  <h2>{adminStats.lekcije}</h2>
+                </div>
+                <div className="stat-card purple">
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <ShieldCheck size={22} />
+                    <p>Uloga</p>
+                  </div>
+                  <h2 style={{ fontSize: "28px" }}>Admin</h2>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* KORISNIK STATS */}
+          {uloga !== "admin" && (
+            <>
+              <div className="stats-grid" style={{ marginTop: "24px" }}>
+                <div className="stat-card blue">
+                  <span className="stat-top">Ukupni bodovi</span>
+                  <h2>{stats.bodovi}</h2>
+                </div>
+                <div className="stat-card orange">
+                  <p>Završene lekcije</p>
+                  <h2>{stats.zavrseneLekcije}</h2>
+                </div>
+                <div className="stat-card purple">
+                  <p>Nivo</p>
+                  <h2>{stats.nivo}</h2>
+                </div>
+              </div>
+
+              <div className="progress-section" style={{ marginTop: "24px" }}>
+                <h2 className="section-title">Dostignuća</h2>
+                <div className="badges-grid">
+                  {badges.map((b, i) => (
+                    <div className={`badge-card ${b.earned ? "earned" : "locked"}`} key={i}>
+                      <span className="badge-icon">{b.icon}</span>
+                      <span className="badge-label">{b.label}</span>
+                      {!b.earned && <span className="badge-lock">🔒</span>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
         </main>
       </div>
     </div>

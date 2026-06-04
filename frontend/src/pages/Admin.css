@@ -1,0 +1,152 @@
+.stats-box table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.stats-box thead {
+  background: #f8f8f8;
+}
+
+.stats-box th {
+  color: #333;
+  text-align: left;
+  padding: 15px 18px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.stats-box td {
+  padding: 15px 18px;
+  border-bottom: 1px solid #eeeeee;
+  color: #333;
+  font-size: 15px;
+  vertical-align: middle;
+}
+
+.stats-box tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.stats-box tbody tr:hover {
+  background: #f8f9ff;
+}
+
+.stats-box td[colspan] {
+  text-align: center;
+  padding: 30px;
+  color: #777;
+  font-weight: 500;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.action-buttons .filter-btn {
+  min-width: 85px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.action-buttons .filter-btn:first-child {
+  background: #3562eb;
+  color: white;
+}
+
+.action-buttons .filter-btn:last-child {
+  background: #ef4444;
+  color: white;
+}
+
+/* FORMA ZA DODAVANJE */
+
+.add-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0 22px;
+  flex-wrap: wrap;
+}
+
+.add-form input,
+.add-form select,
+.add-form textarea {
+  min-width: 220px;
+  height: 44px;
+  padding: 0 14px;
+
+  border: 1px solid #dfe3ee;
+  border-radius: 14px;
+  background: #fff;
+
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.add-form input:focus,
+.add-form select:focus,
+.add-form textarea:focus {
+  border-color: #ff623d;
+  box-shadow: 0 0 0 3px rgba(255, 98, 61, 0.15);
+}
+
+.add-form button {
+  height: 44px;
+  padding: 0 18px;
+
+  border: none;
+  border-radius: 14px;
+
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.add-form button:first-of-type {
+  background: #3562eb;
+  color: white;
+}
+
+.add-form button:first-of-type:hover {
+  transform: translateY(-1px);
+}
+
+.add-form button:last-of-type {
+  background: #f3f5fa;
+  color: #222;
+  border: 1px solid #dfe3ee;
+}
+
+.add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  border: none;
+  border-radius: 14px;
+  background: #ff623d;
+  color: white;
+
+  padding: 11px 18px;
+  margin: 10px 0 18px;
+
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.add-btn:hover {
+  background: #e9552f;
+}

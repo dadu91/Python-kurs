@@ -28,8 +28,21 @@ function LoginForm() {
       }
 
       const data = await res.json();
-      localStorage.setItem("token", data.access_token);
-      navigate("/");
+      const token = data.access_token;
+      localStorage.setItem("token", token);
+
+      // Dohvati ulogu korisnika
+      const korisnikRes = await fetch(`http://localhost:8000/korisnik/pretraga/username?username=${username}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const korisnik = await korisnikRes.json();
+      localStorage.setItem("uloga", korisnik.uloga || "korisnik");
+
+      if (korisnik.uloga === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch {
       setGreska("Greška pri povezivanju sa serverom.");
     }

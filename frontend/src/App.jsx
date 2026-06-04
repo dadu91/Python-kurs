@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import Progress from "./pages/Progress";
 import Lesson from "./pages/Lesson";
+import Admin from "./pages/Admin";
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -23,6 +24,7 @@ function App() {
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/napredak" element={<ProtectedRoute><Progress /></ProtectedRoute>} />
         <Route path="/lekcije/:id" element={<ProtectedRoute><Lesson /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );
