@@ -8,5 +8,5 @@ class Progres(Base):
     id = Column(Integer, primary_key=True, index=True)
     korisnik_id = Column(Integer, ForeignKey("korisnik.id"), nullable=False)
     nivo = Column(Integer, default=1)
-    bodovi = Column(Integer, default=1)
-    datum_azuriranja = Column(DateTime, server_default=func.now())
+    bodovi = Column(Integer, default=0)
+    datum_azuriranja = Column(DateTime, server_default=func.now(), onupdate=func.now())

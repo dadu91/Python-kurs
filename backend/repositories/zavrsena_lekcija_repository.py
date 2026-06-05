@@ -20,3 +20,9 @@ def create_zavrsena_lekcija(db: Session, zavrsena_lekcija: ZavrsenaLekcija):
     db.commit()
     db.refresh(zavrsena_lekcija)
     return zavrsena_lekcija
+
+def get_zavrsena_lekcija_by_korisnik_and_lekcija(db: Session, korisnik_id: int, lekcija_id: int):
+    return db.query(ZavrsenaLekcija).filter(
+        ZavrsenaLekcija.korisnik_id == korisnik_id,
+        ZavrsenaLekcija.lekcija_id == lekcija_id
+    ).first()

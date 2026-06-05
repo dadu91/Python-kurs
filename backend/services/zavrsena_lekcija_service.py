@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from repositories import zavrsena_lekcija_repository
 from fastapi import HTTPException, status
 from models.zavrsena_lekcija import ZavrsenaLekcija
+from services import progres_service
 
 # GET
 def get_zavrsena_lekcija_all(db: Session):
@@ -32,16 +33,28 @@ def get_zavrsena_lekcija_lekcija_id(db: Session, lekcija_id: int):
 from schemas.zavrsena_lekcija_schema import ZavrsenaLekcijaCreate
 
 def create_zavrsena_lekcija(db: Session, zavrsena_lekcija: ZavrsenaLekcijaCreate):
-    zavrsena_lekcija_lekcija_id = zavrsena_lekcija_repository.get_zavrsena_lekcija_by_lekcija_id(db, zavrsena_lekcija.lekcija_id)
-    zavrsena_lekcija_korisnik_id = zavrsena_lekcija_repository.get_zavrsena_lekcija_by_korisnik_id(db, zavrsena_lekcija.korisnik_id)
-    if zavrsena_lekcija_lekcija_id and zavrsena_lekcija_korisnik_id:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail=f"Vec postoji zavrsena lekcija sa lekcija ID-em {zavrsena_lekcija.lekcija_id} i sa korisnik ID-em {zavrsena_lekcija.korisnik_id}."
-        )
-    
-    nova_zavrsena_lekcija = ZavrsenaLekcija(
-        korisnik_id = zavrsena_lekcija.korisnik_id,
-        lekcija_id = zavrsena_lekcija.lekcija_id
+    postojeca = zavrsena_lekcija_repository.get_zavrsena_lekcija_by_korisnik_and_lekcija(
+        db,
+        zavrsena_lekcija.korisnik_id,
+        zavrsena_lekcija.lekcija_id
     )
 
-    return zavrsena_lekcija_repository.create_zavrsena_lekcija(db, nova_zavrsena_lekcija)
+    if postojeca:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Korisnik je vec zavrsio lekciju sa ID-em {zavrsena_lekcija.lekcija_id}."
+        )
+
+    nova_zavrsena_lekcija = ZavrsenaLekcija(
+        korisnik_id=zavrsena_lekcija.korisnik_id,
+        lekcija_id=zavrsena_lekcija.lekcija_id
+    )
+
+    rezultat = zavrsena_lekcija_repository.create_zavrsena_lekcija(db, nova_zavrsena_lekcija)
+
+    progres_service.dodaj_bodove_za_lekciju(
+        db,
+        zavrsena_lekcija.korisnik_id
+    )
+
+    return rezultat

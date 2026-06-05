@@ -62,15 +62,15 @@
 }
 
 .course-card.blue {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+    background: linear-gradient(135deg, #1f2937, #2563eb);
 }
 
 .course-card.orange {
-  background: linear-gradient(135deg, #fb923c, #f97316);
+   background: linear-gradient(135deg, #26334d, #4f46e5);
 }
 
 .course-card.purple {
-  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+   background: linear-gradient(135deg, #111827, #0ea5e9);
 }
 
 .course-badge {
