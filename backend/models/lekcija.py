@@ -7,5 +7,5 @@ class Lekcija(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     naziv = Column(String(100), unique=True, nullable=False)
-    redosljed = Column(Integer, nullable=False)
+    redoslijed = Column(Integer, nullable=False)
     opis = Column(Text, nullable=True)

@@ -37,294 +37,11 @@ import {
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 
-const lessons = {
-  1: {
-    badge: "Lekcija 1",
-    title: "Uvod u Python",
-    heroClass: "intro-hero",
-    description:
-      "U ovoj lekciji učiš šta je Python, kako se pokreće prvi program i kako se koristi print naredba.",
-    duration: "20 min",
-    level: "Početnik",
-    theoryTitle: "Šta je Python?",
-    theory:
-      "Python je programski jezik koji se koristi za web aplikacije, automatizaciju, analizu podataka, vještačku inteligenciju i mnoge druge oblasti.",
-    theoryCode: `print("Zdravo, Python!")`,
-    goals: [
-      "Razumiješ šta je Python",
-      "Znaš čemu služi print()",
-      "Umiješ da napišeš prvi program",
-    ],
-    code: `print("Zdravo, svijete!")
+import uvod from "../lessons/uvod";
+import petlje from "../lessons/petlje";
+import lesson3 from "../lessons/lesson3";
 
-ime = "Petar"
-print("Zdravo, moje ime je", ime)`,
-    secondTitle: "Print naredba",
-    secondText:
-      "Naredba print() služi za ispis teksta ili vrijednosti na ekran. Tekst pišemo između navodnika.",
-    secondCode: `print("Učim Python")`,
-    questions: [
-      {
-        question: "Koja naredba se koristi za ispis u Pythonu?",
-        answers: ["echo()", "print()", "write()"],
-        correct: 1,
-      },
-      {
-        question: "Šta će ispisati kod: print('Python')?",
-        answers: ["Python", "print", "Grešku"],
-        correct: 0,
-      },
-      {
-        question: "Tekst u Pythonu najčešće pišemo između:",
-        answers: ["zagrada", "navodnika", "zareza"],
-        correct: 1,
-      },
-    ],
-    codingTasks: [],
-  },
-
-  2: {
-    badge: "Lekcija 2",
-    title: "Petlje u Pythonu",
-    heroClass: "loops-hero",
-    description:
-      "U ovoj lekciji učiš kako rade for i while petlje, kako se koristi range(), kako se prolazi kroz listu i kako da prepoznaš najčešće greške u petljama.",
-    duration: "45 min",
-    level: "Početnik",
-    theoryTitle: "Šta su petlje?",
-    theory:
-      "Petlje koristimo kada želimo da se neki dio koda ponovi više puta. Umjesto da istu naredbu pišemo ručno više puta, napišemo petlju koja to radi za nas.",
-    theoryCode: `for i in range(5):
-    print(i)`,
-    goals: [
-      "Razumiješ kako radi for petlja",
-      "Znaš kako se koristi range()",
-      "Razlikuješ for i while petlju",
-      "Umiješ da pronađeš grešku u kodu sa petljama",
-      "Znaš kako se petljom prolazi kroz listu",
-    ],
-    code: `for i in range(5):
-    print(i)
-
-brojevi = [2, 4, 6, 8]
-
-for broj in brojevi:
-    print(broj)
-
-x = 0
-while x < 3:
-    print("Python")
-    x += 1`,
-    secondTitle: "Najčešće greške kod petlji",
-    secondText:
-      "Kod petlji početnici često zaborave dvotačku, pogriješe uvlačenje koda ili naprave while petlju koja se nikad ne završava.",
-    secondCode: `# Greška: fali dvotačka
-for i in range(5)
-    print(i)
-
-# Ispravno:
-for i in range(5):
-    print(i)`,
-
-    questions: [
-      {
-        question:
-          "Koja petlja se najčešće koristi kada znamo koliko puta nešto ponavljamo?",
-        answers: ["for", "while", "if"],
-        correct: 0,
-      },
-      {
-        question: "Šta će ispisati kod: for i in range(3): print(i)?",
-        answers: ["1 2 3", "0 1 2", "0 1 2 3"],
-        correct: 1,
-      },
-      {
-        question: "Koja petlja se koristi kada ponavljanje zavisi od uslova?",
-        answers: ["for", "while", "print"],
-        correct: 1,
-      },
-      {
-        question: "Šta fali u ovom kodu: for i in range(5) print(i)?",
-        answers: ["Dvotačka poslije range(5)", "Navodnici", "Promjenljiva x"],
-        correct: 0,
-      },
-      {
-        question:
-          "Koja greška se najčešće dobija ako kod unutar petlje nije pravilno uvučen?",
-        answers: ["NameError", "IndentationError", "ValueError"],
-        correct: 1,
-      },
-      {
-        question: "Šta radi naredba x += 1 u while petlji?",
-        answers: [
-          "Smanjuje x za 1",
-          "Povećava x za 1",
-          "Prekida program",
-        ],
-        correct: 1,
-      },
-      {
-        question:
-          "Šta može da se desi ako u while petlji nikad ne promijenimo uslov?",
-        answers: [
-          "Petlja se nikad ne završava",
-          "Program se odmah gasi",
-          "Python automatski popravi grešku",
-        ],
-        correct: 0,
-      },
-      {
-        question: "Kako provjeravamo da li je broj paran?",
-        answers: ["broj % 2 == 0", "broj / 2 == 0", "broj + 2 == 0"],
-        correct: 0,
-      },
-    ],
-
-    codingTasks: [
-      {
-        title: "Mini zadatak 1: Ispiši brojeve od 0 do 4",
-        description:
-          "Napiši for petlju koja koristi range(5) i ispisuje svaki broj od 0 do 4.",
-        solution: `for i in range(5):
-    print(i)`,
-        expectedOutput: `0
-1
-2
-3
-4`,
-        hint: "Treba ti for petlja, range(5) i print(i).",
-        check: (code) =>
-          code.includes("foriinrange(5):") && code.includes("print(i)"),
-      },
-      {
-        title: "Mini zadatak 2: Prođi kroz listu brojeva",
-        description:
-          "Data je lista brojeva: brojevi = [2, 4, 6, 8]. Napiši program koji pomoću for petlje prolazi kroz listu i ispisuje svaki broj.",
-        solution: `brojevi = [2, 4, 6, 8]
-
-for broj in brojevi:
-    print(broj)`,
-        expectedOutput: `2
-4
-6
-8`,
-        hint: "Treba ti lista brojevi = [2, 4, 6, 8], for broj in brojevi i print(broj).",
-        check: (code) =>
-          code.includes("brojevi=[2,4,6,8]") &&
-          code.includes("forbrojinbrojevi:") &&
-          code.includes("print(broj)"),
-      },
-      {
-        title: "Mini zadatak 3: Ispiši samo parne brojeve",
-        description:
-          "Data je lista brojeva: brojevi = [10, 15, 22, 31, 44, 57, 68]. Napiši program koji pomoću for petlje prolazi kroz listu i ispisuje samo parne brojeve.",
-        solution: `brojevi = [10, 15, 22, 31, 44, 57, 68]
-
-for broj in brojevi:
-    if broj % 2 == 0:
-        print(broj)`,
-        expectedOutput: `10
-22
-44
-68`,
-        hint: "Provjeri listu, for petlju, uslov za paran broj i ispis.",
-        check: (code) =>
-          code.includes("brojevi=[10,15,22,31,44,57,68]") &&
-          code.includes("forbrojinbrojevi:") &&
-          code.includes("ifbroj%2==0:") &&
-          code.includes("print(broj)"),
-      },
-      {
-        title: "Mini zadatak 4: Prebroj parne brojeve",
-        description:
-          "Data je lista brojeva: brojevi = [12, 19, 24, 33, 40, 55, 72, 81]. Napiši program koji broji koliko parnih brojeva ima u listi i na kraju ispisuje vrijednost brojača.",
-        solution: `brojevi = [12, 19, 24, 33, 40, 55, 72, 81]
-brojac = 0
-
-for broj in brojevi:
-    if broj % 2 == 0:
-        brojac += 1
-
-print(brojac)`,
-        expectedOutput: `4`,
-        hint: "Provjeri listu, brojač, for petlju, if uslov, povećanje brojača i print.",
-        check: (code) =>
-          code.includes("brojevi=[12,19,24,33,40,55,72,81]") &&
-          code.includes("brojac=0") &&
-          code.includes("forbrojinbrojevi:") &&
-          code.includes("ifbroj%2==0:") &&
-          code.includes("brojac+=1") &&
-          code.includes("print("),
-      },
-      {
-        title: "Mini zadatak 5: Pronađi i ispravi grešku",
-        description:
-          "U kodu ispod fali dvotačka poslije range(5). Napiši ispravan kod koji ispisuje brojeve od 0 do 4: for i in range(5) print(i).",
-        solution: `for i in range(5):
-    print(i)`,
-        expectedOutput: `0
-1
-2
-3
-4`,
-        hint: "Poslije for i in range(5) mora da stoji dvotačka.",
-        check: (code) =>
-          code.includes("foriinrange(5):") && code.includes("print(i)"),
-      },
-    ],
-  },
-
-  3: {
-    badge: "Lekcija 3",
-    title: "Zadaci u Pythonu",
-    heroClass: "tasks-hero",
-    description:
-      "U ovoj lekciji vježbaš osnovne Python zadatke koristeći promjenljive, uslove i petlje.",
-    duration: "35 min",
-    level: "Početnik",
-    theoryTitle: "Kako rješavamo zadatke?",
-    theory:
-      "Kod zadataka je najbitnije da prvo razumiješ šta se traži, zatim napraviš plan, pa tek onda pišeš kod.",
-    theoryCode: `broj = int(input("Unesi broj: "))
-
-if broj > 0:
-    print("Broj je pozitivan")`,
-    goals: [
-      "Razumiješ tekst zadatka",
-      "Koristiš input i print",
-      "Primjenjuješ uslove i petlje",
-    ],
-    code: `broj = int(input("Unesi broj: "))
-
-if broj % 2 == 0:
-    print("Broj je paran")
-else:
-    print("Broj je neparan")`,
-    secondTitle: "Savjet za zadatke",
-    secondText:
-      "Uvijek testiraj program sa više primjera. Ako radi za jedan broj, ne znači da radi za sve.",
-    secondCode: `# Testiraj za:
-# 2, 5, 0, -4`,
-    questions: [
-      {
-        question: "Koja funkcija služi za unos podataka?",
-        answers: ["input()", "print()", "range()"],
-        correct: 0,
-      },
-      {
-        question: "Kako provjeravamo da li je broj paran?",
-        answers: ["broj / 2 == 0", "broj % 2 == 0", "broj + 2 == 0"],
-        correct: 1,
-      },
-      {
-        question: "Šta radi if naredba?",
-        answers: ["Ponavlja kod", "Provjerava uslov", "Ispisuje tekst"],
-        correct: 1,
-      },
-    ],
-    codingTasks: [],
-  },
-};
+const lessons = { 1: uvod, 2: petlje, 3: lesson3 };
 
 function Lesson() {
   const navigate = useNavigate();
@@ -339,6 +56,8 @@ function Lesson() {
   const [taskResults, setTaskResults] = useState({});
   const [taskOutputs, setTaskOutputs] = useState({});
   const [shownSolutions, setShownSolutions] = useState({});
+  const [vjezbaKodovi, setVjezbaKodovi] = useState({});
+  const [vjezbaRezultati, setVjezbaRezultati] = useState({});
 
   const textareaRefs = useRef({});
   const cursorPos = useRef(null);
@@ -503,6 +222,17 @@ function Lesson() {
     }
   };
 
+  const checkVjezbu = (blockIndex) => {
+    const block = lesson.theoryBlocks[blockIndex];
+    const code = vjezbaKodovi[blockIndex] || "";
+    const normalized = normalizeCode(code);
+    const isCorrect = block.vjezbaSintakse.check(normalized);
+    setVjezbaRezultati((prev) => ({
+      ...prev,
+      [blockIndex]: isCorrect ? "correct" : "wrong",
+    }));
+  };
+
   const correctCount = lesson.questions.filter(
     (q, index) => selectedAnswers[index] === q.correct
   ).length;
@@ -564,40 +294,84 @@ function Lesson() {
             </div>
           </section>
 
-          <section className="lesson-grid">
-            <article className="lesson-panel theory-panel">
-              <h2>{lesson.theoryTitle}</h2>
-              <p>{lesson.theory}</p>
-              <pre className="mini-code">{lesson.theoryCode}</pre>
-            </article>
+          <section className="lesson-panel" style={{ marginBottom: "24px" }}>
+            <h2>Šta učiš?</h2>
+            <div className="goal-list">
+              {lesson.goals.map((goal, index) => (
+                <div className="goal-item" key={index}>
+                  <CheckCircle2 size={19} />
+                  <span>{goal}</span>
+                </div>
+              ))}
+            </div>
+          </section>
 
-            <article className="lesson-panel">
-              <h2>Šta učiš?</h2>
+          <section className="theory-flow">
+            {lesson.theoryBlocks.map((block, blockIndex) => (
+              <div key={blockIndex} className="theory-block lesson-panel">
+                <div className="panel-title-row">
+                  <h2>{block.title}</h2>
+                  <Code2 size={22} />
+                </div>
+                <p>{block.text}</p>
+                <pre className="mini-code">{block.code}</pre>
 
-              <div className="goal-list">
-                {lesson.goals.map((goal, index) => (
-                  <div className="goal-item" key={index}>
-                    <CheckCircle2 size={19} />
-                    <span>{goal}</span>
+                {block.vjezbaSintakse && (
+                  <div className="vjezba-sintakse">
+                    <h4>Vježba sintakse</h4>
+                    <p>{block.vjezbaSintakse.uputstvo}</p>
+                    <textarea
+                      className="code-input"
+                      placeholder={block.vjezbaSintakse.placeholder}
+                      value={vjezbaKodovi[blockIndex] || ""}
+                      onChange={(e) =>
+                        setVjezbaKodovi((prev) => ({
+                          ...prev,
+                          [blockIndex]: e.target.value,
+                        }))
+                      }
+                      onKeyDown={(e) => {
+                        const el = e.target;
+                        const start = el.selectionStart;
+                        const end = el.selectionEnd;
+                        const code = el.value;
+                        if (e.key === "Tab") {
+                          e.preventDefault();
+                          const newVal = code.substring(0, start) + "    " + code.substring(end);
+                          setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
+                        }
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          const currentLine = code.substring(0, start).split("\n").pop();
+                          const indent = currentLine.match(/^(\s*)/)[1];
+                          const extraIndent = currentLine.trimEnd().endsWith(":") ? "    " : "";
+                          const newVal = code.substring(0, start) + "\n" + indent + extraIndent + code.substring(end);
+                          setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
+                        }
+                      }}
+                    />
+                    <div className="code-actions">
+                      <button
+                        className="check-code-btn"
+                        onClick={() => checkVjezbu(blockIndex)}
+                      >
+                        Provjeri
+                      </button>
+                    </div>
+                    {vjezbaRezultati[blockIndex] === "correct" && (
+                      <div className="code-result correct-result">
+                        Tačno! Sintaksa je ispravna.
+                      </div>
+                    )}
+                    {vjezbaRezultati[blockIndex] === "wrong" && (
+                      <div className="code-result wrong-result">
+                        Nije tačno. {block.vjezbaSintakse.hint}
+                      </div>
+                    )}
                   </div>
-                ))}
+                )}
               </div>
-            </article>
-
-            <article className="lesson-panel code-panel">
-              <div className="panel-title-row">
-                <h2>Primjer koda</h2>
-                <Code2 size={22} />
-              </div>
-
-              <pre>{lesson.code}</pre>
-            </article>
-
-            <article className="lesson-panel theory-panel">
-              <h2>{lesson.secondTitle}</h2>
-              <p>{lesson.secondText}</p>
-              <pre className="mini-code">{lesson.secondCode}</pre>
-            </article>
+            ))}
           </section>
 
           <section className="quiz-section">

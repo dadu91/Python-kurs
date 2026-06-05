@@ -29,7 +29,7 @@ def create_lekcija(db: Session, lekcija: LekcijaCreate):
 
     nova_lekcija = Lekcija(
         naziv=lekcija.naziv,
-        redosljed=lekcija.redosljed,
+        redoslijed=lekcija.redoslijed,
         opis=lekcija.opis
     )
 
@@ -40,8 +40,8 @@ def update_lekcija(db: Session, lekcija: Lekcija, lekcija_update: LekcijaUpdate)
     if lekcija_update.naziv is not None:
         lekcija.naziv = lekcija_update.naziv
 
-    if lekcija_update.redosljed is not None:
-        lekcija.redosljed = lekcija_update.redosljed
+    if lekcija_update.redoslijed is not None:
+        lekcija.redoslijed = lekcija_update.redoslijed
 
     if lekcija_update.opis is not None:
         lekcija.opis = lekcija_update.opis

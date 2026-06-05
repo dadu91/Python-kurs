@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class LekcijaBase(BaseModel):
     naziv: str
-    redosljed: int
+    redoslijed: int
     opis: str | None = None
 
 
@@ -13,7 +13,7 @@ class LekcijaCreate(LekcijaBase):
 
 class LekcijaUpdate(BaseModel):
     naziv: str | None = None
-    redosljed: int | None = None
+    redoslijed: int | None = None
     opis: str | None = None
 
 

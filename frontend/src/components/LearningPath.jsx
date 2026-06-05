@@ -16,7 +16,7 @@ function LearningPath({ lekcije = [] }) {
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
           >
             <div className="module-left">
-              <div className="module-number">{lekcija.redosljed}</div>
+              <div className="module-number">{lekcija.redoslijed}</div>
               <h4>{lekcija.naziv}</h4>
             </div>
 

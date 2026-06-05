@@ -31,7 +31,7 @@ function Admin() {
   ]);
 
   const [noviKorisnik, setNoviKorisnik] = useState({ username: "", mail: "", uloga: "" });
-  const [novaLekcija, setNovaLekcija] = useState({ naziv: "", redosljed: "", opis: "" });
+  const [novaLekcija, setNovaLekcija] = useState({ naziv: "", redoslijed: "", opis: "" });
   const [noviZadatak, setNoviZadatak] = useState({ naziv: "", lekcija: "" });
   const [novoDostignuce, setNovoDostignuce] = useState({ naziv: "", opis: "", uslov: "" });
 
@@ -241,7 +241,7 @@ function Admin() {
                   onClick={() => {
                     setShowLessonForm(!showLessonForm);
                     setEditLessonId(null);
-                    setNovaLekcija({ naziv: "", redosljed: "", opis: "" });
+                    setNovaLekcija({ naziv: "", redoslijed: "", opis: "" });
                   }}
                 >
                   <PlusCircle size={18} />
@@ -260,8 +260,8 @@ function Admin() {
                   <input
                     type="number"
                     placeholder="Redosljed"
-                    value={novaLekcija.redosljed}
-                    onChange={(e) => setNovaLekcija({ ...novaLekcija, redosljed: e.target.value })}
+                    value={novaLekcija.redoslijed}
+                    onChange={(e) => setNovaLekcija({ ...novaLekcija, redoslijed: e.target.value })}
                   />
                   <input
                     type="text"
@@ -272,7 +272,7 @@ function Admin() {
                   <button
                     className="filter-btn"
                     onClick={() => {
-                      if (!novaLekcija.naziv || !novaLekcija.redosljed || !novaLekcija.opis) {
+                      if (!novaLekcija.naziv || !novaLekcija.redoslijed || !novaLekcija.opis) {
                         alert("Popunite sva polja za lekciju.");
                         return;
                       }
@@ -280,17 +280,17 @@ function Admin() {
                         setLekcije((prev) =>
                           prev.map((l) =>
                             l.id === editLessonId
-                              ? { ...l, naziv: novaLekcija.naziv, redosljed: novaLekcija.redosljed, opis: novaLekcija.opis }
+                              ? { ...l, naziv: novaLekcija.naziv, redoslijed: novaLekcija.redoslijed, opis: novaLekcija.opis }
                               : l
                           )
                         );
                       } else {
                         setLekcije((prev) => [
                           ...prev,
-                          { id: prev.length + 1, naziv: novaLekcija.naziv, redosljed: novaLekcija.redosljed, opis: novaLekcija.opis },
+                          { id: prev.length + 1, naziv: novaLekcija.naziv, redoslijed: novaLekcija.redoslijed, opis: novaLekcija.opis },
                         ]);
                       }
-                      setNovaLekcija({ naziv: "", redosljed: "", opis: "" });
+                      setNovaLekcija({ naziv: "", redoslijed: "", opis: "" });
                       setEditLessonId(null);
                       setShowLessonForm(false);
                     }}
@@ -302,7 +302,7 @@ function Admin() {
                     onClick={() => {
                       setShowLessonForm(false);
                       setEditLessonId(null);
-                      setNovaLekcija({ naziv: "", redosljed: "", opis: "" });
+                      setNovaLekcija({ naziv: "", redoslijed: "", opis: "" });
                     }}
                   >
                     Odustani
@@ -330,7 +330,7 @@ function Admin() {
                       <tr key={l.id}>
                         <td>{l.id}</td>
                         <td>{l.naziv}</td>
-                        <td>{l.redosljed}</td>
+                        <td>{l.redoslijed}</td>
                         <td>{l.opis}</td>
                         <td>
                           <div className="action-buttons">
@@ -338,7 +338,7 @@ function Admin() {
                               className="filter-btn"
                               onClick={() => {
                                 setEditLessonId(l.id);
-                                setNovaLekcija({ naziv: l.naziv, redosljed: l.redosljed, opis: l.opis });
+                                setNovaLekcija({ naziv: l.naziv, redoslijed: l.redoslijed, opis: l.opis });
                                 setShowLessonForm(true);
                               }}
                             >

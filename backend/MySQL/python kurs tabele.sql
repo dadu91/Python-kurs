@@ -16,13 +16,14 @@ CREATE TABLE korisnik (
 CREATE TABLE lekcija (
 	id INT AUTO_INCREMENT PRIMARY KEY,
     naziv VARCHAR(100) NOT NULL UNIQUE,
-    redosljed INT NOT NULL,
+    redoslijed INT NOT NULL,
     opis TEXT
 );
 
 CREATE TABLE zadatak (
 	id INT AUTO_INCREMENT PRIMARY KEY,
     lekcija_id INT NOT NULL,
+    redoslijed INT NOT NULL DEFAULT 1,
     tezina ENUM('laka', 'srednja', 'teska') DEFAULT 'laka',
     tip ENUM('teorija', 'prakticni', 'quiz') DEFAULT 'teorija',
     FOREIGN KEY (lekcija_id) REFERENCES lekcija(id) ON DELETE CASCADE
@@ -66,3 +67,5 @@ CREATE TABLE zadatak_korisnik (
 );
 
 select * from korisnik;
+
+select * from zadatak;

@@ -49,3 +49,8 @@ INSERT INTO greska (tip_greske, opis) VALUES
 
 
 select * from greska;
+
+DELETE FROM korisnik WHERE id > 0;
+
+INSERT INTO korisnik (username, password, mail, uloga) VALUES
+("Admin", "$2b$12$frdM2qj/WLqMO3IPmMWmsebHPDT/EaKj5pKl5pShfOI2h/JRtVzMy", "admin@gmail.com", "admin");
