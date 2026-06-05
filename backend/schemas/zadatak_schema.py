@@ -5,6 +5,7 @@ from typing import Optional
 class ZadatakOut(BaseModel):
     id: int
     lekcija_id: int
+    redoslijed: int
     tezina: str
     tip: str
 

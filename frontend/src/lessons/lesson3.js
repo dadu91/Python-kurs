@@ -8,9 +8,9 @@ const lesson3 = {
   level: "Početnik",
 
   goals: [
-    "Razumiješ tekst zadatka",
-    "Koristiš input i print",
-    "Primjenjuješ uslove i petlje",
+    { tekst: "Razumiješ tekst zadatka", blockIndex: 0 },
+    { tekst: "Koristiš input i print", blockIndex: 0 },
+    { tekst: "Primjenjuješ uslove i petlje", blockIndex: 1 },
   ],
 
   theoryBlocks: [

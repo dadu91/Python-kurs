@@ -67,5 +67,14 @@ CREATE TABLE zadatak_korisnik (
 );
 
 select * from korisnik;
+select korisnik_id, zadatak_id
+from zadatak_korisnik, zadatak, korisnik
+where korisnik.id = zadatak_korisnik.korisnik_id and zadatak.id = zadatak_korisnik.zadatak_id and korisnik.id = 8;
 
 select * from zadatak;
+select * from zadatak;
+
+select * from zadatak_korisnik;
+
+SELECT * FROM zadatak_korisnik WHERE korisnik_id = 11;
+select * from korisnik where id = 12;

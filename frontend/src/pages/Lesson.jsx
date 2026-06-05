@@ -58,9 +58,68 @@ function Lesson() {
   const [shownSolutions, setShownSolutions] = useState({});
   const [vjezbaKodovi, setVjezbaKodovi] = useState({});
   const [vjezbaRezultati, setVjezbaRezultati] = useState({});
+  const [zadaciMapa, setZadaciMapa] = useState({});
+  const [uradjeniZadaci, setUradjeniZadaci] = useState(new Set());
 
   const textareaRefs = useRef({});
   const cursorPos = useRef(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    fetch(`http://localhost:8000/zadaci/po-lekciji/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.ok ? res.json() : [])
+      .then((zadaci) => {
+        const mapa = {};
+        zadaci.forEach((z) => { mapa[z.redoslijed] = z.id; });
+        setZadaciMapa(mapa);
+      })
+      .catch(() => {});
+
+    fetchKorisnikId(token).then((korisnikId) => {
+      if (!korisnikId) return;
+
+      fetch(`http://localhost:8000/zadatak_korisnik/tacni/po-korisnik/${korisnikId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.ok ? res.json() : [])
+        .then((data) => {
+          setUradjeniZadaci(new Set(data.map((zk) => zk.zadatak_id)));
+        })
+        .catch(() => {});
+
+      fetch(`http://localhost:8000/zavrsena_lekcija/po-korisnik-id/${korisnikId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => res.ok ? res.json() : [])
+        .then((data) => {
+          if (Array.isArray(data) && data.some((zl) => zl.lekcija_id === parseInt(id))) {
+            setFinished(true);
+          }
+        })
+        .catch(() => {});
+    });
+  }, [id]);
+
+  const upisiZadatakKorisnik = async (redoslijed, tacno, tipGreske = null) => {
+    const zadatakId = zadaciMapa[redoslijed];
+    if (!zadatakId) return;
+    const token = localStorage.getItem("token");
+    const korisnikId = await fetchKorisnikId(token);
+    if (!korisnikId) return;
+    const body = { zadatak_id: zadatakId, korisnik_id: korisnikId, tacno };
+    if (tipGreske) body.tip_greske = tipGreske;
+    fetch("http://localhost:8000/zadatak_korisnik/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body),
+    }).catch(() => {});
+    if (tacno) {
+      setUradjeniZadaci((prev) => new Set([...prev, zadatakId]));
+    }
+  };
 
   useEffect(() => {
     if (cursorPos.current !== null) {
@@ -75,10 +134,10 @@ function Lesson() {
   });
 
   const handleAnswer = (questionIndex, answerIndex) => {
-    setSelectedAnswers({
-      ...selectedAnswers,
-      [questionIndex]: answerIndex,
-    });
+    if (selectedAnswers[questionIndex] === lesson.questions[questionIndex].correct) return;
+    const tacno = answerIndex === lesson.questions[questionIndex].correct;
+    setSelectedAnswers({ ...selectedAnswers, [questionIndex]: answerIndex });
+    upisiZadatakKorisnik(lesson.questions[questionIndex].redoslijed, tacno);
   };
 
   const normalizeCode = (code) => {
@@ -90,99 +149,14 @@ function Lesson() {
       .toLowerCase();
   };
 
-  const getTaskError = (taskIndex, code) => {
-    if (taskIndex === 0) {
-      if (!code.includes("foriinrange(5):")) {
-        return "SyntaxError: očekuje se for petlja oblika: for i in range(5):";
-      }
-
-      if (!code.includes("print(i)")) {
-        return "LogicError: petlja postoji, ali ne ispisuje vrijednost i. Dodaj print(i).";
-      }
-    }
-
-    if (taskIndex === 1) {
-      if (!code.includes("brojevi=[2,4,6,8]")) {
-        return "NameError: lista brojevi nije pravilno definisana. Očekuje se brojevi = [2, 4, 6, 8].";
-      }
-
-      if (!code.includes("forbrojinbrojevi:")) {
-        return "SyntaxError: fali for petlja koja prolazi kroz listu brojevi.";
-      }
-
-      if (!code.includes("print(broj)")) {
-        return "LogicError: prolaziš kroz listu, ali ne ispisuješ trenutni broj. Dodaj print(broj).";
-      }
-    }
-
-    if (taskIndex === 2) {
-      if (!code.includes("brojevi=[10,15,22,31,44,57,68]")) {
-        return "NameError: lista brojevi nije pravilno definisana. Očekuje se brojevi = [10, 15, 22, 31, 44, 57, 68].";
-      }
-
-      if (!code.includes("forbrojinbrojevi:")) {
-        return "SyntaxError: fali for petlja koja prolazi kroz listu brojevi.";
-      }
-
-      if (!code.includes("ifbroj%2==0:")) {
-        return "LogicError: fali uslov koji provjerava da li je broj paran: if broj % 2 == 0:";
-      }
-
-      if (!code.includes("print(broj)")) {
-        return "LogicError: pronašao si parne brojeve, ali ih ne ispisuješ. Dodaj print(broj).";
-      }
-    }
-
-    if (taskIndex === 3) {
-      if (!code.includes("brojevi=[12,19,24,33,40,55,72,81]")) {
-        return "NameError: lista brojevi nije pravilno definisana. Očekuje se brojevi = [12, 19, 24, 33, 40, 55, 72, 81].";
-      }
-
-      if (!code.includes("brojac=0")) {
-        return "NameError: brojač nije postavljen. Dodaj brojac = 0 prije petlje.";
-      }
-
-      if (!code.includes("forbrojinbrojevi:")) {
-        return "SyntaxError: fali for petlja koja prolazi kroz listu brojevi.";
-      }
-
-      if (!code.includes("ifbroj%2==0:")) {
-        return "LogicError: fali provjera da li je broj paran: if broj % 2 == 0:";
-      }
-
-      if (!code.includes("brojac+=1")) {
-        return "LogicError: pronađeš paran broj, ali ne povećavaš brojač. Dodaj brojac += 1.";
-      }
-
-      if (!code.includes("print(")) {
-        return "LogicError: rezultat se ne ispisuje. Dodaj print(brojac).";
-      }
-    }
-
-    if (taskIndex === 4) {
-      if (!code.includes("foriinrange(5):")) {
-        return "SyntaxError: fali dvotačka poslije range(5). Ispravno je: for i in range(5):";
-      }
-
-      if (!code.includes("print(i)")) {
-        return "LogicError: petlja postoji, ali ne ispisuje vrijednost i. Dodaj print(i).";
-      }
-    }
-
-    return "Greška: kod nije tačan. Provjeri sintaksu i pokušaj ponovo.";
-  };
 
   const checkTaskCode = (taskIndex) => {
     const task = lesson.codingTasks[taskIndex];
     const userCode = textareaRefs.current[taskIndex]?.value || "";
     const normalizedCode = normalizeCode(userCode);
-
     const isCorrect = task.check(normalizedCode);
-
-    setTaskResults({
-      ...taskResults,
-      [taskIndex]: isCorrect ? "correct" : "wrong",
-    });
+    setTaskResults({ ...taskResults, [taskIndex]: isCorrect ? "correct" : "wrong" });
+    upisiZadatakKorisnik(task.redoslijed, isCorrect);
   };
 
   const runTaskCode = async (taskIndex) => {
@@ -207,15 +181,14 @@ function Lesson() {
       if (data.greska) {
         setTaskOutputs({ ...taskOutputs, [taskIndex]: `>>> Pokreni kod\n${data.greska.tip}: ${data.greska.poruka}` });
         setTaskResults({ ...taskResults, [taskIndex]: "wrong" });
+        upisiZadatakKorisnik(task.redoslijed, false, data.greska.tip);
       } else {
         const output = data.output || "";
         setTaskOutputs({ ...taskOutputs, [taskIndex]: `>>> Pokreni kod\n${output}` });
 
-        if (task.check(normalizedCode)) {
-          setTaskResults({ ...taskResults, [taskIndex]: "correct" });
-        } else {
-          setTaskResults({ ...taskResults, [taskIndex]: "wrong" });
-        }
+        const isCorrect = task.check(normalizedCode);
+        setTaskResults({ ...taskResults, [taskIndex]: isCorrect ? "correct" : "wrong" });
+        if (isCorrect) upisiZadatakKorisnik(task.redoslijed, true);
       }
     } catch {
       setTaskOutputs({ ...taskOutputs, [taskIndex]: ">>> Greška pri povezivanju sa serverom." });
@@ -298,9 +271,16 @@ function Lesson() {
             <h2>Šta učiš?</h2>
             <div className="goal-list">
               {lesson.goals.map((goal, index) => (
-                <div className="goal-item" key={index}>
+                <div
+                  className="goal-item goal-item-link"
+                  key={index}
+                  onClick={() => {
+                    const el = document.getElementById(`theory-block-${goal.blockIndex}`);
+                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }}
+                >
                   <CheckCircle2 size={19} />
-                  <span>{goal}</span>
+                  <span>{goal.tekst}</span>
                 </div>
               ))}
             </div>
@@ -308,13 +288,24 @@ function Lesson() {
 
           <section className="theory-flow">
             {lesson.theoryBlocks.map((block, blockIndex) => (
-              <div key={blockIndex} className="theory-block lesson-panel">
+              <div key={blockIndex} id={`theory-block-${blockIndex}`} className="theory-block lesson-panel">
                 <div className="panel-title-row">
                   <h2>{block.title}</h2>
                   <Code2 size={22} />
                 </div>
                 <p>{block.text}</p>
                 <pre className="mini-code">{block.code}</pre>
+
+                {block.codeObjasnjenje && (
+                  <div className="code-objasnjenje">
+                    {block.codeObjasnjenje.map((linija, i) => (
+                      <div key={i} className="code-objasnjenje-red">
+                        <span className="code-objasnjenje-broj">{i + 1}</span>
+                        <span>{linija}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {block.vjezbaSintakse && (
                   <div className="vjezba-sintakse">
@@ -385,36 +376,29 @@ function Lesson() {
 
             <div className="quiz-list">
               {lesson.questions.map((item, questionIndex) => (
-                <article className="quiz-card" key={questionIndex}>
+                <article className={`quiz-card ${uradjeniZadaci.has(zadaciMapa[item.redoslijed]) ? "quiz-card-done" : ""}`} key={questionIndex}>
                   <h3>
+                    {uradjeniZadaci.has(zadaciMapa[item.redoslijed]) && <CheckCircle2 size={18} style={{ color: "#23a455", marginRight: "8px", display: "inline" }} />}
                     Pitanje {questionIndex + 1}: {item.question}
                   </h3>
 
                   <div className="answer-list">
                     {item.answers.map((answer, answerIndex) => {
-                      const isSelected =
-                        selectedAnswers[questionIndex] === answerIndex;
+                      const isSelected = selectedAnswers[questionIndex] === answerIndex;
                       const isCorrect = item.correct === answerIndex;
-                      const isAnswered =
-                        selectedAnswers[questionIndex] !== undefined;
+                      const isAnswered = selectedAnswers[questionIndex] !== undefined;
+                      const isLocked = selectedAnswers[questionIndex] === item.correct;
 
                       let buttonClass = "answer-btn";
-
-                      if (isAnswered && isSelected && isCorrect) {
-                        buttonClass += " correct";
-                      }
-
-                      if (isAnswered && isSelected && !isCorrect) {
-                        buttonClass += " wrong";
-                      }
+                      if (isAnswered && isSelected && isCorrect) buttonClass += " correct";
+                      if (isAnswered && isSelected && !isCorrect) buttonClass += " wrong";
 
                       return (
                         <button
                           key={answerIndex}
                           className={buttonClass}
-                          onClick={() =>
-                            handleAnswer(questionIndex, answerIndex)
-                          }
+                          disabled={isLocked}
+                          onClick={() => handleAnswer(questionIndex, answerIndex)}
                         >
                           {answer}
                         </button>
@@ -450,8 +434,11 @@ function Lesson() {
 
               <div className="coding-task-list">
                 {lesson.codingTasks.map((task, taskIndex) => (
-                  <div className="code-checker-box" key={taskIndex}>
-                    <h3>{task.title}</h3>
+                  <div className={`code-checker-box ${uradjeniZadaci.has(zadaciMapa[task.redoslijed]) ? "code-checker-done" : ""}`} key={taskIndex}>
+                    <h3>
+                      {uradjeniZadaci.has(zadaciMapa[task.redoslijed]) && <CheckCircle2 size={18} style={{ color: "#23a455", marginRight: "8px", display: "inline" }} />}
+                      {task.title}
+                    </h3>
                     <p>{task.description}</p>
 
                     <textarea

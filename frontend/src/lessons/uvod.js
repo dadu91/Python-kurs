@@ -8,9 +8,9 @@ const uvod = {
   level: "Početnik",
 
   goals: [
-    "Razumiješ šta je Python",
-    "Znaš čemu služi print()",
-    "Umiješ da napišeš prvi program",
+    { tekst: "Razumiješ šta je Python", blockIndex: 0 },
+    { tekst: "Znaš čemu služi print()", blockIndex: 1 },
+    { tekst: "Umiješ da napišeš prvi program", blockIndex: 1 },
   ],
 
   theoryBlocks: [

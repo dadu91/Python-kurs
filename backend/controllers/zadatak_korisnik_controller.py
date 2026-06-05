@@ -4,6 +4,7 @@ from typing import List
 
 from database import get_db
 from services import zadatak_korisnik_service
+from repositories import zadatak_korisnik_repository
 from schemas.zadatak_korisnik_schema import ZadatakKorisnikOut, ZadatakKorisnikCreate
 
 from utils.auth import get_current_user
@@ -30,6 +31,10 @@ def citaj_zadatak_korisnik_preko_greska_id(greska_id: int, db: Session = Depends
 @router.get("/po-tacno/{tacno}",response_model=List[ZadatakKorisnikOut])
 def citaj_zadatak_korisnik_preko_tacno(tacno: bool, db: Session = Depends(get_db), current_user: Korisnik = Depends(get_current_user)):
     return zadatak_korisnik_service.get_zadatak_korisnik_tacno(db, tacno)
+
+@router.get("/tacni/po-korisnik/{korisnik_id}", response_model=List[ZadatakKorisnikOut])
+def citaj_tacne_zadatke_korisnika(korisnik_id: int, db: Session = Depends(get_db), current_user: Korisnik = Depends(get_current_user)):
+    return zadatak_korisnik_repository.get_tacni_zadaci_by_korisnik(db, korisnik_id)
 
 @router.post("/", response_model=ZadatakKorisnikOut)
 def kreiraj_zadatak_korisnik(zadatak_korisnik: ZadatakKorisnikCreate, db: Session = Depends(get_db), current_user: Korisnik = Depends(get_current_user)):

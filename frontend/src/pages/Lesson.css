@@ -159,6 +159,16 @@
   color: #ff6542;
 }
 
+.goal-item-link {
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.goal-item-link:hover {
+  background: #eef0ff;
+  transform: translateX(4px);
+}
+
 .theory-panel p {
   font-size: 17px;
   line-height: 1.6;
@@ -482,6 +492,88 @@
   align-items: center;
   gap: 10px;
   font-weight: 800;
+}
+
+/* Uradjeni zadaci */
+.quiz-card-done {
+  border: 1px solid #c9f5d8;
+  background: #f4fff8;
+}
+
+.code-checker-done {
+  border: 1px solid #c9f5d8;
+  background: #f4fff8;
+}
+
+/* Code objasnjenje */
+.code-objasnjenje {
+  margin-top: 14px;
+  background: #f8f9ff;
+  border-left: 3px solid #fdba74;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.code-objasnjenje-red {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.code-objasnjenje-broj {
+  background: #fdba74;
+  color: white;
+  font-weight: 700;
+  font-size: 12px;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Vjezba sintakse */
+.vjezba-sintakse {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #eceeff;
+}
+
+.vjezba-sintakse h4 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #f97316;
+  margin: 0 0 8px;
+}
+
+.vjezba-sintakse p {
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+/* Theory flow */
+.theory-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-bottom: 24px;
+}
+
+.theory-block p {
+  font-size: 17px;
+  line-height: 1.6;
+  color: #333;
+  margin: 0 0 4px;
 }
 
 @media (max-width: 900px) {

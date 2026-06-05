@@ -17,6 +17,19 @@ def get_zadatak_korisnik_by_greska_id(db: Session, greska_id: int):
 def get_zadatak_korisnik_by_tacno(db: Session, tacno: bool):
     return db.query(ZadatakKorisnik).filter(ZadatakKorisnik.tacno == tacno).all()
 
+def get_tacno_by_korisnik_and_zadatak(db: Session, korisnik_id: int, zadatak_id: int):
+    return db.query(ZadatakKorisnik).filter(
+        ZadatakKorisnik.korisnik_id == korisnik_id,
+        ZadatakKorisnik.zadatak_id == zadatak_id,
+        ZadatakKorisnik.tacno == True
+    ).first()
+
+def get_tacni_zadaci_by_korisnik(db: Session, korisnik_id: int):
+    return db.query(ZadatakKorisnik).filter(
+        ZadatakKorisnik.korisnik_id == korisnik_id,
+        ZadatakKorisnik.tacno == True
+    ).all()
+
 # POST
 def create_zadatak_korisnik(db: Session, zadatak_korisnik: ZadatakKorisnik):
     db.add(zadatak_korisnik)

@@ -179,7 +179,7 @@ function Dashboard() {
                       <CourseCard
                         key={l.id}
                         id={l.id}
-                        badge={`Lekcija ${l.redosljed}`}
+                        badge={`Lekcija ${l.redoslijed}`}
                         title={l.naziv}
                         progress="0/1"
                         type={typeMap[l.id] || "intro"}
