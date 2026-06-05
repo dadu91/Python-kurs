@@ -175,11 +175,11 @@ function Dashboard() {
 
                 {lekcije.length > 0 ? (
                   <div className="top-cards">
-                    {lekcije.slice(0, 3).map((l) => (
+                    {lekcije.slice(0, 4).map((l) => (
                       <CourseCard
                         key={l.id}
                         id={l.id}
-                        badge={`Lekcija ${l.redosljed}`}
+                        badge={`Lekcija ${l.redoslijed}`}
                         title={l.naziv}
                         progress="0/1"
                         type={typeMap[l.id] || "intro"}

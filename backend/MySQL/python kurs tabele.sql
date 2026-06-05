@@ -16,7 +16,7 @@ CREATE TABLE korisnik (
 CREATE TABLE lekcija (
 	id INT AUTO_INCREMENT PRIMARY KEY,
     naziv VARCHAR(100) NOT NULL UNIQUE,
-    redoslijed INT NOT NULL,
+    redosljed INT NOT NULL,
     opis TEXT
 );
 
@@ -69,3 +69,5 @@ CREATE TABLE zadatak_korisnik (
 select * from korisnik;
 
 select * from zadatak;
+
+

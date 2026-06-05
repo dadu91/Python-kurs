@@ -54,3 +54,13 @@ DELETE FROM korisnik WHERE id > 0;
 
 INSERT INTO korisnik (username, password, mail, uloga) VALUES
 ("Admin", "$2b$12$frdM2qj/WLqMO3IPmMWmsebHPDT/EaKj5pKl5pShfOI2h/JRtVzMy", "admin@gmail.com", "admin");
+
+USE python_kurs;
+
+SELECT * FROM lekcija;
+SELECT * FROM zadatak;
+SELECT * FROM korisnik;
+
+USE python_kurs;
+
+SELECT id, username, mail, uloga FROM korisnik;
