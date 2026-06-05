@@ -76,5 +76,11 @@ select * from zadatak;
 
 select * from zadatak_korisnik;
 
-SELECT * FROM zadatak_korisnik WHERE korisnik_id = 11;
-select * from korisnik where id = 12;
+SELECT * FROM zadatak_korisnik WHERE korisnik_id = 1;
+select * from korisnik where id = 1;
+
+DELETE FROM zadatak WHERE lekcija_id = (SELECT id FROM lekcija WHERE redoslijed = 3);
+DELETE FROM lekcija WHERE redoslijed = 3;
+
+SELECT id, redoslijed, tip FROM zadatak WHERE lekcija_id = (SELECT id FROM lekcija WHERE naziv = 'Promjenljive u Pythonu');
+

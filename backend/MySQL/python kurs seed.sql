@@ -1,54 +1,87 @@
 USE python_kurs;
 
--- Lekcije
+-- LEKCIJE
 INSERT INTO lekcija (naziv, redoslijed, opis) VALUES
-('Uvod u Python', 1, 'Šta je Python, kako se pokreće prvi program i kako se koristi print naredba.'),
-('Petlje u Pythonu', 2, 'For i while petlje, range(), prolazak kroz listu i najčešće greške u petljama.'),
-('Zadaci u Pythonu', 3, 'Osnovni Python zadaci koristeći promjenljive, uslove i petlje.');
+('Uvod u Python',         1, 'Šta je Python, kako se pokreće prvi program i kako se koristi print naredba.'),
+('Promjenljive u Pythonu',2, 'Šta su promjenljive, tipovi podataka i kako Python sam prepoznaje tip.'),
+('Liste u Pythonu',       3, 'Šta su liste, kako se prave, kako pristupamo elementima i kako prolazimo kroz listu.'),
+('Petlje u Pythonu',      4, 'For i while petlje, range(), prolazak kroz listu i najčešće greške u petljama.');
 
--- Zadaci za Lekciju 1 - Uvod u Python (id=1)
+
+-- ZADACI - Lekcija 1: Uvod
+
 INSERT INTO zadatak (lekcija_id, redoslijed, tezina, tip) VALUES
-(1, 1, 'laka', 'teorija'),
-(1, 2, 'laka', 'quiz'),
-(1, 3, 'laka', 'quiz'),
-(1, 4, 'laka', 'quiz');
+((SELECT id FROM lekcija WHERE naziv = 'Uvod u Python'), 1, 'laka',   'teorija'),
+((SELECT id FROM lekcija WHERE naziv = 'Uvod u Python'), 2, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Uvod u Python'), 3, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Uvod u Python'), 4, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Uvod u Python'), 5, 'laka',   'prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Uvod u Python'), 6, 'srednja','prakticni');
 
--- Zadaci za Lekciju 2 - Petlje u Pythonu (id=2)
--- redoslijed 1: teorija
--- redoslijed 2-8: quiz (7 pitanja)
--- redoslijed 9-11: prakticni (3 zadatka)
+
+-- ZADACI - Lekcija 2: Promjenljive
+
 INSERT INTO zadatak (lekcija_id, redoslijed, tezina, tip) VALUES
-(2, 1, 'laka', 'teorija'),
-(2, 2, 'laka', 'quiz'),
-(2, 3, 'laka', 'quiz'),
-(2, 4, 'laka', 'quiz'),
-(2, 5, 'srednja', 'quiz'),
-(2, 6, 'srednja', 'quiz'),
-(2, 7, 'srednja', 'quiz'),
-(2, 8, 'srednja', 'quiz'),
-(2, 9, 'laka', 'prakticni'),
-(2, 10, 'srednja', 'prakticni'),
-(2, 11, 'teska', 'prakticni');
+((SELECT id FROM lekcija WHERE naziv = 'Promjenljive u Pythonu'), 1, 'laka', 'teorija'),
+((SELECT id FROM lekcija WHERE naziv = 'Promjenljive u Pythonu'), 2, 'laka', 'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Promjenljive u Pythonu'), 3, 'laka', 'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Promjenljive u Pythonu'), 4, 'laka', 'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Promjenljive u Pythonu'), 5, 'laka', 'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Promjenljive u Pythonu'), 6, 'laka', 'quiz');
 
--- Zadaci za Lekciju 3 - Zadaci u Pythonu (id=3)
+
+-- ZADACI - Lekcija 3: Liste
+
 INSERT INTO zadatak (lekcija_id, redoslijed, tezina, tip) VALUES
-(3, 1, 'laka', 'teorija'),
-(3, 2, 'laka', 'quiz'),
-(3, 3, 'laka', 'quiz'),
-(3, 4, 'srednja', 'quiz');
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'),  1, 'laka',   'teorija'),
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'),  2, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'),  3, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'),  4, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'),  5, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'),  6, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'),  7, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'),  8, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'),  9, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'), 10, 'srednja','prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'), 11, 'srednja','prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'), 12, 'srednja','prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'), 13, 'srednja','prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Liste u Pythonu'), 14, 'srednja','prakticni');
 
--- Greske
+
+
+-- ZADACI - Lekcija 4: Petlje
+
+INSERT INTO zadatak (lekcija_id, redoslijed, tezina, tip) VALUES
+((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'),  1, 'laka',   'teorija'),
+((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'),  2, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'),  3, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'),  4, 'laka',   'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'),  5, 'srednja','quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'),  6, 'srednja','quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'),  7, 'srednja','quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'),  8, 'srednja','quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'),  9, 'laka',   'prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'), 10, 'srednja','prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'), 11, 'teska',  'prakticni');
+
+
+
+-- GRESKE
+
 INSERT INTO greska (tip_greske, opis) VALUES
-('SyntaxError', 'Greška u sintaksi — fali dvotačka, zagrada ili navodnik.'),
-('IndentationError', 'Pogrešno uvlačenje koda — Python zahtijeva konzistentne razmake.'),
-('NameError', 'Koristi se promjenljiva ili funkcija koja nije definisana.'),
-('TypeError', 'Pogrešan tip podataka — npr. sabiranje stringa i broja.'),
-('ValueError', 'Pogrešna vrijednost — npr. int("abc").'),
-('IndexError', 'Pristup elementu liste koji ne postoji.'),
+('SyntaxError',       'Greška u sintaksi — fali dvotačka, zagrada ili navodnik.'),
+('IndentationError',  'Pogrešno uvlačenje koda — Python zahtijeva konzistentne razmake.'),
+('NameError',         'Koristi se promjenljiva ili funkcija koja nije definisana.'),
+('TypeError',         'Pogrešan tip podataka — npr. sabiranje stringa i broja.'),
+('ValueError',        'Pogrešna vrijednost — npr. int("abc").'),
+('IndexError',        'Pristup elementu liste koji ne postoji.'),
 ('ZeroDivisionError', 'Dijeljenje s nulom.'),
-('LogicError', 'Kod se izvršava bez greške ali daje pogrešan rezultat.');
+('LogicError',        'Kod se izvršava bez greške ali daje pogrešan rezultat.');
 
--- Admin (sifra: Admin.12345)
+
+
+-- ADMIN (sifra: Admin.12345)
+
 INSERT INTO korisnik (username, password, mail, uloga) VALUES
 ('Admin', '$2b$12$frdM2qj/WLqMO3IPmMWmsebHPDT/EaKj5pKl5pShfOI2h/JRtVzMy', 'admin@gmail.com', 'admin');
-
