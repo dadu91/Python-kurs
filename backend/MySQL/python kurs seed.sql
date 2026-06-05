@@ -46,3 +46,6 @@ INSERT INTO greska (tip_greske, opis) VALUES
 ('IndexError', 'Pristup elementu liste koji ne postoji.'),
 ('ZeroDivisionError', 'Dijeljenje s nulom.'),
 ('LogicError', 'Kod se izvršava bez greške ali daje pogrešan rezultat.');
+
+
+select * from greska;

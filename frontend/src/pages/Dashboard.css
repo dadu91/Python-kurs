@@ -4,6 +4,69 @@
   color: #222;
 }
 
+.dashboard-hero {
+  background: linear-gradient(135deg, #1f2937, #3457d5);
+  color: white;
+  border-radius: 24px;
+  padding: 28px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.hero-label {
+  color: #ffb199;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.dashboard-hero h1 {
+  font-size: 46px;
+  margin: 8px 0;
+}
+
+.dashboard-hero p {
+  color: #e5e7eb;
+}
+
+.dashboard-hero button,
+.current-box button {
+  border: none;
+  background: #ff6a3d;
+  color: white;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.dash-stat-card {
+  background: white;
+  border-radius: 18px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+}
+
+.dash-stat-card p {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.dash-stat-card h2 {
+  color: #ff6a3d;
+  font-size: 36px;
+  margin-top: 6px;
+}
+
 .filter-row {
   display: flex;
   gap: 10px;
@@ -14,32 +77,60 @@
 .filter-btn {
   border: 1px solid #cfd8e3;
   background: white;
+  color: #374151;
   border-radius: 999px;
   padding: 10px 16px;
   cursor: pointer;
+  font-weight: 600;
 }
 
-.filter-btn.active {
+.filter-btn.active,
+.filter-btn:hover {
   background: #3562eb;
   color: white;
   border-color: #3562eb;
 }
 
-.content-grid {
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 20px;
-  align-items: stretch;
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
 }
 
-.stats-box {
-  margin-top: 10px;
+.section-header h2 {
+  color: #111827;
+}
+
+.section-header span {
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.lessons-section,
+.stats-box,
+.current-box,
+.empty-card {
+  background: white;
+  border-radius: 22px;
+  padding: 22px;
+  border: 1px solid #e5e7eb;
+}
+
+.lessons-section {
+  margin-top: 18px;
+}
+
+.lessons-section h2,
+.stats-box h2,
+.current-box h2 {
+  color: #111827;
+  margin-bottom: 14px;
 }
 
 .stats-grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 18px;
   margin-top: 16px;
 }
@@ -63,45 +154,45 @@
 }
 
 .stat-card h2 {
-  font-size: 48px;
+  font-size: 46px;
+  margin: 8px 0 0;
+}
+
+.stat-card span {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.current-box {
+  max-width: 640px;
+}
+
+.current-box span {
+  color: #ff6a3d;
   font-weight: 700;
-  margin: 8px 0;
 }
 
-.stat-card p, .stat-card span {
-  font-size: 14px;
-  opacity: 0.85;
+.current-box p {
+  color: #6b7280;
+  margin: 8px 0 18px;
 }
 
-.stat-top {
-  font-size: 14px;
-  opacity: 0.85;
+.empty-card {
+  color: #6b7280;
 }
 
-.stat-extra {
-  margin-top: 4px;
-}
-
-@media (max-width: 1100px) {
-  .content-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 768px) {
-  .page-title {
-    font-size: 28px;
+@media (max-width: 900px) {
+  .dashboard-hero {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
+  .dashboard-hero h1 {
+    font-size: 34px;
+  }
+
+  .dashboard-stats,
   .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .stat-card h2 {
-    font-size: 32px;
-  }
-
-  .content-grid {
     grid-template-columns: 1fr;
   }
 }
