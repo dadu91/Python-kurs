@@ -40,8 +40,9 @@ import Topbar from "../components/Topbar";
 import uvod from "../lessons/uvod";
 import petlje from "../lessons/petlje";
 import lesson3 from "../lessons/lesson3";
+import promenljive from "../lessons/promenljive";
 
-const lessons = { 1: uvod, 2: petlje, 3: lesson3 };
+const lessons = { 1: uvod, 2: petlje, 3: lesson3, 4: promenljive };
 
 function Lesson() {
   const navigate = useNavigate();

@@ -48,6 +48,19 @@ INSERT INTO greska (tip_greske, opis) VALUES
 ('ZeroDivisionError', 'Dijeljenje s nulom.'),
 ('LogicError', 'Kod se izvršava bez greške ali daje pogrešan rezultat.');
 
+-- Lekcija 4 - Promjenljive
+INSERT INTO lekcija (naziv, redosljed, opis) VALUES
+('Promjenljive u Pythonu', 4, 'Šta su promjenljive, tipovi podataka i kako Python sam prepoznaje tip.');
+
+-- Zadaci za Lekciju 4
+INSERT INTO zadatak (lekcija_id, tezina, tip) VALUES
+(4, 'laka', 'teorija'),
+(4, 'laka', 'quiz'),
+(4, 'laka', 'quiz'),
+(4, 'laka', 'quiz'),
+(4, 'laka', 'quiz'),
+(4, 'laka', 'quiz');
+
 -- Admin (sifra: Admin.12345)
 INSERT INTO korisnik (username, password, mail, uloga) VALUES
 ('Admin', '$2b$12$frdM2qj/WLqMO3IPmMWmsebHPDT/EaKj5pKl5pShfOI2h/JRtVzMy', 'admin@gmail.com', 'admin');

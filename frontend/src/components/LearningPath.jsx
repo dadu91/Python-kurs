@@ -48,7 +48,7 @@ function LearningPath({ lekcije = [] }) {
               <button
                 className="continue-btn"
                 style={{ marginLeft: "18px" }}
-                onClick={() => navigate(`/lekcije/${lekcija.id}`)}
+                onClick={() => navigate(`/lekcije/${lekcija.redoslijed}`)}
               >
                 Počni lekciju
               </button>
