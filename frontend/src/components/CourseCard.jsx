@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "./CourseCard.css";
 
-function CourseCard({ id = 1, badge, title, progress, type }) {
+function CourseCard({ id = 1, badge, title, progress, type, zavrsena = false }) {
   const navigate = useNavigate();
 
   const themeMap = {
@@ -39,7 +39,7 @@ function CourseCard({ id = 1, badge, title, progress, type }) {
           openLesson();
         }}
       >
-        Nastavi
+        {zavrsena ? "Uradi opet" : "Nastavi"}
       </button>
     </div>
   );

@@ -1,4 +1,4 @@
-import { Search, User, Award, ShieldCheck, LayoutDashboard } from "lucide-react";
+import { Search, User, ShieldCheck, LayoutDashboard } from "lucide-react";
 import "./Topbar.css";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -130,7 +130,6 @@ function Topbar() {
             <div className="search-results">
               {rezultati.map((item, i) => (
                 <button key={i} onClick={() => handleSelect(item)}>
-                  <span className="search-tip">{item.tip === "lekcija" ? "📚" : "👤"}</span>
                   {item.naziv || item.username}
                 </button>
               ))}
@@ -157,15 +156,6 @@ function Topbar() {
             )}
           </button>
         )}
-
-        <div
-          className="topbar-badge"
-          onClick={() => navigate("/napredak")}
-          title="Moja dostignuća"
-        >
-          <Award size={22} />
-          <span className="badge-count">2</span>
-        </div>
 
         <div className="user-box" style={{ position: "relative" }}>
           <div className="avatar" onClick={() => setOpen(!open)} style={{ cursor: "pointer" }}>

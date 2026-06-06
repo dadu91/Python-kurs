@@ -1,5 +1,5 @@
-const promenljive = {
-  badge: "Lekcija 4",
+const promjenljive = {
+  badge: "Lekcija 2",
   title: "Promjenljive u Pythonu",
   heroClass: "variables-hero",
   description:
@@ -81,26 +81,31 @@ print(broj)   # dvadeset`,
 
   questions: [
     {
+      redoslijed: 2,
       question: "Šta je promjenljiva u Pythonu?",
       answers: ["Naredba za ispis", "Mjesto gdje čuvamo podatak", "Vrsta petlje"],
       correct: 1,
     },
     {
+      redoslijed: 3,
       question: "Koji tip podatka je: ime = \"Petar\"?",
       answers: ["int", "bool", "str"],
       correct: 2,
     },
     {
+      redoslijed: 4,
       question: "Koja funkcija pokazuje tip podatka?",
       answers: ["print()", "type()", "input()"],
       correct: 1,
     },
     {
+      redoslijed: 5,
       question: "Šta će ispisati: x = 5; x = 10; print(x)?",
       answers: ["5", "10", "Grešku"],
       correct: 1,
     },
     {
+      redoslijed: 6,
       question: "Koji tip podatka je: aktivan = True?",
       answers: ["str", "int", "bool"],
       correct: 2,
@@ -110,4 +115,4 @@ print(broj)   # dvadeset`,
   codingTasks: [],
 };
 
-export default promenljive;
+export default promjenljive;

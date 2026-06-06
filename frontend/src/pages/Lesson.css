@@ -35,19 +35,27 @@
 }
 
 .intro-hero {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, #1a5c40, #2e9e6b);
 }
 
 .loops-hero {
-  background: linear-gradient(135deg, #fb923c, #f97316);
+  background: linear-gradient(135deg, #c45e2a, #f07a45);
 }
 
 .tasks-hero {
-  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  background: linear-gradient(135deg, #6b3aad, #9b6ddb);
 }
 
 .arrays-hero {
   background: linear-gradient(135deg, #5b6cff, #8c5cf6);
+}
+
+.variables-hero {
+  background: linear-gradient(135deg, #6b3aad, #9b6ddb);
+}
+
+.lists-hero {
+  background: linear-gradient(135deg, #2a7a5a, #4ab88a);
 }
 
 .lesson-pill {

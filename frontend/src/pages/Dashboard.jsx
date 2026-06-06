@@ -6,7 +6,8 @@ import LearningPath from "../components/LearningPath";
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
-const typeMap = { 1: "intro", 2: "loops", 3: "tasks" };
+// 1=uvod(teal), 2=promjenljive(ljubičasta), 3=liste(plava/teal2), 4=petlje(naranžasta)
+const colorByRedoslijed = { 1: "intro", 2: "purple", 3: "blue", 4: "orange" };
 
 function getUsername() {
   const token = localStorage.getItem("token");
@@ -32,6 +33,7 @@ function Dashboard() {
     nivo: 1,
   });
   const [trenutnaLekcija, setTrenutnaLekcija] = useState(null);
+  const [zavrseneLekcije, setZavrseneLekcije] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -46,7 +48,7 @@ function Dashboard() {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.json())
-      .then(setLekcije)
+      .then((data) => setLekcije([...data].sort((a, b) => a.redoslijed - b.redoslijed)))
       .catch(() => {});
 
     if (!username) return;
@@ -81,7 +83,7 @@ function Dashboard() {
                 ...prev,
                 zavrseneLekcije: data.length,
               }));
-
+              setZavrseneLekcije(data);
               if (data.length > 0) {
                 setTrenutnaLekcija(data[data.length - 1]);
               }
@@ -169,22 +171,26 @@ function Dashboard() {
             {activeTab === "lessons" && (
               <>
                 <div className="section-header">
-                  <h2>Preporučene lekcije</h2>
+                  <h2>Odaberi lekciju</h2>
                   <span>{lekcije.length} ukupno</span>
                 </div>
 
                 {lekcije.length > 0 ? (
                   <div className="top-cards">
-                    {lekcije.slice(0, 3).map((l) => (
-                      <CourseCard
-                        key={l.id}
-                        id={l.id}
-                        badge={`Lekcija ${l.redoslijed}`}
-                        title={l.naziv}
-                        progress="0/1"
-                        type={typeMap[l.id] || "intro"}
-                      />
-                    ))}
+                    {lekcije.map((l) => {
+                      const zavrsena = zavrseneLekcije.some((z) => z.lekcija_id === l.id);
+                      return (
+                        <CourseCard
+                          key={l.id}
+                          id={l.id}
+                          badge={`Lekcija ${l.redoslijed}`}
+                          title={l.naziv}
+                          progress={zavrsena ? "1/1" : "0/1"}
+                          zavrsena={zavrsena}
+                          type={colorByRedoslijed[l.redoslijed] || "intro"}
+                        />
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="empty-card">Lekcije trenutno nisu učitane.</div>

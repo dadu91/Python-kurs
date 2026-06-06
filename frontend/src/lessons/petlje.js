@@ -1,5 +1,5 @@
 const petlje = {
-  badge: "Lekcija 2",
+  badge: "Lekcija 4",
   title: "Petlje u Pythonu",
   heroClass: "loops-hero",
   description:

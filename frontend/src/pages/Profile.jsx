@@ -3,15 +3,7 @@ import Sidebar from "../components/Sidebar";
 import AdminSidebar from "../components/AdminSidebar";
 import Topbar from "../components/Topbar";
 import { useState, useEffect } from "react";
-import { User, Camera, X, Users, BookOpen, ClipboardList, ShieldCheck } from "lucide-react";
-
-const badges = [
-  { icon: "🏆", label: "Prva lekcija", earned: true },
-  { icon: "🔥", label: "7 dana zaredom", earned: true },
-  { icon: "⚡", label: "Brzinsko rješavanje", earned: false },
-  { icon: "🎯", label: "Perfektan rezultat", earned: false },
-  { icon: "🐍", label: "Python majstor", earned: false },
-];
+import { User, Camera, X, Users, BookOpen, ShieldCheck } from "lucide-react";
 
 function getUsername() {
   const token = localStorage.getItem("token");
@@ -221,14 +213,8 @@ function Profile() {
 
               <div className="progress-section" style={{ marginTop: "24px" }}>
                 <h2 className="section-title">Dostignuća</h2>
-                <div className="badges-grid">
-                  {badges.map((b, i) => (
-                    <div className={`badge-card ${b.earned ? "earned" : "locked"}`} key={i}>
-                      <span className="badge-icon">{b.icon}</span>
-                      <span className="badge-label">{b.label}</span>
-                      {!b.earned && <span className="badge-lock">🔒</span>}
-                    </div>
-                  ))}
+                <div className="empty-card" style={{ color: "#9ca3af", fontSize: "14px" }}>
+                  Još nema dostignuća. Nastavite učiti!
                 </div>
               </div>
             </>

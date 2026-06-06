@@ -1,27 +1,21 @@
-import { useState } from "react";
 import { Home, BookOpen, Trophy, User, Settings, AlertCircle, LogOut } from "lucide-react";
 import "./Sidebar.css";
 import { useNavigate } from "react-router-dom";
 
 function Sidebar({ activeTab, setActiveTab }) {
   const navigate = useNavigate();
-  const [isExpanded, setIsExpanded] = useState(false);
 
   const menu = [
-    { id: "lessons", icon: <Home size={20} />, label: "Dashboard" },
-    { id: "points", icon: <Trophy size={20} />, label: "Statistika" },
-    { id: "current", icon: <BookOpen size={20} />, label: "Trenutna" },
-    { id: "errors", icon: <AlertCircle size={20} />, label: "Greške" },
-    { id: "profile", icon: <User size={20} />, label: "Profil" },
-    { id: "settings", icon: <Settings size={20} />, label: "Podešavanja" },
+    { id: "lessons", icon: <Home size={18} />, label: "Dashboard" },
+    { id: "points", icon: <Trophy size={18} />, label: "Statistika" },
+    { id: "current", icon: <BookOpen size={18} />, label: "Trenutna" },
+    { id: "errors", icon: <AlertCircle size={18} />, label: "Greške" },
+    { id: "profile", icon: <User size={18} />, label: "Profil" },
+    { id: "settings", icon: <Settings size={18} />, label: "Podešavanja" },
   ];
 
   return (
-    <div
-      className={`sidebar ${isExpanded ? "expanded" : ""}`}
-      onMouseEnter={() => setIsExpanded(true)}
-      onMouseLeave={() => setIsExpanded(false)}
-    >
+    <div className="sidebar">
       <div className="sidebar-nav">
         {menu.map((item) => (
           <button

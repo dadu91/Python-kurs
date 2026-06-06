@@ -5,7 +5,7 @@
 }
 
 .dashboard-hero {
-  background: linear-gradient(135deg, #1f2937, #3457d5);
+  background: linear-gradient(135deg, #1f2937, #0d9488);
   color: white;
   border-radius: 24px;
   padding: 28px;
@@ -86,9 +86,9 @@
 
 .filter-btn.active,
 .filter-btn:hover {
-  background: #3562eb;
+  background: #0d9488;
   color: white;
-  border-color: #3562eb;
+  border-color: #0d9488;
 }
 
 .section-header {
@@ -142,7 +142,7 @@
 }
 
 .stat-card.blue {
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
 }
 
 .stat-card.orange {
@@ -156,6 +156,7 @@
 .stat-card h2 {
   font-size: 46px;
   margin: 8px 0 0;
+  color: white;
 }
 
 .stat-card span {

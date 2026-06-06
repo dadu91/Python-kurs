@@ -39,15 +39,18 @@ import Topbar from "../components/Topbar";
 
 import uvod from "../lessons/uvod";
 import petlje from "../lessons/petlje";
-import lesson3 from "../lessons/lesson3";
+import promjenljive from "../lessons/promjenljive";
+import liste from "../lessons/liste";
 
-const lessons = { 1: uvod, 2: petlje, 3: lesson3 };
+// Keyed by redoslijed, not by DB id — otporno na praznine u ID-evima
+const lessonsByRedoslijed = { 1: uvod, 2: promjenljive, 3: liste, 4: petlje };
 
 function Lesson() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  const lesson = lessons[id] || lessons[1];
+  const [redoslijed, setRedoslijed] = useState(null);
+  const lesson = lessonsByRedoslijed[redoslijed] || lessonsByRedoslijed[1];
 
   const [activeTab, setActiveTab] = useState("lessons");
   const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -66,6 +69,13 @@ function Lesson() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+
+    fetch(`http://localhost:8000/lekcije/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.ok ? res.json() : null)
+      .then((lekcija) => { if (lekcija?.redoslijed) setRedoslijed(lekcija.redoslijed); })
+      .catch(() => {});
 
     fetch(`http://localhost:8000/zadaci/po-lekciji/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -238,7 +248,7 @@ function Lesson() {
 
           <section className={`lesson-hero ${lesson.heroClass}`}>
             <div>
-              <span className="lesson-pill">{lesson.badge}</span>
+              <span className="lesson-pill">Lekcija {redoslijed}</span>
               <h1>{lesson.title}</h1>
               <p>{lesson.description}</p>
 
