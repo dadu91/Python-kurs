@@ -75,8 +75,9 @@ select * from zadatak;
 select * from zadatak;
 
 select * from zadatak_korisnik;
+select * from korisnik;
 
-SELECT * FROM zadatak_korisnik WHERE korisnik_id = 1;
+SELECT * FROM zadatak_korisnik WHERE korisnik_id = 3;
 select * from korisnik where id = 1;
 
 DELETE FROM zadatak WHERE lekcija_id = (SELECT id FROM lekcija WHERE redoslijed = 3);

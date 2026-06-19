@@ -152,7 +152,7 @@ for broj in brojevi:
     },
     {
       redoslijed: 5,
-      question: "Šta će ispisati kod: voce = ['jabuka', 'banana']; print(voce[1])?",
+      question: `Šta će ispisati kod:\nvoce = ['jabuka', 'banana']\nprint(voce[1])?`,
       answers: ["jabuka", "banana", "Grešku"],
       correct: 1,
     },
@@ -207,38 +207,7 @@ print(brojevi)`,
     },
     {
       redoslijed: 11,
-      title: "Mini zadatak 2: Ispiši drugi element liste",
-      description:
-        'Data je lista voce = ["jabuka", "banana", "kruška"]. Ispiši drugi element liste.',
-      solution: `voce = ["jabuka", "banana", "kruška"]
-
-print(voce[1])`,
-      expectedOutput: `banana`,
-      hint: "Drugi element ima indeks 1.",
-      check: (code) =>
-        code.includes('voce=["jabuka","banana","kruška"]') &&
-        code.includes("print(voce[1])"),
-    },
-    {
-      redoslijed: 12,
-      title: "Mini zadatak 3: Dodaj element u listu",
-      description:
-        'Data je lista imena = ["Ana", "Marko"]. Dodaj ime "Petar" na kraj liste i ispiši listu.',
-      solution: `imena = ["Ana", "Marko"]
-
-imena.append("Petar")
-
-print(imena)`,
-      expectedOutput: `['Ana', 'Marko', 'Petar']`,
-      hint: "Koristi append().",
-      check: (code) =>
-        code.includes('imena=["ana","marko"]') &&
-        code.includes('imena.append("petar")') &&
-        code.includes("print(imena)"),
-    },
-    {
-      redoslijed: 13,
-      title: "Mini zadatak 4: Izračunaj zbir elemenata",
+      title: "Mini zadatak 2: Izračunaj zbir elemenata",
       description:
         "Data je lista brojevi = [10, 20, 30, 40]. Izračunaj zbir svih elemenata i ispiši rezultat.",
       solution: `brojevi = [10, 20, 30, 40]
@@ -254,8 +223,8 @@ print(zbir)`,
         code.includes("print("),
     },
     {
-      redoslijed: 14,
-      title: "Mini zadatak 5: Ispiši brojeve veće od 10",
+      redoslijed: 12,
+      title: "Mini zadatak 3: Ispiši brojeve veće od 10",
       description:
         "Data je lista brojevi = [4, 12, 7, 18, 25, 3]. Pomoću for petlje ispiši samo brojeve koji su veći od 10.",
       solution: `brojevi = [4, 12, 7, 18, 25, 3]

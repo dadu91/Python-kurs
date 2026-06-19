@@ -34,6 +34,7 @@ function Dashboard() {
   });
   const [trenutnaLekcija, setTrenutnaLekcija] = useState(null);
   const [zavrseneLekcije, setZavrseneLekcije] = useState([]);
+  const [greske, setGreske] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -71,6 +72,13 @@ function Dashboard() {
               }));
             }
           })
+          .catch(() => {});
+
+        fetch(`http://localhost:8000/zadatak_korisnik/greske-po-korisniku/${korisnik.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+          .then((res) => (res.ok ? res.json() : []))
+          .then((data) => { if (Array.isArray(data)) setGreske(data); })
           .catch(() => {});
 
         fetch(`http://localhost:8000/zavrsena_lekcija/po-korisnik-id/${korisnik.id}`, {
@@ -144,7 +152,7 @@ function Dashboard() {
             </div>
           </section>
 
-          <div className="filter-row">
+          {activeTab !== "errors" && <div className="filter-row">
             <button
               onClick={() => setActiveTab("lessons")}
               className={`filter-btn ${activeTab === "lessons" ? "active" : ""}`}
@@ -165,7 +173,7 @@ function Dashboard() {
             >
               Trenutna lekcija
             </button>
-          </div>
+          </div>}
 
           <div className="tab-content" key={activeTab}>
             {activeTab === "lessons" && (
@@ -223,6 +231,42 @@ function Dashboard() {
                     <h2>{stats.nivo}</h2>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {activeTab === "errors" && (
+              <div className="errors-box">
+                <h2>Moje greške</h2>
+                {greske.length === 0 ? (
+                  <div className="empty-card">Nema zabilježenih grešaka. Odlično!</div>
+                ) : (
+                  <div className="errors-list">
+                    {greske.map((g) => (
+                      <div
+                        key={g.id}
+                        className="error-item"
+                        onClick={() => navigate(`/lekcije/${g.lekcija_id}#zadatak-${g.zadatak_redoslijed}`)}
+                        title={`Idi na: ${g.lekcija_naziv} — Zadatak ${g.zadatak_redoslijed}`}
+                      >
+                        <div className="error-badge">{g.tip_greske}</div>
+                        <div className="error-info">
+                          <p className="error-opis">{g.opis}</p>
+                          <div className="error-meta">
+                            <span className="error-lekcija">
+                              {g.lekcija_naziv} — Zadatak {g.zadatak_redoslijed}
+                            </span>
+                            <span className="error-datum">
+                              {new Date(g.datum).toLocaleDateString("bs-BA", {
+                                day: "2-digit", month: "2-digit", year: "numeric",
+                                hour: "2-digit", minute: "2-digit",
+                              })}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

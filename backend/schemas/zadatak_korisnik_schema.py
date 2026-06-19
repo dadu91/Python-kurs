@@ -13,6 +13,19 @@ class ZadatakKorisnikOut(BaseModel):
     class Config:
         from_attributes = True
 
+class GreskaKorisnikaOut(BaseModel):
+    id: int
+    tip_greske: str
+    opis: Optional[str] = None
+    datum: datetime
+    zadatak_id: int
+    zadatak_redoslijed: int
+    lekcija_id: int
+    lekcija_naziv: str
+
+    class Config:
+        from_attributes = True
+
 class ZadatakKorisnikCreate(BaseModel):
     zadatak_id: int
     korisnik_id: int

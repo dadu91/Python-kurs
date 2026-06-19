@@ -42,7 +42,6 @@ import petlje from "../lessons/petlje";
 import promjenljive from "../lessons/promjenljive";
 import liste from "../lessons/liste";
 
-// Keyed by redoslijed, not by DB id — otporno na praznine u ID-evima
 const lessonsByRedoslijed = { 1: uvod, 2: promjenljive, 3: liste, 4: petlje };
 
 function Lesson() {
@@ -66,6 +65,16 @@ function Lesson() {
 
   const textareaRefs = useRef({});
   const cursorPos = useRef(null);
+
+  useEffect(() => {
+    if (window.location.hash) {
+      const targetId = window.location.hash.slice(1);
+      setTimeout(() => {
+        const el = document.getElementById(targetId);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 600);
+    }
+  }, [redoslijed]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -386,7 +395,7 @@ function Lesson() {
 
             <div className="quiz-list">
               {lesson.questions.map((item, questionIndex) => (
-                <article className={`quiz-card ${uradjeniZadaci.has(zadaciMapa[item.redoslijed]) ? "quiz-card-done" : ""}`} key={questionIndex}>
+                <article id={`zadatak-${item.redoslijed}`} className={`quiz-card ${uradjeniZadaci.has(zadaciMapa[item.redoslijed]) ? "quiz-card-done" : ""}`} key={questionIndex}>
                   <h3>
                     {uradjeniZadaci.has(zadaciMapa[item.redoslijed]) && <CheckCircle2 size={18} style={{ color: "#23a455", marginRight: "8px", display: "inline" }} />}
                     Pitanje {questionIndex + 1}: {item.question}
@@ -419,8 +428,8 @@ function Lesson() {
                   {selectedAnswers[questionIndex] !== undefined && (
                     <p className="answer-feedback">
                       {selectedAnswers[questionIndex] === item.correct
-                        ? "Tačno! Dobro si skontao."
-                        : "Nije tačno. Pogledaj još jednom objašnjenje iznad."}
+                        ? "Tačno!"
+                        : "Nije tačno. Razmisli ponovo."}
                     </p>
                   )}
                 </article>
@@ -444,7 +453,7 @@ function Lesson() {
 
               <div className="coding-task-list">
                 {lesson.codingTasks.map((task, taskIndex) => (
-                  <div className={`code-checker-box ${uradjeniZadaci.has(zadaciMapa[task.redoslijed]) ? "code-checker-done" : ""}`} key={taskIndex}>
+                  <div id={`zadatak-${task.redoslijed}`} className={`code-checker-box ${uradjeniZadaci.has(zadaciMapa[task.redoslijed]) ? "code-checker-done" : ""}`} key={taskIndex}>
                     <h3>
                       {uradjeniZadaci.has(zadaciMapa[task.redoslijed]) && <CheckCircle2 size={18} style={{ color: "#23a455", marginRight: "8px", display: "inline" }} />}
                       {task.title}
