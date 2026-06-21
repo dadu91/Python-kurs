@@ -53,6 +53,7 @@ function Lesson() {
 
   const [activeTab, setActiveTab] = useState("lessons");
   const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [adminSelectedAnswers, setAdminSelectedAnswers] = useState({});
   const [finished, setFinished] = useState(false);
   const [taskCodes, setTaskCodes] = useState({});
   const [taskResults, setTaskResults] = useState({});
@@ -61,6 +62,7 @@ function Lesson() {
   const [vjezbaKodovi, setVjezbaKodovi] = useState({});
   const [vjezbaRezultati, setVjezbaRezultati] = useState({});
   const [zadaciMapa, setZadaciMapa] = useState({});
+  const [zadaciIzBaze, setZadaciIzBaze] = useState([]);
   const [uradjeniZadaci, setUradjeniZadaci] = useState(new Set());
 
   const textareaRefs = useRef({});
@@ -91,8 +93,12 @@ function Lesson() {
     })
       .then((res) => res.ok ? res.json() : [])
       .then((zadaci) => {
+        setZadaciIzBaze(zadaci);
+
         const mapa = {};
-        zadaci.forEach((z) => { mapa[z.redoslijed] = z.id; });
+        zadaci.forEach((z) => {
+          if (z.redoslijed) mapa[z.redoslijed] = z.id;
+        });
         setZadaciMapa(mapa);
       })
       .catch(() => {});
@@ -395,9 +401,26 @@ function Lesson() {
 
             <div className="quiz-list">
               {lesson.questions.map((item, questionIndex) => (
-                <article id={`zadatak-${item.redoslijed}`} className={`quiz-card ${uradjeniZadaci.has(zadaciMapa[item.redoslijed]) ? "quiz-card-done" : ""}`} key={questionIndex}>
+                <article
+                  id={`zadatak-${item.redoslijed}`}
+                  className={`quiz-card ${
+                    uradjeniZadaci.has(zadaciMapa[item.redoslijed])
+                      ? "quiz-card-done"
+                      : ""
+                  }`}
+                  key={questionIndex}
+                >
                   <h3>
-                    {uradjeniZadaci.has(zadaciMapa[item.redoslijed]) && <CheckCircle2 size={18} style={{ color: "#23a455", marginRight: "8px", display: "inline" }} />}
+                    {uradjeniZadaci.has(zadaciMapa[item.redoslijed]) && (
+                      <CheckCircle2
+                        size={18}
+                        style={{
+                          color: "#23a455",
+                          marginRight: "8px",
+                          display: "inline",
+                        }}
+                      />
+                    )}
                     Pitanje {questionIndex + 1}: {item.question}
                   </h3>
 
@@ -434,10 +457,80 @@ function Lesson() {
                   )}
                 </article>
               ))}
+
+              {zadaciIzBaze
+                .filter(
+                  (z) =>
+                    z.tip === "quiz" &&
+                    z.naziv &&
+                    z.opis &&
+                    z.odgovor_a &&
+                    z.odgovor_b
+                )
+                .map((z, index) => {
+                  const selected = adminSelectedAnswers[z.id];
+                  const isAnswered = selected !== undefined;
+
+                  return (
+                    <article className="quiz-card" key={z.id}>
+                      <h3>
+                        Pitanje {lesson.questions.length + index + 1}:{" "}
+                        {z.opis || z.naziv}
+                      </h3>
+
+                      <div className="answer-list">
+                        {[z.odgovor_a, z.odgovor_b, z.odgovor_c, z.odgovor_d]
+                          .filter(Boolean)
+                          .map((odgovor, answerIndex) => {
+                            let buttonClass = "answer-btn";
+
+                            if (
+                              isAnswered &&
+                              selected === answerIndex &&
+                              answerIndex === z.tacan_odgovor
+                            ) {
+                              buttonClass += " correct";
+                            }
+
+                            if (
+                              isAnswered &&
+                              selected === answerIndex &&
+                              answerIndex !== z.tacan_odgovor
+                            ) {
+                              buttonClass += " wrong";
+                            }
+
+                            return (
+                              <button
+                                key={answerIndex}
+                                className={buttonClass}
+                                onClick={() =>
+                                  setAdminSelectedAnswers({
+                                    ...adminSelectedAnswers,
+                                    [z.id]: answerIndex,
+                                  })
+                                }
+                              >
+                                {odgovor}
+                              </button>
+                            );
+                          })}
+                      </div>
+
+                      {isAnswered && (
+                        <p className="answer-feedback">
+                          {selected === z.tacan_odgovor
+                            ? "Tačno!"
+                            : "Nije tačno. Razmisli ponovo."}
+                        </p>
+                      )}
+                    </article>
+                  );
+                })}
             </div>
           </section>
-
-          {hasCodingTasks && (
+              
+          {(hasCodingTasks || zadaciIzBaze.some((z) => z.tip === "kod" || z.tip === "prakticni")) && (
             <section className="final-task lesson-panel">
               <div className="panel-title-row">
                 <div>
@@ -551,10 +644,117 @@ function Lesson() {
                     )}
                   </div>
                 ))}
+
+                {zadaciIzBaze
+                  .filter((z) => z.tip === "prakticni" && z.naziv && z.opis)
+                  .map((z) => (
+                    <div className="code-checker-box" key={`admin-kod-${z.id}`}>
+                      <h3>{z.naziv}</h3>
+                      <p>{z.opis}</p>
+
+                      <textarea
+                        id={`admin-code-${z.id}`}
+                        className="code-input"
+                        placeholder="Ovdje upiši svoje rješenje..."
+                      />
+
+                      <div className="code-actions">
+                        <button
+                          className="check-code-btn"
+                          onClick={() => {
+                            const kod = document.getElementById(`admin-code-${z.id}`).value;
+
+                            setTaskResults({
+                              ...taskResults,
+                              [`admin-${z.id}`]:
+                                kod.trim() === z.rjesenje?.trim()
+                                  ? "correct"
+                                  : "wrong",
+                            });
+                          }}
+                        >
+                          Provjeri kod
+                        </button>
+
+                        <button
+                          className="run-code-btn"
+                          onClick={async () => {
+                            const kod = document.getElementById(`admin-code-${z.id}`).value;
+                            const token = localStorage.getItem("token");
+
+                            const res = await fetch("http://localhost:8000/kod/execute", {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`,
+                              },
+                              body: JSON.stringify({ kod }),
+                            });
+
+                            const data = await res.json();
+
+                            setTaskOutputs({
+                              ...taskOutputs,
+                              [`admin-${z.id}`]:
+                                data.greska
+                                  ? `${data.greska.tip}: ${data.greska.poruka}`
+                                  : data.output || "Nema izlaza.",
+                            });
+                          }}
+                        >
+                          Pokreni kod
+                        </button>
+                      </div>
+
+                      {taskResults[`admin-${z.id}`] === "correct" && (
+                        <div className="code-result correct-result">
+                          Tačno! Ovaj zadatak je urađen kako treba.
+                        </div>
+                      )}
+
+                      {taskResults[`admin-${z.id}`] === "wrong" && (
+                        <div className="code-result wrong-result">
+                          Netačan kod, pokušaj ponovo.
+                        </div>
+                      )}
+
+                      {taskOutputs[`admin-${z.id}`] && (
+                        <div className="output-box">
+                          <p>Konzola:</p>
+                          <pre>{taskOutputs[`admin-${z.id}`]}</pre>
+                        </div>
+                      )}
+
+                      <button
+                        className="show-solution-btn"
+                        onClick={() =>
+                          setShownSolutions({
+                            ...shownSolutions,
+                            [`admin-${z.id}`]:
+                              !shownSolutions[`admin-${z.id}`],
+                          })
+                        }
+                      >
+                        {shownSolutions[`admin-${z.id}`]
+                          ? "Sakrij rješenje"
+                          : "Prikaži rješenje"}
+                      </button>
+
+                      {shownSolutions[`admin-${z.id}`] && (
+                        <div className="solution-box">
+                          <p>Jedno moguće rješenje:</p>
+                          <pre className="mini-code">{z.rjesenje}</pre>
+
+                          <p>Izlaz programa:</p>
+                          <pre className="mini-code">{z.ocekivani_izlaz}</pre>
+                        </div>
+                      )}
+                    </div>
+                  ))}
               </div>
             </section>
           )}
-
+          
           <section className="final-task lesson-panel">
             <div className="panel-title-row">
               <div>
