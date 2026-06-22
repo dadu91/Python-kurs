@@ -103,3 +103,11 @@ ADD COLUMN tacan_odgovor INT NULL;
 ALTER TABLE zadatak
 ADD COLUMN rjesenje TEXT NULL,
 ADD COLUMN ocekivani_izlaz TEXT NULL;
+
+-- dodavanje kolona u tabeli LEKCIJE
+ALTER TABLE lekcija ADD COLUMN ciljevi TEXT;
+ALTER TABLE lekcija ADD COLUMN primjer_koda TEXT;
+ALTER TABLE lekcija ADD COLUMN objasnjenje_koda TEXT;
+ALTER TABLE lekcija
+ADD COLUMN trajanje VARCHAR(50) NULL,
+ADD COLUMN nivo VARCHAR(50) NULL;

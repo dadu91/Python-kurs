@@ -30,7 +30,12 @@ def create_lekcija(db: Session, lekcija: LekcijaCreate):
     nova_lekcija = Lekcija(
         naziv=lekcija.naziv,
         redoslijed=lekcija.redoslijed,
-        opis=lekcija.opis
+        opis=lekcija.opis,
+        ciljevi=lekcija.ciljevi,
+        primjer_koda=lekcija.primjer_koda,
+        objasnjenje_koda=lekcija.objasnjenje_koda,
+        trajanje=lekcija.trajanje,
+        nivo=lekcija.nivo
     )
 
     return lekcija_repository.create_lekcija(db, nova_lekcija)
@@ -45,6 +50,21 @@ def update_lekcija(db: Session, lekcija: Lekcija, lekcija_update: LekcijaUpdate)
 
     if lekcija_update.opis is not None:
         lekcija.opis = lekcija_update.opis
+
+    if lekcija_update.ciljevi is not None:
+        lekcija.ciljevi = lekcija_update.ciljevi
+
+    if lekcija_update.primjer_koda is not None:
+        lekcija.primjer_koda = lekcija_update.primjer_koda
+
+    if lekcija_update.objasnjenje_koda is not None:
+        lekcija.objasnjenje_koda = lekcija_update.objasnjenje_koda
+
+    if lekcija_update.trajanje is not None:
+        lekcija.trajanje = lekcija_update.trajanje
+
+    if lekcija_update.nivo is not None:
+        lekcija.nivo = lekcija_update.nivo
 
     return lekcija_repository.update_lekcija(db, lekcija)
 

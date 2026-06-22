@@ -42,14 +42,48 @@ import petlje from "../lessons/petlje";
 import promjenljive from "../lessons/promjenljive";
 import liste from "../lessons/liste";
 
-const lessonsByRedoslijed = { 1: uvod, 2: promjenljive, 3: liste, 4: petlje };
-
+const lessonsByRedoslijed = { 1: uvod, 2: petlje, 3: liste, 4: promjenljive };
+<section className="lesson-content"></section>
 function Lesson() {
   const navigate = useNavigate();
   const { id } = useParams();
 
   const [redoslijed, setRedoslijed] = useState(null);
-  const lesson = lessonsByRedoslijed[redoslijed] || lessonsByRedoslijed[1];
+  const [dbLekcija, setDbLekcija] = useState(null);
+  const hardkodiranaLekcija = lessonsByRedoslijed[redoslijed];
+
+const lesson = hardkodiranaLekcija || (dbLekcija
+  ? {
+      badge: `Lekcija ${dbLekcija.redoslijed}`,
+      title: dbLekcija.naziv,
+      description: dbLekcija.opis || "",
+      heroClass: "variables-hero",
+      duration: dbLekcija.trajanje || "30 min",
+      level: dbLekcija.nivo || "Početnik",
+
+      goals: dbLekcija.ciljevi
+        ? dbLekcija.ciljevi.split("\n").map((cilj, index) => ({
+            tekst: cilj,
+            blockIndex: index,
+          }))
+        : [],
+
+      theoryBlocks: [
+        {
+          title: dbLekcija.naziv,
+          text: dbLekcija.opis || "",
+          code: dbLekcija.primjer_koda || "",
+          codeObjasnjenje: dbLekcija.objasnjenje_koda
+            ? dbLekcija.objasnjenje_koda.split("\n")
+            : [],
+        },
+      ],
+
+      questions: [],
+
+      codingTasks: [],
+    }
+  : null);
 
   const [activeTab, setActiveTab] = useState("lessons");
   const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -85,7 +119,12 @@ function Lesson() {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.ok ? res.json() : null)
-      .then((lekcija) => { if (lekcija?.redoslijed) setRedoslijed(lekcija.redoslijed); })
+      .then((lekcija) => {
+        if (lekcija) {
+          setDbLekcija(lekcija);
+          setRedoslijed(lekcija.redoslijed);
+        }
+      })
       .catch(() => {});
 
     fetch(`http://localhost:8000/zadaci/po-lekciji/${id}`, {
@@ -231,6 +270,10 @@ function Lesson() {
     }));
   };
 
+  if (!lesson) {
+    return <p>Učitavanje lekcije...</p>;
+  }
+
   const correctCount = lesson.questions.filter(
     (q, index) => selectedAnswers[index] === q.correct
   ).length;
@@ -248,6 +291,10 @@ function Lesson() {
     !hasCodingTasks || correctCodingTasksCount === codingTasksCount;
 
   const canCompleteLesson = canFinishQuiz && canFinishCodingTasks;
+
+  if (!lesson) {
+  return <p>Učitavanje lekcije...</p>;
+}
 
   return (
     <div className="page-bg">
@@ -270,7 +317,12 @@ function Lesson() {
               <div className="lesson-meta">
                 <span>Trajanje: {lesson.duration}</span>
                 <span>Nivo: {lesson.level}</span>
-                <span>Mini provjere: {lesson.questions.length}</span>
+                <span>
+                  Mini provjere: {
+                    lesson.questions.length +
+                    zadaciIzBaze.filter((z) => z.tip === "quiz" && z.naziv && z.opis).length
+                  }
+                </span>
                 {hasCodingTasks && <span>Kod zadaci: {codingTasksCount}</span>}
               </div>
             </div>
@@ -331,6 +383,23 @@ function Lesson() {
                     ))}
                   </div>
                 )}
+
+                {zadaciIzBaze
+                  .filter((z) => z.tip === "teorija")
+                  .map((z) => (
+                    <div key={z.id} className="theory-card lesson-panel">
+                      <div className="panel-title-row">
+                        <h2>{z.naziv}</h2>
+                        <Code2 size={22} />
+                      </div>
+
+                      <p>{z.opis}</p>
+
+                      {z.rjesenje && (
+                        <pre className="mini-code">{z.rjesenje}</pre>
+                      )}
+                    </div>
+                ))}
 
                 {block.vjezbaSintakse && (
                   <div className="vjezba-sintakse">
@@ -754,6 +823,7 @@ function Lesson() {
               </div>
             </section>
           )}
+
           
           <section className="final-task lesson-panel">
             <div className="panel-title-row">

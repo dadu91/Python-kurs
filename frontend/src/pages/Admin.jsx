@@ -47,7 +47,7 @@ const [zadaci, setZadaci] = useState([]);
   ]);
 
   const [noviKorisnik, setNoviKorisnik] = useState({ username: "", mail: "", uloga: "" });
-  const [novaLekcija, setNovaLekcija] = useState({ naziv: "", redoslijed: "", opis: "" });
+  const [novaLekcija, setNovaLekcija] = useState({ naziv: "", redoslijed: "", opis: "", ciljevi: "", primjer_koda: "", objasnjenje_koda: "", trajanje: "", nivo: ""});
   const [noviZadatak, setNoviZadatak] = useState({naziv: "", opis: "", odgovor_a: "", odgovor_b: "", odgovor_c: "", odgovor_d: "", tacan_odgovor: "", rjesenje: "", ocekivani_izlaz: "",lekcija_id: "", tezina: "laka", tip: "teorija",});
   const [novoDostignuce, setNovoDostignuce] = useState({ naziv: "", opis: "", uslov: "" });
 
@@ -283,7 +283,7 @@ const [zadaci, setZadaci] = useState([]);
                   onClick={() => {
                     setShowLessonForm(!showLessonForm);
                     setEditLessonId(null);
-                    setNovaLekcija({ naziv: "", redoslijed: "", opis: "" });
+                    setNovaLekcija({ naziv: "", redoslijed: "", opis: "", ciljevi: "" });
                   }}
                 >
                   <PlusCircle size={18} />
@@ -308,11 +308,51 @@ const [zadaci, setZadaci] = useState([]);
                     value={novaLekcija.redoslijed}
                     onChange={(e) => setNovaLekcija({ ...novaLekcija, redoslijed: e.target.value })}
                   />
+                  <input
+                    placeholder="Trajanje npr. 30 min"
+                    value={novaLekcija.trajanje}
+                    onChange={(e) =>
+                      setNovaLekcija({ ...novaLekcija, trajanje: e.target.value })
+                    }
+                  />
+                  <select
+                    value={novaLekcija.nivo}
+                    onChange={(e) =>
+                      setNovaLekcija({ ...novaLekcija, nivo: e.target.value })
+                    }
+                  >
+                    <option value="">Odaberi nivo</option>
+                    <option value="Početnik">Početnik</option>
+                    <option value="Srednji">Srednji</option>
+                    <option value="Napredni">Napredni</option>
+                  </select>
                   <textarea
                     type="text"
                     placeholder="Opis lekcije"
                     value={novaLekcija.opis}
                     onChange={(e) => setNovaLekcija({ ...novaLekcija, opis: e.target.value })}
+                  />
+                  <textarea
+                    placeholder="Ciljevi lekcije - svaki cilj u novi red"
+                    value={novaLekcija.ciljevi}
+                    onChange={(e) =>
+                      setNovaLekcija({ ...novaLekcija, ciljevi: e.target.value })
+                    }
+                  />
+                  <textarea
+                    placeholder="Primjer koda"
+                    value={novaLekcija.primjer_koda}
+                    onChange={(e) =>
+                      setNovaLekcija({ ...novaLekcija, primjer_koda: e.target.value })
+                    }
+                  />
+
+                  <textarea
+                    placeholder="Objašnjenje koda"
+                    value={novaLekcija.objasnjenje_koda}
+                    onChange={(e) =>
+                      setNovaLekcija({ ...novaLekcija, objasnjenje_koda: e.target.value })
+                    }
                   />
                   <button
                     className="filter-btn"
@@ -325,6 +365,12 @@ const [zadaci, setZadaci] = useState([]);
                         naziv: novaLekcija.naziv,
                         redoslijed: Number(novaLekcija.redoslijed),
                         opis: novaLekcija.opis,
+                        ciljevi: novaLekcija.ciljevi,
+                        ciljevi: novaLekcija.ciljevi,
+                        primjer_koda: novaLekcija.primjer_koda,
+                        objasnjenje_koda: novaLekcija.objasnjenje_koda,
+                        trajanje: novaLekcija.trajanje,
+                        nivo: novaLekcija.nivo,
                       };
 
                       if (editLessonId) {
@@ -367,7 +413,7 @@ const [zadaci, setZadaci] = useState([]);
                         setLekcije((prev) => [...prev, dodataLekcija]);
                       }
 
-                      setNovaLekcija({ naziv: "", redoslijed: "", opis: "" });
+                      setNovaLekcija({ naziv: "", redoslijed: "", opis: "", ciljevi: "" });
                       setEditLessonId(null);
                       setShowLessonForm(false);
                     }}
@@ -379,7 +425,7 @@ const [zadaci, setZadaci] = useState([]);
                     onClick={() => {
                       setShowLessonForm(false);
                       setEditLessonId(null);
-                      setNovaLekcija({ naziv: "", redoslijed: "", opis: "" });
+                      setNovaLekcija({ naziv: "", redoslijed: "", opis: "", ciljevi: "" });
                     }}
                   >
                     Odustani
@@ -415,7 +461,16 @@ const [zadaci, setZadaci] = useState([]);
                               className="filter-btn"
                               onClick={() => {
                                 setEditLessonId(l.id);
-                                setNovaLekcija({ naziv: l.naziv, redoslijed: l.redoslijed, opis: l.opis });
+                                setNovaLekcija({
+                                  naziv: l.naziv,
+                                  redoslijed: l.redoslijed,
+                                  opis: l.opis || "",
+                                  ciljevi: l.ciljevi || "",
+                                  primjer_koda: l.primjer_koda || "",
+                                  objasnjenje_koda: l.objasnjenje_koda || "",
+                                  trajanje: l.trajanje || "",
+                                  nivo: l.nivo || "",
+                                });
                                 setShowLessonForm(true);
                               }}
                             >
