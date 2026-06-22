@@ -33,6 +33,7 @@ import {
   Terminal,
   HelpCircle,
   Trophy,
+  ChevronRight,
 } from "lucide-react";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
@@ -41,8 +42,9 @@ import uvod from "../lessons/uvod";
 import petlje from "../lessons/petlje";
 import promjenljive from "../lessons/promjenljive";
 import liste from "../lessons/liste";
+import stringovi from "../lessons/stringovi";
 
-const lessonsByRedoslijed = { 1: uvod, 2: promjenljive, 3: liste, 4: petlje };
+const lessonsByRedoslijed = { 1: uvod, 2: promjenljive, 3: liste, 4: petlje, 5: stringovi };
 
 function Lesson() {
   const navigate = useNavigate();
@@ -62,19 +64,12 @@ function Lesson() {
   const [vjezbaRezultati, setVjezbaRezultati] = useState({});
   const [zadaciMapa, setZadaciMapa] = useState({});
   const [uradjeniZadaci, setUradjeniZadaci] = useState(new Set());
+  const [currentStep, setCurrentStep] = useState(0);
+  const [maxStep, setMaxStep] = useState(0);
 
   const textareaRefs = useRef({});
   const cursorPos = useRef(null);
-
-  useEffect(() => {
-    if (window.location.hash) {
-      const targetId = window.location.hash.slice(1);
-      setTimeout(() => {
-        const el = document.getElementById(targetId);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
-      }, 600);
-    }
-  }, [redoslijed]);
+  const mainRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -168,14 +163,12 @@ function Lesson() {
       .toLowerCase();
   };
 
-
   const checkTaskCode = (taskIndex) => {
     const task = lesson.codingTasks[taskIndex];
     const userCode = textareaRefs.current[taskIndex]?.value || "";
     const normalizedCode = normalizeCode(userCode);
     const isCorrect = task.check(normalizedCode);
     setTaskResults({ ...taskResults, [taskIndex]: isCorrect ? "correct" : "wrong" });
-    upisiZadatakKorisnik(task.redoslijed, isCorrect);
   };
 
   const runTaskCode = async (taskIndex) => {
@@ -185,7 +178,7 @@ function Lesson() {
     const token = localStorage.getItem("token");
 
     if (!userCode.trim()) {
-      setTaskOutputs({ ...taskOutputs, [taskIndex]: ">>> Pokreni kod\nGreška: prvo upiši kod." });
+      setTaskOutputs({ ...taskOutputs, [taskIndex]: ">>> Predaj kod\nGreška: prvo upiši kod." });
       return;
     }
 
@@ -198,12 +191,12 @@ function Lesson() {
       const data = await res.json();
 
       if (data.greska) {
-        setTaskOutputs({ ...taskOutputs, [taskIndex]: `>>> Pokreni kod\n${data.greska.tip}: ${data.greska.poruka}` });
+        setTaskOutputs({ ...taskOutputs, [taskIndex]: `>>> Predaj kod\n${data.greska.tip}: ${data.greska.poruka}` });
         setTaskResults({ ...taskResults, [taskIndex]: "wrong" });
         upisiZadatakKorisnik(task.redoslijed, false, data.greska.tip);
       } else {
         const output = data.output || "";
-        setTaskOutputs({ ...taskOutputs, [taskIndex]: `>>> Pokreni kod\n${output}` });
+        setTaskOutputs({ ...taskOutputs, [taskIndex]: `>>> Predaj kod\n${output}` });
 
         const isCorrect = task.check(normalizedCode);
         setTaskResults({ ...taskResults, [taskIndex]: isCorrect ? "correct" : "wrong" });
@@ -243,12 +236,50 @@ function Lesson() {
 
   const canCompleteLesson = canFinishQuiz && canFinishCodingTasks;
 
+  // Build steps
+  const steps = [
+    { type: "goals", label: "Uvod" },
+    ...lesson.theoryBlocks.map((b, i) => ({ type: "theory", index: i, label: b.title })),
+    { type: "quiz", label: "Mini provjere" },
+    ...(hasCodingTasks ? [{ type: "coding", label: "Kod zadaci" }] : []),
+    { type: "finish", label: "Završi" },
+  ];
+
+  const step = steps[currentStep];
+  const isLastStep = currentStep === steps.length - 1;
+
+  const canProceed = (() => {
+    if (step.type === "goals") return true;
+    if (step.type === "theory") {
+      const block = lesson.theoryBlocks[step.index];
+      if (!block.vjezbaSintakse) return true;
+      return vjezbaRezultati[step.index] === "correct";
+    }
+    if (step.type === "quiz") return correctCount === lesson.questions.length;
+    if (step.type === "coding") return canFinishCodingTasks;
+    return true;
+  })();
+
+  const goToStep = (i) => {
+    if (i > maxStep) return;
+    setCurrentStep(i);
+    if (mainRef.current) mainRef.current.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const nextStep = () => {
+    if (isLastStep) return;
+    const next = currentStep + 1;
+    setCurrentStep(next);
+    setMaxStep((m) => Math.max(m, next));
+    if (mainRef.current) mainRef.current.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <div className="page-bg">
       <div className="dashboard-shell">
         <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        <main className="dashboard-main lesson-main">
+        <main className="dashboard-main lesson-main" ref={mainRef}>
           <Topbar />
 
           <button className="back-btn" onClick={() => navigate("/")}>
@@ -286,166 +317,194 @@ function Lesson() {
             </div>
           </section>
 
-          <section className="lesson-panel" style={{ marginBottom: "24px" }}>
-            <h2>Šta učiš?</h2>
-            <div className="goal-list">
-              {lesson.goals.map((goal, index) => (
-                <div
-                  className="goal-item goal-item-link"
-                  key={index}
-                  onClick={() => {
-                    const el = document.getElementById(`theory-block-${goal.blockIndex}`);
-                    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }}
-                >
-                  <CheckCircle2 size={19} />
-                  <span>{goal.tekst}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="theory-flow">
-            {lesson.theoryBlocks.map((block, blockIndex) => (
-              <div key={blockIndex} id={`theory-block-${blockIndex}`} className="theory-block lesson-panel">
-                <div className="panel-title-row">
-                  <h2>{block.title}</h2>
-                  <Code2 size={22} />
-                </div>
-                <p>{block.text}</p>
-                <pre className="mini-code">{block.code}</pre>
-
-                {block.codeObjasnjenje && (
-                  <div className="code-objasnjenje">
-                    {block.codeObjasnjenje.map((linija, i) => (
-                      <div key={i} className="code-objasnjenje-red">
-                        <span className="code-objasnjenje-broj">{i + 1}</span>
-                        <span>{linija}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {block.vjezbaSintakse && (
-                  <div className="vjezba-sintakse">
-                    <h4>Vježba sintakse</h4>
-                    <p>{block.vjezbaSintakse.uputstvo}</p>
-                    <textarea
-                      className="code-input"
-                      placeholder={block.vjezbaSintakse.placeholder}
-                      value={vjezbaKodovi[blockIndex] || ""}
-                      onChange={(e) =>
-                        setVjezbaKodovi((prev) => ({
-                          ...prev,
-                          [blockIndex]: e.target.value,
-                        }))
-                      }
-                      onKeyDown={(e) => {
-                        const el = e.target;
-                        const start = el.selectionStart;
-                        const end = el.selectionEnd;
-                        const code = el.value;
-                        if (e.key === "Tab") {
-                          e.preventDefault();
-                          const newVal = code.substring(0, start) + "    " + code.substring(end);
-                          setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
-                        }
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          const currentLine = code.substring(0, start).split("\n").pop();
-                          const indent = currentLine.match(/^(\s*)/)[1];
-                          const extraIndent = currentLine.trimEnd().endsWith(":") ? "    " : "";
-                          const newVal = code.substring(0, start) + "\n" + indent + extraIndent + code.substring(end);
-                          setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
-                        }
-                      }}
-                    />
-                    <div className="code-actions">
-                      <button
-                        className="check-code-btn"
-                        onClick={() => checkVjezbu(blockIndex)}
-                      >
-                        Provjeri
-                      </button>
-                    </div>
-                    {vjezbaRezultati[blockIndex] === "correct" && (
-                      <div className="code-result correct-result">
-                        Tačno! Sintaksa je ispravna.
-                      </div>
-                    )}
-                    {vjezbaRezultati[blockIndex] === "wrong" && (
-                      <div className="code-result wrong-result">
-                        Nije tačno. {block.vjezbaSintakse.hint}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+          {/* Step navigation */}
+          <nav className="lesson-steps-nav">
+            {steps.map((s, i) => (
+              <button
+                key={i}
+                className={`step-pill${i === currentStep ? " step-active" : ""}${i < currentStep ? " step-done" : ""}${i > currentStep && i <= maxStep ? " step-done" : ""}${i > maxStep ? " step-locked" : ""}`}
+                onClick={() => goToStep(i)}
+                disabled={i > maxStep}
+                title={s.label}
+              >
+                {i < currentStep ? <CheckCircle2 size={13} /> : <span className="step-num">{i + 1}</span>}
+                <span className="step-label">{s.label}</span>
+              </button>
             ))}
-          </section>
+          </nav>
 
-          <section className="quiz-section">
-            <div className="quiz-header">
-              <HelpCircle size={26} />
-              <div>
-                <h2>Mini provjere</h2>
-                <p>Odgovori na pitanja da provjeriš da li si razumio lekciju.</p>
-              </div>
-            </div>
-
-            <div className="quiz-list">
-              {lesson.questions.map((item, questionIndex) => (
-                <article id={`zadatak-${item.redoslijed}`} className={`quiz-card ${uradjeniZadaci.has(zadaciMapa[item.redoslijed]) ? "quiz-card-done" : ""}`} key={questionIndex}>
-                  <h3>
-                    {uradjeniZadaci.has(zadaciMapa[item.redoslijed]) && <CheckCircle2 size={18} style={{ color: "#23a455", marginRight: "8px", display: "inline" }} />}
-                    Pitanje {questionIndex + 1}: {item.question}
-                  </h3>
-
-                  <div className="answer-list">
-                    {item.answers.map((answer, answerIndex) => {
-                      const isSelected = selectedAnswers[questionIndex] === answerIndex;
-                      const isCorrect = item.correct === answerIndex;
-                      const isAnswered = selectedAnswers[questionIndex] !== undefined;
-                      const isLocked = selectedAnswers[questionIndex] === item.correct;
-
-                      let buttonClass = "answer-btn";
-                      if (isAnswered && isSelected && isCorrect) buttonClass += " correct";
-                      if (isAnswered && isSelected && !isCorrect) buttonClass += " wrong";
-
-                      return (
-                        <button
-                          key={answerIndex}
-                          className={buttonClass}
-                          disabled={isLocked}
-                          onClick={() => handleAnswer(questionIndex, answerIndex)}
-                        >
-                          {answer}
-                        </button>
-                      );
-                    })}
+          {/* Step content */}
+          {step.type === "goals" && (
+            <section className="lesson-panel step-content" style={{ marginBottom: "24px" }}>
+              <h2>Šta učiš?</h2>
+              <div className="goal-list">
+                {lesson.goals.map((goal, index) => (
+                  <div className="goal-item" key={index}>
+                    <CheckCircle2 size={19} />
+                    <span>{goal.tekst}</span>
                   </div>
+                ))}
+              </div>
+            </section>
+          )}
 
-                  {selectedAnswers[questionIndex] !== undefined && (
-                    <p className="answer-feedback">
-                      {selectedAnswers[questionIndex] === item.correct
-                        ? "Tačno!"
-                        : "Nije tačno. Razmisli ponovo."}
-                    </p>
-                  )}
-                </article>
-              ))}
+          {step.type === "theory" && (
+            <div className="theory-flow step-content">
+              {(() => {
+                const block = lesson.theoryBlocks[step.index];
+                const blockIndex = step.index;
+                return (
+                  <div className="theory-block lesson-panel">
+                    <div className="panel-title-row">
+                      <h2>{block.title}</h2>
+                      <Code2 size={22} />
+                    </div>
+                    <p>{block.text}</p>
+                    <pre className="mini-code">{block.code}</pre>
+
+                    {block.codeObjasnjenje && (
+                      <div className="code-objasnjenje">
+                        {block.codeObjasnjenje.map((linija, i) => (
+                          <div key={i} className="code-objasnjenje-red">
+                            <span className="code-objasnjenje-broj">{i + 1}</span>
+                            <span>{linija}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {block.vjezbaSintakse && (
+                      <div className="vjezba-sintakse">
+                        <h4>Vježba sintakse</h4>
+                        <p>{block.vjezbaSintakse.uputstvo}</p>
+                        <textarea
+                          className="code-input"
+                          placeholder={block.vjezbaSintakse.placeholder}
+                          value={vjezbaKodovi[blockIndex] || ""}
+                          onChange={(e) =>
+                            setVjezbaKodovi((prev) => ({
+                              ...prev,
+                              [blockIndex]: e.target.value,
+                            }))
+                          }
+                          onKeyDown={(e) => {
+                            const el = e.target;
+                            const start = el.selectionStart;
+                            const end = el.selectionEnd;
+                            const code = el.value;
+                            const pairs = { "(": ")", '"': '"', "'": "'", "{": "}" };
+                            if (pairs[e.key]) {
+                              e.preventDefault();
+                              const newVal = code.substring(0, start) + e.key + pairs[e.key] + code.substring(end);
+                              setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
+                              setTimeout(() => { el.selectionStart = start + 1; el.selectionEnd = start + 1; }, 0);
+                              return;
+                            }
+                            if (e.key === "Tab") {
+                              e.preventDefault();
+                              const newVal = code.substring(0, start) + "    " + code.substring(end);
+                              setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
+                            }
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              const currentLine = code.substring(0, start).split("\n").pop();
+                              const indent = currentLine.match(/^(\s*)/)[1];
+                              const extraIndent = currentLine.trimEnd().endsWith(":") ? "    " : "";
+                              const newVal = code.substring(0, start) + "\n" + indent + extraIndent + code.substring(end);
+                              setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
+                            }
+                          }}
+                        />
+                        <div className="code-actions">
+                          <button
+                            className="check-code-btn"
+                            onClick={() => checkVjezbu(blockIndex)}
+                          >
+                            Provjeri
+                          </button>
+                        </div>
+                        {vjezbaRezultati[blockIndex] === "correct" && (
+                          <div className="code-result correct-result">
+                            Tačno! Sintaksa je ispravna.
+                          </div>
+                        )}
+                        {vjezbaRezultati[blockIndex] === "wrong" && (
+                          <div className="code-result wrong-result">
+                            Nije tačno. {block.vjezbaSintakse.hint}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
-          </section>
+          )}
 
-          {hasCodingTasks && (
-            <section className="final-task lesson-panel">
+          {step.type === "quiz" && (
+            <section className="quiz-section step-content">
+              <div className="quiz-header">
+                <HelpCircle size={26} />
+                <div>
+                  <h2>Mini provjere</h2>
+                  <p>Odgovori na pitanja da provjeriš da li si razumio lekciju.</p>
+                </div>
+              </div>
+
+              <div className="quiz-list">
+                {lesson.questions.map((item, questionIndex) => (
+                  <article id={`zadatak-${item.redoslijed}`} className={`quiz-card ${uradjeniZadaci.has(zadaciMapa[item.redoslijed]) ? "quiz-card-done" : ""}`} key={questionIndex}>
+                    <h3>
+                      {uradjeniZadaci.has(zadaciMapa[item.redoslijed]) && <CheckCircle2 size={18} style={{ color: "#23a455", marginRight: "8px", display: "inline" }} />}
+                      Pitanje {questionIndex + 1}: {item.question}
+                    </h3>
+
+                    <div className="answer-list">
+                      {item.answers.map((answer, answerIndex) => {
+                        const isSelected = selectedAnswers[questionIndex] === answerIndex;
+                        const isCorrect = item.correct === answerIndex;
+                        const isAnswered = selectedAnswers[questionIndex] !== undefined;
+                        const isLocked = selectedAnswers[questionIndex] === item.correct;
+
+                        let buttonClass = "answer-btn";
+                        if (isAnswered && isSelected && isCorrect) buttonClass += " correct";
+                        if (isAnswered && isSelected && !isCorrect) buttonClass += " wrong";
+
+                        return (
+                          <button
+                            key={answerIndex}
+                            className={buttonClass}
+                            disabled={isLocked}
+                            onClick={() => handleAnswer(questionIndex, answerIndex)}
+                          >
+                            {answer}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {selectedAnswers[questionIndex] !== undefined && (
+                      <p className="answer-feedback">
+                        {selectedAnswers[questionIndex] === item.correct
+                          ? "Tačno!"
+                          : "Nije tačno. Razmisli ponovo."}
+                      </p>
+                    )}
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {step.type === "coding" && hasCodingTasks && (
+            <section className="final-task lesson-panel step-content">
               <div className="panel-title-row">
                 <div>
                   <h2>Zadaci za pisanje koda</h2>
                   <p>
                     Upiši svoje rješenje ispod svakog zadatka. Klikni
                     <b> Provjeri kod</b> da vidiš da li je tačno ili
-                    <b> Pokreni kod</b> da dobiješ izlaz kao u konzoli.
+                    <b> Predaj kod</b> da dobiješ izlaz kao u konzoli.
                   </p>
                 </div>
                 <Terminal size={26} />
@@ -469,6 +528,15 @@ function Lesson() {
                         const start = el.selectionStart;
                         const end = el.selectionEnd;
                         const code = el.value;
+                        const pairs = { "(": ")", '"': '"', "'": "'", "{": "}" };
+
+                        if (pairs[e.key]) {
+                          e.preventDefault();
+                          el.value = code.substring(0, start) + e.key + pairs[e.key] + code.substring(end);
+                          el.selectionStart = start + 1;
+                          el.selectionEnd = start + 1;
+                          return;
+                        }
 
                         if (e.key === "Tab") {
                           e.preventDefault();
@@ -503,7 +571,7 @@ function Lesson() {
                         className="run-code-btn"
                         onClick={() => runTaskCode(taskIndex)}
                       >
-                        Pokreni kod
+                        Predaj kod
                       </button>
                     </div>
 
@@ -555,64 +623,80 @@ function Lesson() {
             </section>
           )}
 
-          <section className="final-task lesson-panel">
-            <div className="panel-title-row">
-              <div>
-                <h2>Završi lekciju</h2>
-                <p>
-                  Lekciju možeš završiti kada odgovoriš na sva pitanja
-                  {hasCodingTasks && " i tačno riješiš sve zadatke za kod"}.
-                </p>
+          {step.type === "finish" && (
+            <section className="final-task lesson-panel step-content">
+              <div className="panel-title-row">
+                <div>
+                  <h2>Završi lekciju</h2>
+                  <p>
+                    Lekciju možeš završiti kada odgovoriš na sva pitanja
+                    {hasCodingTasks && " i tačno riješiš sve zadatke za kod"}.
+                  </p>
+                </div>
+                <Trophy size={26} />
               </div>
-              <Trophy size={26} />
-            </div>
 
-            <button
-              className={finished ? "done-btn completed" : "done-btn"}
-              disabled={!canCompleteLesson}
-              onClick={async () => {
-                const token = localStorage.getItem("token");
-                const korisnikId = await fetchKorisnikId(token);
-                if (!korisnikId) return;
+              <button
+                className={finished ? "done-btn completed" : "done-btn"}
+                disabled={!canCompleteLesson}
+                onClick={async () => {
+                  const token = localStorage.getItem("token");
+                  const korisnikId = await fetchKorisnikId(token);
+                  if (!korisnikId) return;
 
-                // Kreiraj progres ako ne postoji
-                await fetch("http://localhost:8000/progres/", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                  body: JSON.stringify({ korisnik_id: korisnikId }),
-                });
+                  await fetch("http://localhost:8000/progres/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ korisnik_id: korisnikId }),
+                  });
 
-                // Upiši završenu lekciju
-                await fetch("http://localhost:8000/zavrsena_lekcija/", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                  body: JSON.stringify({ lekcija_id: parseInt(id), korisnik_id: korisnikId }),
-                });
+                  await fetch("http://localhost:8000/zavrsena_lekcija/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ lekcija_id: parseInt(id), korisnik_id: korisnikId }),
+                  });
 
-                setFinished(true);
-              }}
-            >
-              {finished
-                ? "Lekcija završena"
-                : !canFinishQuiz
-                ? "Odgovori na mini provjere"
-                : hasCodingTasks && !canFinishCodingTasks
-                ? "Riješi sve kod zadatke"
-                : "Označi kao završeno"}
-            </button>
+                  setFinished(true);
+                }}
+              >
+                {finished
+                  ? "Lekcija završena"
+                  : !canFinishQuiz
+                  ? "Odgovori na mini provjere"
+                  : hasCodingTasks && !canFinishCodingTasks
+                  ? "Riješi sve kod zadatke"
+                  : "Označi kao završeno"}
+              </button>
 
-            {finished && (
-              <div className="success-box">
-                <Trophy size={22} />
-                <span>
-                  Završio si lekciju. Mini provjere: {correctCount}/
-                  {lesson.questions.length}
-                  {hasCodingTasks &&
-                    `, kod zadaci: ${correctCodingTasksCount}/${codingTasksCount}`}
+              {finished && (
+                <div className="success-box">
+                  <Trophy size={22} />
+                  <span>
+                    Završio si lekciju. Mini provjere: {correctCount}/
+                    {lesson.questions.length}
+                    {hasCodingTasks &&
+                      `, kod zadaci: ${correctCodingTasksCount}/${codingTasksCount}`}
+                  </span>
+                </div>
+              )}
+            </section>
+          )}
+
+          {/* Next step button */}
+          {!isLastStep && (
+            <div className="step-nav-row">
+              {!canProceed && (
+                <span className="step-nav-hint">
+                  {step.type === "theory" && "Uradi vježbu tačno da nastaviš."}
+                  {step.type === "quiz" && "Odgovori tačno na sva pitanja da nastaviš."}
+                  {step.type === "coding" && "Tačno riješi sve kod zadatke da nastaviš."}
                 </span>
-              </div>
-            )}
-          </section>
+              )}
+              <button className="next-step-btn" onClick={nextStep} disabled={!canProceed}>
+                Nastavi <ChevronRight size={18} />
+              </button>
+            </div>
+          )}
         </main>
       </div>
     </div>

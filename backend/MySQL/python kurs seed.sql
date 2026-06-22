@@ -2,10 +2,11 @@ USE python_kurs;
 
 -- LEKCIJE
 INSERT INTO lekcija (naziv, redoslijed, opis) VALUES
-('Uvod u Python',         1, 'Šta je Python, kako se pokreće prvi program i kako se koristi print naredba.'),
-('Promjenljive u Pythonu',2, 'Šta su promjenljive, tipovi podataka i kako Python sam prepoznaje tip.'),
-('Liste u Pythonu',       3, 'Šta su liste, kako se prave, kako pristupamo elementima i kako prolazimo kroz listu.'),
-('Petlje u Pythonu',      4, 'For i while petlje, range(), prolazak kroz listu i najčešće greške u petljama.');
+('Uvod u Python',          1, 'Šta je Python, kako se pokreće prvi program i kako se koristi print naredba.'),
+('Promjenljive u Pythonu', 2, 'Šta su promjenljive, tipovi podataka i kako Python sam prepoznaje tip.'),
+('Liste u Pythonu',        3, 'Šta su liste, kako se prave, kako pristupamo elementima i kako prolazimo kroz listu.'),
+('Petlje u Pythonu',       4, 'For i while petlje, range(), prolazak kroz listu i najčešće greške u petljama.'),
+('Stringovi u Pythonu',    5, 'Šta su stringovi, kako se kreiraju, spajaju i koriste osnovne metode za rad sa tekstom.');
 
 
 -- ZADACI - Lekcija 1: Uvod
@@ -64,6 +65,20 @@ INSERT INTO zadatak (lekcija_id, redoslijed, tezina, tip) VALUES
 ((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'),  9, 'laka',   'prakticni'),
 ((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'), 10, 'srednja','prakticni'),
 ((SELECT id FROM lekcija WHERE naziv = 'Petlje u Pythonu'), 11, 'teska',  'prakticni');
+
+
+
+-- ZADACI - Lekcija 5: Stringovi
+
+INSERT INTO zadatak (lekcija_id, redoslijed, tezina, tip) VALUES
+((SELECT id FROM lekcija WHERE naziv = 'Stringovi u Pythonu'), 1, 'laka',    'teorija'),
+((SELECT id FROM lekcija WHERE naziv = 'Stringovi u Pythonu'), 2, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Stringovi u Pythonu'), 3, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Stringovi u Pythonu'), 4, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Stringovi u Pythonu'), 5, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Stringovi u Pythonu'), 6, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Stringovi u Pythonu'), 7, 'srednja', 'prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Stringovi u Pythonu'), 8, 'srednja', 'prakticni');
 
 
 
