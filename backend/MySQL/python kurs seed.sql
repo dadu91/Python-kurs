@@ -100,3 +100,29 @@ INSERT INTO greska (tip_greske, opis) VALUES
 
 INSERT INTO korisnik (username, password, mail, uloga) VALUES
 ('Admin', '$2b$12$frdM2qj/WLqMO3IPmMWmsebHPDT/EaKj5pKl5pShfOI2h/JRtVzMy', 'admin@gmail.com', 'admin');
+
+-- dodavanje kolona u tabeli zadatak
+ALTER TABLE zadatak
+ADD COLUMN naziv VARCHAR(255) NULL;
+
+ALTER TABLE zadatak
+ADD COLUMN opis TEXT NULL;
+
+ALTER TABLE zadatak
+ADD COLUMN odgovor_a VARCHAR(255) NULL,
+ADD COLUMN odgovor_b VARCHAR(255) NULL,
+ADD COLUMN odgovor_c VARCHAR(255) NULL,
+ADD COLUMN odgovor_d VARCHAR(255) NULL,
+ADD COLUMN tacan_odgovor INT NULL;
+
+ALTER TABLE zadatak
+ADD COLUMN rjesenje TEXT NULL,
+ADD COLUMN ocekivani_izlaz TEXT NULL;
+
+-- dodavanje kolona u tabeli LEKCIJE
+ALTER TABLE lekcija ADD COLUMN ciljevi TEXT;
+ALTER TABLE lekcija ADD COLUMN primjer_koda TEXT;
+ALTER TABLE lekcija ADD COLUMN objasnjenje_koda TEXT;
+ALTER TABLE lekcija
+ADD COLUMN trajanje VARCHAR(50) NULL,
+ADD COLUMN nivo VARCHAR(50) NULL;

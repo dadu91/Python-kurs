@@ -45,16 +45,50 @@ import liste from "../lessons/liste";
 import stringovi from "../lessons/stringovi";
 
 const lessonsByRedoslijed = { 1: uvod, 2: promjenljive, 3: liste, 4: petlje, 5: stringovi };
-
 function Lesson() {
   const navigate = useNavigate();
   const { id } = useParams();
 
   const [redoslijed, setRedoslijed] = useState(null);
-  const lesson = lessonsByRedoslijed[redoslijed] || lessonsByRedoslijed[1];
+  const [dbLekcija, setDbLekcija] = useState(null);
+  const hardkodiranaLekcija = lessonsByRedoslijed[redoslijed];
+
+const lesson = hardkodiranaLekcija || (dbLekcija
+  ? {
+      badge: `Lekcija ${dbLekcija.redoslijed}`,
+      title: dbLekcija.naziv,
+      description: dbLekcija.opis || "",
+      heroClass: "variables-hero",
+      duration: dbLekcija.trajanje || "30 min",
+      level: dbLekcija.nivo || "Početnik",
+
+      goals: dbLekcija.ciljevi
+        ? dbLekcija.ciljevi.split("\n").map((cilj, index) => ({
+            tekst: cilj,
+            blockIndex: index,
+          }))
+        : [],
+
+      theoryBlocks: [
+        {
+          title: dbLekcija.naziv,
+          text: dbLekcija.opis || "",
+          code: dbLekcija.primjer_koda || "",
+          codeObjasnjenje: dbLekcija.objasnjenje_koda
+            ? dbLekcija.objasnjenje_koda.split("\n")
+            : [],
+        },
+      ],
+
+      questions: [],
+
+      codingTasks: [],
+    }
+  : null);
 
   const [activeTab, setActiveTab] = useState("lessons");
   const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [adminSelectedAnswers, setAdminSelectedAnswers] = useState({});
   const [finished, setFinished] = useState(false);
   const [taskCodes, setTaskCodes] = useState({});
   const [taskResults, setTaskResults] = useState({});
@@ -63,6 +97,7 @@ function Lesson() {
   const [vjezbaKodovi, setVjezbaKodovi] = useState({});
   const [vjezbaRezultati, setVjezbaRezultati] = useState({});
   const [zadaciMapa, setZadaciMapa] = useState({});
+  const [zadaciIzBaze, setZadaciIzBaze] = useState([]);
   const [uradjeniZadaci, setUradjeniZadaci] = useState(new Set());
   const [currentStep, setCurrentStep] = useState(0);
   const [maxStep, setMaxStep] = useState(0);
@@ -78,7 +113,12 @@ function Lesson() {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => res.ok ? res.json() : null)
-      .then((lekcija) => { if (lekcija?.redoslijed) setRedoslijed(lekcija.redoslijed); })
+      .then((lekcija) => {
+        if (lekcija) {
+          setDbLekcija(lekcija);
+          setRedoslijed(lekcija.redoslijed);
+        }
+      })
       .catch(() => {});
 
     fetch(`http://localhost:8000/zadaci/po-lekciji/${id}`, {
@@ -86,8 +126,12 @@ function Lesson() {
     })
       .then((res) => res.ok ? res.json() : [])
       .then((zadaci) => {
+        setZadaciIzBaze(zadaci);
+
         const mapa = {};
-        zadaci.forEach((z) => { mapa[z.redoslijed] = z.id; });
+        zadaci.forEach((z) => {
+          if (z.redoslijed) mapa[z.redoslijed] = z.id;
+        });
         setZadaciMapa(mapa);
       })
       .catch(() => {});
@@ -218,6 +262,10 @@ function Lesson() {
     }));
   };
 
+  if (!lesson) {
+    return <p>Učitavanje lekcije...</p>;
+  }
+
   const correctCount = lesson.questions.filter(
     (q, index) => selectedAnswers[index] === q.correct
   ).length;
@@ -235,6 +283,8 @@ function Lesson() {
     !hasCodingTasks || correctCodingTasksCount === codingTasksCount;
 
   const canCompleteLesson = canFinishQuiz && canFinishCodingTasks;
+
+  if (!lesson) return <p>Učitavanje lekcije...</p>;
 
   // Build steps
   const steps = [
@@ -295,7 +345,12 @@ function Lesson() {
               <div className="lesson-meta">
                 <span>Trajanje: {lesson.duration}</span>
                 <span>Nivo: {lesson.level}</span>
-                <span>Mini provjere: {lesson.questions.length}</span>
+                <span>
+                  Mini provjere: {
+                    lesson.questions.length +
+                    zadaciIzBaze.filter((z) => z.tip === "quiz" && z.naziv && z.opis).length
+                  }
+                </span>
                 {hasCodingTasks && <span>Kod zadaci: {codingTasksCount}</span>}
               </div>
             </div>
@@ -619,6 +674,113 @@ function Lesson() {
                     )}
                   </div>
                 ))}
+
+                {zadaciIzBaze
+                  .filter((z) => z.tip === "prakticni" && z.naziv && z.opis)
+                  .map((z) => (
+                    <div className="code-checker-box" key={`admin-kod-${z.id}`}>
+                      <h3>{z.naziv}</h3>
+                      <p>{z.opis}</p>
+
+                      <textarea
+                        id={`admin-code-${z.id}`}
+                        className="code-input"
+                        placeholder="Ovdje upiši svoje rješenje..."
+                      />
+
+                      <div className="code-actions">
+                        <button
+                          className="check-code-btn"
+                          onClick={() => {
+                            const kod = document.getElementById(`admin-code-${z.id}`).value;
+
+                            setTaskResults({
+                              ...taskResults,
+                              [`admin-${z.id}`]:
+                                kod.trim() === z.rjesenje?.trim()
+                                  ? "correct"
+                                  : "wrong",
+                            });
+                          }}
+                        >
+                          Provjeri kod
+                        </button>
+
+                        <button
+                          className="run-code-btn"
+                          onClick={async () => {
+                            const kod = document.getElementById(`admin-code-${z.id}`).value;
+                            const token = localStorage.getItem("token");
+
+                            const res = await fetch("http://localhost:8000/kod/execute", {
+                              method: "POST",
+                              headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`,
+                              },
+                              body: JSON.stringify({ kod }),
+                            });
+
+                            const data = await res.json();
+
+                            setTaskOutputs({
+                              ...taskOutputs,
+                              [`admin-${z.id}`]:
+                                data.greska
+                                  ? `${data.greska.tip}: ${data.greska.poruka}`
+                                  : data.output || "Nema izlaza.",
+                            });
+                          }}
+                        >
+                          Pokreni kod
+                        </button>
+                      </div>
+
+                      {taskResults[`admin-${z.id}`] === "correct" && (
+                        <div className="code-result correct-result">
+                          Tačno! Ovaj zadatak je urađen kako treba.
+                        </div>
+                      )}
+
+                      {taskResults[`admin-${z.id}`] === "wrong" && (
+                        <div className="code-result wrong-result">
+                          Netačan kod, pokušaj ponovo.
+                        </div>
+                      )}
+
+                      {taskOutputs[`admin-${z.id}`] && (
+                        <div className="output-box">
+                          <p>Konzola:</p>
+                          <pre>{taskOutputs[`admin-${z.id}`]}</pre>
+                        </div>
+                      )}
+
+                      <button
+                        className="show-solution-btn"
+                        onClick={() =>
+                          setShownSolutions({
+                            ...shownSolutions,
+                            [`admin-${z.id}`]:
+                              !shownSolutions[`admin-${z.id}`],
+                          })
+                        }
+                      >
+                        {shownSolutions[`admin-${z.id}`]
+                          ? "Sakrij rješenje"
+                          : "Prikaži rješenje"}
+                      </button>
+
+                      {shownSolutions[`admin-${z.id}`] && (
+                        <div className="solution-box">
+                          <p>Jedno moguće rješenje:</p>
+                          <pre className="mini-code">{z.rjesenje}</pre>
+
+                          <p>Izlaz programa:</p>
+                          <pre className="mini-code">{z.ocekivani_izlaz}</pre>
+                        </div>
+                      )}
+                    </div>
+                  ))}
               </div>
             </section>
           )}

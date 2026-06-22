@@ -20,10 +20,26 @@ function Admin() {
   const [editTaskId, setEditTaskId] = useState(null);
   const [editAchievementId, setEditAchievementId] = useState(null);
 
-  const [zadaci, setZadaci] = useState([
-    { id: 1, naziv: "Prvi Python program", lekcija: "Uvod u Python" },
-    { id: 2, naziv: "Promjenljive", lekcija: "Osnove sintakse" },
-  ]);
+//   const [zadaci, setZadaci] = useState([
+//   {
+//     id: 1,
+//     naziv: "Prvi Python program",
+//     lekcija: "Uvod u Python",
+//     lekcija_id: 1,
+//     tezina: "laka",
+//     tip: "teorija",
+//   },
+//   {
+//     id: 2,
+//     naziv: "Promjenljive",
+//     lekcija: "Osnove sintakse",
+//     lekcija_id: 2,
+//     tezina: "laka",
+//     tip: "teorija",
+//   },
+// ]);
+
+const [zadaci, setZadaci] = useState([]);
 
   const [dostignuca, setDostignuca] = useState([
     { id: 1, naziv: "Prva lekcija", opis: "Korisnik je završio prvu lekciju", uslov: "Završena 1 lekcija" },
@@ -31,15 +47,20 @@ function Admin() {
   ]);
 
   const [noviKorisnik, setNoviKorisnik] = useState({ username: "", mail: "", uloga: "" });
-  const [novaLekcija, setNovaLekcija] = useState({ naziv: "", redoslijed: "", opis: "" });
-  const [noviZadatak, setNoviZadatak] = useState({ naziv: "", lekcija: "" });
+  const [novaLekcija, setNovaLekcija] = useState({ naziv: "", redoslijed: "", opis: "", ciljevi: "", primjer_koda: "", objasnjenje_koda: "", trajanje: "", nivo: ""});
+  const [noviZadatak, setNoviZadatak] = useState({naziv: "", opis: "", odgovor_a: "", odgovor_b: "", odgovor_c: "", odgovor_d: "", tacan_odgovor: "", rjesenje: "", ocekivani_izlaz: "",lekcija_id: "", tezina: "laka", tip: "teorija",});
   const [novoDostignuce, setNovoDostignuce] = useState({ naziv: "", opis: "", uslov: "" });
 
   const token = localStorage.getItem("token");
 
   const otvoriModal = (tekst, onConfirm) => {
-    setConfirmModal({ open: true, tekst, onConfirm });
-  };
+  setConfirmModal({ open: true, tekst, onConfirm });
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
 
   const zatvoriModal = () => {
     setConfirmModal({ open: false, onConfirm: null, tekst: "" });
@@ -57,12 +78,33 @@ function Admin() {
       .then(setKorisnici)
       .catch((e) => setGreska(e.message));
 
-    fetch("http://localhost:8000/lekcije/", {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then(setLekcije)
-      .catch(() => {});
+    Promise.all([
+  fetch("http://localhost:8000/lekcije/", {
+    headers: { Authorization: `Bearer ${token}` },
+  }).then((res) => res.json()),
+
+  fetch("http://localhost:8000/zadaci/", {
+    headers: { Authorization: `Bearer ${token}` },
+  }).then((res) => res.json()),
+])
+  .then(([lekcijeData, zadaciData]) => {
+    setLekcije(lekcijeData);
+
+    setZadaci(
+      zadaciData.map((z) => ({
+        id: z.id,
+        naziv: `Zadatak ${z.id}`,
+        opis: z.opis || "",
+        lekcija_id: z.lekcija_id,
+        tezina: z.tezina,
+        tip: z.tip,
+        lekcija:
+          lekcijeData.find((l) => l.id === z.lekcija_id)?.naziv ||
+          `Lekcija ${z.lekcija_id}`,
+      }))
+    );
+  })
+  .catch(() => {});
   }, [token]);
 
   const obrisiKorisnika = async (id) => {
@@ -241,7 +283,7 @@ function Admin() {
                   onClick={() => {
                     setShowLessonForm(!showLessonForm);
                     setEditLessonId(null);
-                    setNovaLekcija({ naziv: "", redoslijed: "", opis: "" });
+                    setNovaLekcija({ naziv: "", redoslijed: "", opis: "", ciljevi: "" });
                   }}
                 >
                   <PlusCircle size={18} />
@@ -251,6 +293,9 @@ function Admin() {
 
               {showLessonForm && (
                 <div className="add-form">
+                  <h4 className="form-title">
+                    {editLessonId ? "Izmjena lekcije" : "Nova lekcija"}
+                  </h4>
                   <input
                     type="text"
                     placeholder="Naziv lekcije"
@@ -264,33 +309,111 @@ function Admin() {
                     onChange={(e) => setNovaLekcija({ ...novaLekcija, redoslijed: e.target.value })}
                   />
                   <input
+                    placeholder="Trajanje npr. 30 min"
+                    value={novaLekcija.trajanje}
+                    onChange={(e) =>
+                      setNovaLekcija({ ...novaLekcija, trajanje: e.target.value })
+                    }
+                  />
+                  <select
+                    value={novaLekcija.nivo}
+                    onChange={(e) =>
+                      setNovaLekcija({ ...novaLekcija, nivo: e.target.value })
+                    }
+                  >
+                    <option value="">Odaberi nivo</option>
+                    <option value="Početnik">Početnik</option>
+                    <option value="Srednji">Srednji</option>
+                    <option value="Napredni">Napredni</option>
+                  </select>
+                  <textarea
                     type="text"
-                    placeholder="Opis"
+                    placeholder="Opis lekcije"
                     value={novaLekcija.opis}
                     onChange={(e) => setNovaLekcija({ ...novaLekcija, opis: e.target.value })}
                   />
+                  <textarea
+                    placeholder="Ciljevi lekcije - svaki cilj u novi red"
+                    value={novaLekcija.ciljevi}
+                    onChange={(e) =>
+                      setNovaLekcija({ ...novaLekcija, ciljevi: e.target.value })
+                    }
+                  />
+                  <textarea
+                    placeholder="Primjer koda"
+                    value={novaLekcija.primjer_koda}
+                    onChange={(e) =>
+                      setNovaLekcija({ ...novaLekcija, primjer_koda: e.target.value })
+                    }
+                  />
+
+                  <textarea
+                    placeholder="Objašnjenje koda"
+                    value={novaLekcija.objasnjenje_koda}
+                    onChange={(e) =>
+                      setNovaLekcija({ ...novaLekcija, objasnjenje_koda: e.target.value })
+                    }
+                  />
                   <button
                     className="filter-btn"
-                    onClick={() => {
+                    onClick={async () => {
                       if (!novaLekcija.naziv || !novaLekcija.redoslijed || !novaLekcija.opis) {
                         alert("Popunite sva polja za lekciju.");
                         return;
                       }
+                      const lekcijaZaSlanje = {
+                        naziv: novaLekcija.naziv,
+                        redoslijed: Number(novaLekcija.redoslijed),
+                        opis: novaLekcija.opis,
+                        ciljevi: novaLekcija.ciljevi,
+                        ciljevi: novaLekcija.ciljevi,
+                        primjer_koda: novaLekcija.primjer_koda,
+                        objasnjenje_koda: novaLekcija.objasnjenje_koda,
+                        trajanje: novaLekcija.trajanje,
+                        nivo: novaLekcija.nivo,
+                      };
+
                       if (editLessonId) {
+                        const res = await fetch(`http://localhost:8000/lekcije/${editLessonId}`, {
+                          method: "PUT",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                          },
+                          body: JSON.stringify(lekcijaZaSlanje),
+                        });
+
+                        if (!res.ok) {
+                          alert("Greška pri izmjeni lekcije.");
+                          return;
+                        }
+
+                        const izmijenjenaLekcija = await res.json();
+
                         setLekcije((prev) =>
-                          prev.map((l) =>
-                            l.id === editLessonId
-                              ? { ...l, naziv: novaLekcija.naziv, redoslijed: novaLekcija.redoslijed, opis: novaLekcija.opis }
-                              : l
-                          )
+                          prev.map((l) => (l.id === editLessonId ? izmijenjenaLekcija : l))
                         );
                       } else {
-                        setLekcije((prev) => [
-                          ...prev,
-                          { id: prev.length + 1, naziv: novaLekcija.naziv, redoslijed: novaLekcija.redoslijed, opis: novaLekcija.opis },
-                        ]);
+                        const res = await fetch("http://localhost:8000/lekcije/", {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                          },
+                          body: JSON.stringify(lekcijaZaSlanje),
+                        });
+
+                        if (!res.ok) {
+                          alert("Greška pri dodavanju lekcije.");
+                          return;
+                        }
+
+                        const dodataLekcija = await res.json();
+
+                        setLekcije((prev) => [...prev, dodataLekcija]);
                       }
-                      setNovaLekcija({ naziv: "", redoslijed: "", opis: "" });
+
+                      setNovaLekcija({ naziv: "", redoslijed: "", opis: "", ciljevi: "" });
                       setEditLessonId(null);
                       setShowLessonForm(false);
                     }}
@@ -302,7 +425,7 @@ function Admin() {
                     onClick={() => {
                       setShowLessonForm(false);
                       setEditLessonId(null);
-                      setNovaLekcija({ naziv: "", redoslijed: "", opis: "" });
+                      setNovaLekcija({ naziv: "", redoslijed: "", opis: "", ciljevi: "" });
                     }}
                   >
                     Odustani
@@ -338,7 +461,16 @@ function Admin() {
                               className="filter-btn"
                               onClick={() => {
                                 setEditLessonId(l.id);
-                                setNovaLekcija({ naziv: l.naziv, redoslijed: l.redoslijed, opis: l.opis });
+                                setNovaLekcija({
+                                  naziv: l.naziv,
+                                  redoslijed: l.redoslijed,
+                                  opis: l.opis || "",
+                                  ciljevi: l.ciljevi || "",
+                                  primjer_koda: l.primjer_koda || "",
+                                  objasnjenje_koda: l.objasnjenje_koda || "",
+                                  trajanje: l.trajanje || "",
+                                  nivo: l.nivo || "",
+                                });
                                 setShowLessonForm(true);
                               }}
                             >
@@ -369,7 +501,13 @@ function Admin() {
                   onClick={() => {
                     setShowTaskForm(!showTaskForm);
                     setEditTaskId(null);
-                    setNoviZadatak({ naziv: "", lekcija: "" });
+                    setNoviZadatak({
+                      naziv: "",
+                      opis: "",
+                      lekcija_id: "",
+                      tezina: "laka",
+                      tip: "teorija",
+                    });
                   }}
                 >
                   <PlusCircle size={18} />
@@ -379,40 +517,221 @@ function Admin() {
 
               {showTaskForm && (
                 <div className="add-form">
+                  <h4 className="form-title">
+                    {editTaskId ? "Izmjena zadatka" : "Novi zadatak"}
+                  </h4>
                   <input
                     type="text"
                     placeholder="Naziv zadatka"
                     value={noviZadatak.naziv}
-                    onChange={(e) => setNoviZadatak({ ...noviZadatak, naziv: e.target.value })}
+                    onChange={(e) =>
+                      setNoviZadatak({
+                        ...noviZadatak,
+                        naziv: e.target.value,
+                      })
+                    }
                   />
-                  <input
-                    type="text"
-                    placeholder="Lekcija"
-                    value={noviZadatak.lekcija}
-                    onChange={(e) => setNoviZadatak({ ...noviZadatak, lekcija: e.target.value })}
+                  <textarea
+                    placeholder="Opis zadatka"
+                    value={noviZadatak.opis}
+                    onChange={(e) =>
+                      setNoviZadatak({
+                        ...noviZadatak,
+                        opis: e.target.value,
+                      })
+                    }
                   />
+                  <select
+                    value={noviZadatak.lekcija_id}
+                    onChange={(e) =>
+                      setNoviZadatak({ ...noviZadatak, lekcija_id: e.target.value })
+                    }
+                  >
+                    <option value="">Izaberi lekciju</option>
+                    {lekcije.map((l) => (
+                      <option key={l.id} value={l.id}>
+                        {l.naziv}
+                      </option>
+                    ))}
+                  </select>
+
+                  <select
+                    value={noviZadatak.tezina}
+                    onChange={(e) =>
+                      setNoviZadatak({ ...noviZadatak, tezina: e.target.value })
+                    }
+                  >
+                    <option value="laka">Laka</option>
+                    <option value="srednja">Srednja</option>
+                    <option value="teska">Teška</option>
+                  </select>
+
+                  <select
+                    value={noviZadatak.tip}
+                    onChange={(e) =>
+                      setNoviZadatak({ ...noviZadatak, tip: e.target.value })
+                    }
+                  >
+                    <option value="teorija">Teorija</option>
+                    <option value="prakticni">Praktični</option>
+                    <option value="quiz">Quiz</option>
+                  </select>
+
+                  {noviZadatak.tip === "quiz" && (
+                    <>
+                      <input
+                        type="text"
+                        placeholder="Odgovor A"
+                        value={noviZadatak.odgovor_a}
+                        onChange={(e) =>
+                          setNoviZadatak({ ...noviZadatak, odgovor_a: e.target.value })
+                        }
+                      />
+
+                      <input
+                        type="text"
+                        placeholder="Odgovor B"
+                        value={noviZadatak.odgovor_b}
+                        onChange={(e) =>
+                          setNoviZadatak({ ...noviZadatak, odgovor_b: e.target.value })
+                        }
+                      />
+
+                      <input
+                        type="text"
+                        placeholder="Odgovor C"
+                        value={noviZadatak.odgovor_c}
+                        onChange={(e) =>
+                          setNoviZadatak({ ...noviZadatak, odgovor_c: e.target.value })
+                        }
+                      />
+
+                      <input
+                        type="text"
+                        placeholder="Odgovor D"
+                        value={noviZadatak.odgovor_d}
+                        onChange={(e) =>
+                          setNoviZadatak({ ...noviZadatak, odgovor_d: e.target.value })
+                        }
+                      />
+
+                      <select
+                        value={noviZadatak.tacan_odgovor}
+                        onChange={(e) =>
+                          setNoviZadatak({
+                            ...noviZadatak,
+                            tacan_odgovor: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="">Tačan odgovor</option>
+                        <option value="0">A</option>
+                        <option value="1">B</option>
+                        <option value="2">C</option>
+                        <option value="3">D</option>
+                      </select>
+                    </>
+                  )}
+
+                  {noviZadatak.tip === "prakticni" && (
+                    <>
+                      <textarea
+                        placeholder="Rješenje zadatka"
+                        value={noviZadatak.rjesenje}
+                        onChange={(e) =>
+                          setNoviZadatak({ ...noviZadatak, rjesenje: e.target.value })
+                        }
+                      />
+
+                      <textarea
+                        placeholder="Očekivani izlaz"
+                        value={noviZadatak.ocekivani_izlaz}
+                        onChange={(e) =>
+                          setNoviZadatak({ ...noviZadatak, ocekivani_izlaz: e.target.value })
+                        }
+                      />
+                    </>
+                  )}
                   <button
                     className="filter-btn"
-                    onClick={() => {
-                      if (!noviZadatak.naziv || !noviZadatak.lekcija) {
-                        alert("Popunite sva polja za zadatak.");
+                    onClick={async () => {
+                      if (!noviZadatak.naziv || !noviZadatak.lekcija_id) {
+                        alert("Popunite naziv i izaberite lekciju.");
                         return;
                       }
+                      const zadatakZaSlanje = {
+                        lekcija_id: Number(noviZadatak.lekcija_id),
+                        naziv: noviZadatak.naziv,
+                        opis: noviZadatak.opis,
+                        tezina: noviZadatak.tezina,
+                        tip: noviZadatak.tip,
+
+                        odgovor_a: noviZadatak.odgovor_a,
+                        odgovor_b: noviZadatak.odgovor_b,
+                        odgovor_c: noviZadatak.odgovor_c,
+                        odgovor_d: noviZadatak.odgovor_d,
+                        tacan_odgovor:
+                          noviZadatak.tacan_odgovor === ""
+                            ? null
+                            : Number(noviZadatak.tacan_odgovor),
+                        
+                        rjesenje: noviZadatak.rjesenje,
+                        ocekivani_izlaz: noviZadatak.ocekivani_izlaz,
+                      };
+
+                      const url = editTaskId
+                        ? `http://localhost:8000/zadaci/${editTaskId}`
+                        : "http://localhost:8000/zadaci/";
+
+                      const res = await fetch(url, {
+                        method: editTaskId ? "PUT" : "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                          Authorization: `Bearer ${token}`,
+                        },
+                        body: JSON.stringify(zadatakZaSlanje),
+                      });
+
+                      if (!res.ok) {
+                        alert(editTaskId ? "Greška pri izmjeni zadatka." : "Greška pri dodavanju zadatka.");
+                        return;
+                      }
+
+                      const sacuvaniZadatak = await res.json();
+
+                      const zadatakZaTabelu = {
+                        id: sacuvaniZadatak.id,
+                        naziv: noviZadatak.naziv,
+                        lekcija_id: Number(noviZadatak.lekcija_id),
+                        opis: sacuvaniZadatak.opis || noviZadatak.opis,
+                        tezina: noviZadatak.tezina,
+                        tip: noviZadatak.tip,
+                        lekcija:
+                          lekcije.find((l) => l.id === Number(noviZadatak.lekcija_id))?.naziv || "",
+                      };
+
                       if (editTaskId) {
                         setZadaci((prev) =>
-                          prev.map((z) =>
-                            z.id === editTaskId
-                              ? { ...z, naziv: noviZadatak.naziv, lekcija: noviZadatak.lekcija }
-                              : z
-                          )
+                          prev.map((z) => (z.id === editTaskId ? zadatakZaTabelu : z))
                         );
                       } else {
-                        setZadaci((prev) => [
-                          ...prev,
-                          { id: prev.length + 1, naziv: noviZadatak.naziv, lekcija: noviZadatak.lekcija },
-                        ]);
+                        setZadaci((prev) => [...prev, zadatakZaTabelu]);
                       }
-                      setNoviZadatak({ naziv: "", lekcija: "" });
+
+                      setNoviZadatak({
+                        naziv: "",
+                        opis: "",
+                        odgovor_a: "",
+                        odgovor_b: "",
+                        odgovor_c: "",
+                        odgovor_d: "",
+                        tacan_odgovor: "",
+                        rjesenje: "",
+                        ocekivani_izlaz: "",
+                        lekcija_id: "",
+                        tezina: "laka",
+                        tip: "teorija",
+                      });
                       setEditTaskId(null);
                       setShowTaskForm(false);
                     }}
@@ -424,7 +743,20 @@ function Admin() {
                     onClick={() => {
                       setShowTaskForm(false);
                       setEditTaskId(null);
-                      setNoviZadatak({ naziv: "", lekcija: "" });
+                      setNoviZadatak({
+                        naziv: "",
+                        opis: "",
+                        odgovor_a: "",
+                        odgovor_b: "",
+                        odgovor_c: "",
+                        odgovor_d: "",
+                        tacan_odgovor: "",
+                        rjesenje: "",
+                        ocekivani_izlaz: "",
+                        lekcija_id: "",
+                        tezina: "laka",
+                        tip: "teorija",
+                      });
                     }}
                   >
                     Odustani
@@ -438,13 +770,16 @@ function Admin() {
                     <th>ID</th>
                     <th>Naziv</th>
                     <th>Lekcija</th>
+                    <th>Opis</th>
+                    <th>Težina</th>
+                    <th>Tip</th>
                     <th>Akcija</th>
                   </tr>
                 </thead>
                 <tbody>
                   {zadaci.length === 0 ? (
                     <tr>
-                      <td colSpan="4">Nema zadataka za prikaz.</td>
+                      <td colSpan="7">Nema zadataka za prikaz.</td>
                     </tr>
                   ) : (
                     zadaci.map((z) => (
@@ -452,14 +787,38 @@ function Admin() {
                         <td>{z.id}</td>
                         <td>{z.naziv}</td>
                         <td>{z.lekcija}</td>
+                        <td>{z.opis}</td>
+                        <td>{z.tezina}</td>
+                        <td>{z.tip}</td>
                         <td>
                           <div className="action-buttons">
                             <button
                               className="filter-btn"
                               onClick={() => {
                                 setEditTaskId(z.id);
-                                setNoviZadatak({ naziv: z.naziv, lekcija: z.lekcija });
+                                setNoviZadatak({
+                                  naziv: z.naziv,
+                                  opis: z.opis || "",
+
+                                  odgovor_a: z.odgovor_a || "",
+                                  odgovor_b: z.odgovor_b || "",
+                                  odgovor_c: z.odgovor_c || "",
+                                  odgovor_d: z.odgovor_d || "",
+                                  tacan_odgovor:
+                                    z.tacan_odgovor !== null && z.tacan_odgovor !== undefined
+                                      ? String(z.tacan_odgovor)
+                                      : "",
+                                  rjesenje: z.rjesenje || "",
+                                  ocekivani_izlaz: z.ocekivani_izlaz || "",
+                                  lekcija_id: z.lekcija_id || "",
+                                  tezina: z.tezina || "laka",
+                                  tip: z.tip || "teorija",
+                                });
                                 setShowTaskForm(true);
+                                window.scrollTo({
+                                top: 0,
+                                behavior: "smooth",
+                              });
                               }}
                             >
                               Izmijeni

@@ -27,6 +27,18 @@ def get_zadaci_po_lekciji(db: Session, lekcija_id: int):
 def create_zadatak(db: Session, zadatak: ZadatakCreate):
     novi_zadatak = Zadatak(
         lekcija_id=zadatak.lekcija_id,
+        naziv=zadatak.naziv,
+        opis=zadatak.opis,
+
+        odgovor_a=zadatak.odgovor_a,
+        odgovor_b=zadatak.odgovor_b,
+        odgovor_c=zadatak.odgovor_c,
+        odgovor_d=zadatak.odgovor_d,
+        tacan_odgovor=zadatak.tacan_odgovor,
+
+        rjesenje=zadatak.rjesenje,
+        ocekivani_izlaz=zadatak.ocekivani_izlaz,
+
         tezina=zadatak.tezina,
         tip=zadatak.tip
     )
@@ -34,10 +46,39 @@ def create_zadatak(db: Session, zadatak: ZadatakCreate):
 
 
 def update_zadatak(db: Session, zadatak: Zadatak, zadatak_update: ZadatakUpdate):
+    if zadatak_update.naziv is not None:
+        zadatak.naziv = zadatak_update.naziv
+
+    if zadatak_update.opis is not None:
+        zadatak.opis = zadatak_update.opis
+
+    if zadatak_update.odgovor_a is not None:
+        zadatak.odgovor_a = zadatak_update.odgovor_a
+
+    if zadatak_update.odgovor_b is not None:
+        zadatak.odgovor_b = zadatak_update.odgovor_b
+
+    if zadatak_update.odgovor_c is not None:
+        zadatak.odgovor_c = zadatak_update.odgovor_c
+
+    if zadatak_update.odgovor_d is not None:
+        zadatak.odgovor_d = zadatak_update.odgovor_d
+
+    if zadatak_update.tacan_odgovor is not None:
+        zadatak.tacan_odgovor = zadatak_update.tacan_odgovor
+
+    if zadatak_update.rjesenje is not None:
+        zadatak.rjesenje = zadatak_update.rjesenje
+
+    if zadatak_update.ocekivani_izlaz is not None:
+        zadatak.ocekivani_izlaz = zadatak_update.ocekivani_izlaz
+
     if zadatak_update.tezina is not None:
         zadatak.tezina = zadatak_update.tezina
+
     if zadatak_update.tip is not None:
         zadatak.tip = zadatak_update.tip
+
     return zadatak_repository.update_zadatak(db, zadatak)
 
 
