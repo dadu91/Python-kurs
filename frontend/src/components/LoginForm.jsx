@@ -30,6 +30,8 @@ function LoginForm() {
       const data = await res.json();
       const token = data.access_token;
       localStorage.setItem("token", token);
+      // Očisti staru sliku da novi korisnik ne vidi sliku prethodnog
+      localStorage.removeItem("profileImage");
 
       // Dohvati ulogu korisnika
       const korisnikRes = await fetch(`http://localhost:8000/korisnik/pretraga/username?username=${username}`, {

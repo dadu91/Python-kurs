@@ -36,22 +36,34 @@ def citaj_zadatak_korisnik_preko_tacno(tacno: bool, db: Session = Depends(get_db
 def citaj_tacne_zadatke_korisnika(korisnik_id: int, db: Session = Depends(get_db), current_user: Korisnik = Depends(get_current_user)):
     return zadatak_korisnik_repository.get_tacni_zadaci_by_korisnik(db, korisnik_id)
 
-@router.get("/greske-po-korisniku/{korisnik_id}", response_model=List[GreskaKorisnikaOut])
-def citaj_greske_korisnika(korisnik_id: int, db: Session = Depends(get_db), current_user: Korisnik = Depends(get_current_user)):
-    rezultati = zadatak_korisnik_repository.get_greske_by_korisnik(db, korisnik_id)
-    greske = []
-    for zk, g, z, l in rezultati:
-        greske.append(GreskaKorisnikaOut(
-            id=zk.id,
-            tip_greske=g.tip_greske,
-            opis=g.opis,
-            datum=zk.datum,
-            zadatak_id=zk.zadatak_id,
-            zadatak_redoslijed=z.redoslijed,
-            lekcija_id=l.id,
-            lekcija_naziv=l.naziv
-        ))
-    return greske
+@router.get("/aktivnost/sedmica/{korisnik_id}")
+def aktivnost_sedmica(korisnik_id: int, db: Session = Depends(get_db), current_user: Korisnik = Depends(get_current_user)):
+    from datetime import datetime, timedelta
+    data = zadatak_korisnik_repository.get_aktivnost_sedmica(db, korisnik_id)
+    aktivnost_map = {str(row.dan): row.broj for row in data}
+    names = ["Pon", "Uto", "Sri", "Čet", "Pet", "Sub", "Ned"]
+    result = []
+    for i in range(6, -1, -1):
+        dan = (datetime.now() - timedelta(days=i)).date()
+        result.append({"day": names[dan.weekday()], "value": aktivnost_map.get(str(dan), 0)})
+    return result
+
+@router.get("/netacni/po-korisnik/{korisnik_id}", response_model=List[ZadatakKorisnikOut])
+def citaj_netacne_zadatke_korisnika(korisnik_id: int, db: Session = Depends(get_db), current_user: Korisnik = Depends(get_current_user)):
+    return zadatak_korisnik_repository.get_netacni_zadaci_by_korisnik(db, korisnik_id)
+
+@router.get("/greske/po-korisnik/{korisnik_id}")
+def greske_korisnika(korisnik_id: int, db: Session = Depends(get_db), current_user: Korisnik = Depends(get_current_user)):
+    data = zadatak_korisnik_repository.get_greske_by_korisnik(db, korisnik_id)
+    return [
+        {
+            "tip_greske": r.tip_greske,
+            "opis": r.opis,
+            "broj": r.broj,
+            "zadnji_put": str(r.zadnji_put) if r.zadnji_put else None,
+        }
+        for r in data
+    ]
 
 @router.post("/", response_model=ZadatakKorisnikOut)
 def kreiraj_zadatak_korisnik(zadatak_korisnik: ZadatakKorisnikCreate, db: Session = Depends(get_db), current_user: Korisnik = Depends(get_current_user)):
