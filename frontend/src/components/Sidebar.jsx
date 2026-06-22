@@ -6,12 +6,12 @@ function Sidebar({ activeTab, setActiveTab }) {
   const navigate = useNavigate();
 
   const menu = [
-    { id: "lessons", icon: <Home size={18} />, label: "Dashboard" },
-    { id: "points", icon: <Trophy size={18} />, label: "Statistika" },
-    { id: "current", icon: <BookOpen size={18} />, label: "Trenutna" },
-    { id: "errors", icon: <AlertCircle size={18} />, label: "Greške" },
-    { id: "profile", icon: <User size={18} />, label: "Profil" },
-    { id: "settings", icon: <Settings size={18} />, label: "Podešavanja" },
+    { id: "lessons", icon: <Home size={18} />, label: "Dashboard", path: "/" },
+    { id: "progress", icon: <Trophy size={18} />, label: "Statistika", path: "/napredak" },
+    { id: "current", icon: <BookOpen size={18} />, label: "Trenutna", path: "/?tab=current" },
+    { id: "errors", icon: <AlertCircle size={18} />, label: "Greške", path: "/?tab=errors" },
+    { id: "profile", icon: <User size={18} />, label: "Profil", path: "/profile" },
+    { id: "settings", icon: <Settings size={18} />, label: "Podešavanja", path: "/settings" },
   ];
 
   return (
@@ -23,7 +23,7 @@ function Sidebar({ activeTab, setActiveTab }) {
             className={`side-icon ${activeTab === item.id ? "active" : ""}`}
             onClick={() => {
               setActiveTab(item.id);
-              navigate(item.id === "profile" ? "/profile" : `/?tab=${item.id}`);
+              navigate(item.path);
             }}
           >
             <div className="icon-wrap">

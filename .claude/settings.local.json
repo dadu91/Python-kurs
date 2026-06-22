@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx --yes acorn --ecma2020 --module src/pages/Dashboard.jsx)",
+      "Bash(where node *)",
+      "Bash(where npx *)",
+      "PowerShell(Get-Command node -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Command npm -ErrorAction SilentlyContinue)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(git checkout *)",
+      "Bash(git fsck *)",
+      "Bash(cp .recovery/frontend/src/App.jsx                                   frontend/src/App.jsx)",
+      "Bash(cp .recovery/frontend/src/main.jsx                                  frontend/src/main.jsx)",
+      "Bash(cp .recovery/frontend/src/styles/global.css                         frontend/src/styles/global.css)",
+      "Bash(cp .recovery/frontend/src/pages/Dashboard.jsx                       frontend/src/pages/Dashboard.jsx)",
+      "Bash(cp .recovery/frontend/src/pages/Dashboard.css                       frontend/src/pages/Dashboard.css)",
+      "Bash(npm run *)",
+      "Bash(cd \"C:/Users/Korisnik/OneDrive/Desktop/KAKO GOD ZA SI\" && ls -la Python-kurs.zip 2>&1 && echo \"=== zip size ok ===\")",
+      "PowerShell($dest = \"C:\\\\Users\\\\Korisnik\\\\OneDrive\\\\Desktop\\\\KAKO GOD ZA SI\\\\_orig_zip\"; if \\(Test-Path $dest\\) { Remove-Item $dest -Recurse -Force }; Expand-Archive -Path \"C:\\\\Users\\\\Korisnik\\\\OneDrive\\\\Desktop\\\\KAKO GOD ZA SI\\\\Python-kurs.zip\" -DestinationPath $dest -Force; \"Raspakovano u: $dest\"; Get-ChildItem $dest | Select-Object Name)",
+      "PowerShell($dest = \"C:\\\\Users\\\\Korisnik\\\\OneDrive\\\\Desktop\\\\KAKO GOD ZA SI\\\\_orig_zip\"; if \\(Test-Path $dest\\) { Remove-Item $dest -Recurse -Force }; Expand-Archive -Path \"C:\\\\Users\\\\Korisnik\\\\OneDrive\\\\Desktop\\\\KAKO GOD ZA SI\\\\Python-kurs.zip\" -DestinationPath $dest -Force; \"OK raspakovano\"; Get-ChildItem $dest -Recurse -Directory | Where-Object { $_.Name -eq \"lessons\" -or $_.Name -eq \"pages\" } | Select-Object FullName)",
+      "Bash(find _orig_zip -type d \\\\\\( -name lessons -o -name pages \\\\\\))",
+      "Bash(find _orig_zip -path \"*src/lessons/*\" -name \"*.js\")",
+      "Bash(diff \"../_orig_zip/Python-kurs/frontend/src/pages/Lesson.jsx\" frontend/src/pages/Lesson.jsx)",
+      "Bash(diff \"../_orig_zip/Python-kurs/frontend/src/pages/Lesson.css\" frontend/src/pages/Lesson.css)",
+      "Bash(git ls-remote *)"
+    ]
+  }
+}

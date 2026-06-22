@@ -30,6 +30,43 @@ def get_tacni_zadaci_by_korisnik(db: Session, korisnik_id: int):
         ZadatakKorisnik.tacno == True
     ).all()
 
+def get_aktivnost_sedmica(db: Session, korisnik_id: int):
+    from datetime import datetime, timedelta
+    from sqlalchemy import func, cast, Date
+    sedam_dana = datetime.now() - timedelta(days=6)
+    return (
+        db.query(
+            cast(ZadatakKorisnik.datum, Date).label("dan"),
+            func.count(ZadatakKorisnik.id).label("broj")
+        )
+        .filter(ZadatakKorisnik.korisnik_id == korisnik_id, ZadatakKorisnik.datum >= sedam_dana)
+        .group_by(cast(ZadatakKorisnik.datum, Date))
+        .all()
+    )
+
+def get_netacni_zadaci_by_korisnik(db: Session, korisnik_id: int):
+    return db.query(ZadatakKorisnik).filter(
+        ZadatakKorisnik.korisnik_id == korisnik_id,
+        ZadatakKorisnik.tacno == False
+    ).all()
+
+def get_greske_by_korisnik(db: Session, korisnik_id: int):
+    from sqlalchemy import func
+    from models.greska import Greska
+    return (
+        db.query(
+            Greska.tip_greske.label("tip_greske"),
+            Greska.opis.label("opis"),
+            func.count(ZadatakKorisnik.id).label("broj"),
+            func.max(ZadatakKorisnik.datum).label("zadnji_put"),
+        )
+        .join(Greska, ZadatakKorisnik.greska_id == Greska.id)
+        .filter(ZadatakKorisnik.korisnik_id == korisnik_id, ZadatakKorisnik.tacno == False)
+        .group_by(Greska.tip_greske, Greska.opis)
+        .order_by(func.count(ZadatakKorisnik.id).desc())
+        .all()
+    )
+
 # POST
 def create_zadatak_korisnik(db: Session, zadatak_korisnik: ZadatakKorisnik):
     db.add(zadatak_korisnik)

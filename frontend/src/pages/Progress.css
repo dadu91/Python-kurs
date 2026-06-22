@@ -1,97 +1,252 @@
-.progress-section {
-  background: #f4f4f4;
-  border-radius: 24px;
-  padding: 24px;
+.prog-loading {
+  padding: 60px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.prog-empty {
+  color: #9ca3af;
+  font-size: 14px;
+  padding: 12px 0;
+}
+
+/* ── STAT KARTICE ─────────────────────────────────────────── */
+.prog-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
   margin-bottom: 20px;
 }
 
-.section-title {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: #222;
+.prog-stat {
+  border-radius: 20px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: white;
 }
 
+/* Identičan paleta kao Dashboard */
+.prog-stat.teal   { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+.prog-stat.orange { background: linear-gradient(135deg, #fb923c, #f97316); }
+.prog-stat.purple { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+.prog-stat.dark   { background: linear-gradient(135deg, #1f2937, #0d9488); }
+
+.prog-stat-label {
+  font-size: 13px;
+  opacity: 0.85;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.prog-stat-value {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* ── SECTION WRAPPER ──────────────────────────────────────── */
+.prog-section {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 22px;
+  padding: 24px 26px;
+  margin-bottom: 18px;
+}
+
+.prog-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.prog-badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0d9488;
+  background: #f0fdf9;
+  border: 1px solid #ccfbf1;
+  padding: 4px 14px;
+  border-radius: 999px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 18px;
+}
+
+/* ── PROGRESS BARS ────────────────────────────────────────── */
 .progress-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .progress-item-top {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.progress-item-name {
   font-size: 14px;
-  margin-bottom: 6px;
-  color: #333;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.done-dot {
+  background: linear-gradient(135deg, #14b8a6, #0d9488);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.progress-item-pct {
+  font-size: 13px;
+  color: #0d9488;
+  font-weight: 700;
 }
 
 .progress-track {
   height: 8px;
-  background: #e5e5e5;
-  border-radius: 10px;
+  background: #f3f4f6;
+  border-radius: 99px;
   overflow: hidden;
 }
 
 .progress-fill-blue {
   height: 100%;
-  background: linear-gradient(90deg, #3b82f6, #2563eb);
-  border-radius: 10px;
-  transition: width 0.4s ease;
+  background: linear-gradient(90deg, #14b8a6, #0d9488);
+  border-radius: 99px;
+  transition: width 0.6s ease;
 }
 
-.activity-chart {
+/* ── ACTIVITY CHART ───────────────────────────────────────── */
+.activity-chart-wrap {
+  position: relative;
+}
+
+.activity-chart-inner {
   display: flex;
   align-items: flex-end;
-  gap: 12px;
-  height: 120px;
-  padding-top: 10px;
+  gap: 8px;
+  height: 140px;
+  padding: 0 4px;
+  border-bottom: 2px solid #f3f4f6;
 }
 
 .activity-col {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 0;
   flex: 1;
 }
 
-.activity-bar {
-  width: 100%;
-  background: linear-gradient(180deg, #ff6a3d, #f97316);
-  border-radius: 8px 8px 0 0;
-  transition: height 0.4s ease;
-}
-
-.activity-day {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.badges-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 14px;
-}
-
-.badge-card {
-  border-radius: 16px;
-  padding: 16px;
+.activity-bar-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  height: 120px;
+  padding-bottom: 2px;
+}
+
+.activity-bar {
+  width: 60%;
+  max-width: 36px;
+  background: linear-gradient(180deg, #14b8a6, #0d9488);
+  border-radius: 99px;
+  min-height: 8px;
+  transition: height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 14px rgba(13, 148, 136, 0.25);
+}
+
+.activity-bar:hover {
+  background: linear-gradient(180deg, #2dd4bf, #14b8a6);
+  box-shadow: 0 6px 18px rgba(13, 148, 136, 0.35);
+}
+
+.activity-day-row {
+  display: flex;
   gap: 8px;
+  padding: 10px 4px 0;
+}
+
+.activity-day-label {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+/* ── BADGES ───────────────────────────────────────────────── */
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.badge-card {
+  border-radius: 18px;
+  padding: 18px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   position: relative;
+  border: 1px solid transparent;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
+}
+
+.badge-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 18px 18px 0 0;
 }
 
 .badge-card.earned {
-  background: white;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  background: #f8fffe;
+  border-color: #99f6e4;
+}
+
+.badge-card.earned::before {
+  background: linear-gradient(90deg, #14b8a6, #0d9488);
+}
+
+.badge-card.earned:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(13, 148, 136, 0.12);
 }
 
 .badge-card.locked {
-  background: #e5e5e5;
-  opacity: 0.6;
+  background: #fafafa;
+  border-color: #e5e7eb;
+  opacity: 0.55;
 }
 
 .badge-icon {
@@ -99,21 +254,37 @@
 }
 
 .badge-label {
-  font-size: 12px;
-  font-weight: 600;
-  text-align: center;
-  color: #333;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.badge-desc {
+  font-size: 11px;
+  color: #9ca3af;
+  line-height: 1.4;
 }
 
 .badge-lock {
-  font-size: 12px;
+  font-size: 13px;
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 10px;
+  right: 10px;
 }
 
-@media (max-width: 768px) {
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .prog-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .badges-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .prog-stats-grid {
+    grid-template-columns: 1fr;
   }
 }

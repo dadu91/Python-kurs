@@ -33,6 +33,7 @@ function Topbar() {
   const handleOdjava = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("uloga");
+    localStorage.removeItem("profileImage");
     navigate("/login");
   };
 
