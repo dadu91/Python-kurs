@@ -219,7 +219,7 @@ print(zbir)`,
       hint: "Možeš koristiti sum(brojevi), pa rezultat ispisati.",
       check: (code) =>
         code.includes("brojevi=[10,20,30,40]") &&
-        code.includes("sum(brojevi)") &&
+        (code.includes("sum(brojevi)") || (code.includes("zbir") && code.includes("+=") && code.includes("print("))) &&
         code.includes("print("),
     },
     {

@@ -51,6 +51,7 @@ function Lesson() {
 
   const [redoslijed, setRedoslijed] = useState(null);
   const [dbLekcija, setDbLekcija] = useState(null);
+  const [nextLessonId, setNextLessonId] = useState(null);
   const hardkodiranaLekcija = lessonsByRedoslijed[redoslijed];
 
 const lesson = hardkodiranaLekcija || (dbLekcija
@@ -101,12 +102,24 @@ const lesson = hardkodiranaLekcija || (dbLekcija
   const [uradjeniZadaci, setUradjeniZadaci] = useState(new Set());
   const [currentStep, setCurrentStep] = useState(0);
   const [maxStep, setMaxStep] = useState(0);
+  const [lessonAlreadyFinished, setLessonAlreadyFinished] = useState(false);
 
   const textareaRefs = useRef({});
   const cursorPos = useRef(null);
   const mainRef = useRef(null);
 
   useEffect(() => {
+    setFinished(false);
+    setLessonAlreadyFinished(false);
+    setMaxStep(0);
+    setCurrentStep(0);
+    setSelectedAnswers({});
+    setTaskCodes({});
+    setTaskResults({});
+    setTaskOutputs({});
+    setVjezbaKodovi({});
+    setVjezbaRezultati({});
+
     const token = localStorage.getItem("token");
 
     fetch(`http://localhost:8000/lekcije/${id}`, {
@@ -117,6 +130,16 @@ const lesson = hardkodiranaLekcija || (dbLekcija
         if (lekcija) {
           setDbLekcija(lekcija);
           setRedoslijed(lekcija.redoslijed);
+
+          fetch(`http://localhost:8000/lekcije/`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+            .then((r) => r.ok ? r.json() : [])
+            .then((sve) => {
+              const sledeca = sve.find((l) => l.redoslijed === lekcija.redoslijed + 1);
+              if (sledeca) setNextLessonId(sledeca.id);
+            })
+            .catch(() => {});
         }
       })
       .catch(() => {});
@@ -155,11 +178,23 @@ const lesson = hardkodiranaLekcija || (dbLekcija
         .then((data) => {
           if (Array.isArray(data) && data.some((zl) => zl.lekcija_id === parseInt(id))) {
             setFinished(true);
+            setLessonAlreadyFinished(true);
           }
         })
         .catch(() => {});
     });
   }, [id]);
+
+  useEffect(() => {
+    if (lessonAlreadyFinished && lesson) {
+      const totalSteps = 1
+        + (lesson.theoryBlocks?.length || 0)
+        + 1
+        + (lesson.codingTasks?.length > 0 ? 1 : 0)
+        + 1;
+      setMaxStep(totalSteps - 1);
+    }
+  }, [lessonAlreadyFinished, lesson]);
 
   const upisiZadatakKorisnik = async (redoslijed, tacno, tipGreske = null) => {
     const zadatakId = zadaciMapa[redoslijed];
@@ -831,15 +866,22 @@ const lesson = hardkodiranaLekcija || (dbLekcija
               </button>
 
               {finished && (
-                <div className="success-box">
-                  <Trophy size={22} />
-                  <span>
-                    Završio si lekciju. Mini provjere: {correctCount}/
-                    {lesson.questions.length}
-                    {hasCodingTasks &&
-                      `, kod zadaci: ${correctCodingTasksCount}/${codingTasksCount}`}
-                  </span>
-                </div>
+                <>
+                  <div className="success-box">
+                    <Trophy size={22} />
+                    <span>
+                      Završio si lekciju. Mini provjere: {correctCount}/
+                      {lesson.questions.length}
+                      {hasCodingTasks &&
+                        `, kod zadaci: ${correctCodingTasksCount}/${codingTasksCount}`}
+                    </span>
+                  </div>
+                  {nextLessonId && (
+                    <button className="next-lesson-btn" onClick={() => navigate(`/lekcije/${nextLessonId}`)}>
+                      Sljedeća lekcija →
+                    </button>
+                  )}
+                </>
               )}
             </section>
           )}

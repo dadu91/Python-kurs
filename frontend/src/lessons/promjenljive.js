@@ -41,7 +41,7 @@ print(type(x))  # ispisuje tip podatka`,
         placeholder: "Ovdje upiši kod...",
         hint: "Treba ti: grad = \"Sarajevo\" i ispod print(grad).",
         check: (code) =>
-          code.includes("grad") && code.includes("Sarajevo") && code.includes("print"),
+          code.includes("grad") && code.includes("sarajevo") && code.includes("print"),
       },
     },
     {

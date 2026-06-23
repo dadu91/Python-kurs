@@ -503,6 +503,24 @@
   font-weight: 800;
 }
 
+.next-lesson-btn {
+  margin-top: 16px;
+  padding: 12px 24px;
+  background: #4f6ef7;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.15s;
+}
+
+.next-lesson-btn:hover {
+  background: #3a56d4;
+  transform: translateY(-1px);
+}
+
 /* Uradjeni zadaci */
 .quiz-card-done {
   border: 1px solid #c9f5d8;

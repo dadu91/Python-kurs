@@ -166,260 +166,129 @@ function Dashboard() {
             <span className="hero-glow" />
           </section>
 
-          <section className="dashboard-stats">
-            <div className="dash-stat-card">
-              <div className="dash-stat-top">
-                <div className="dash-stat-icon teal"><BookOpen size={18} /></div>
-                <p>Završene lekcije</p>
+          {activeTab === "lessons" && (
+            <>
+              <div className="section-header">
+                <h2>Odaberi lekciju</h2>
+                <span>{lekcije.length} ukupno</span>
               </div>
-              <h2>{stats.zavrseneLekcije}</h2>
-              <div className="dash-stat-foot">
-                <div className="dash-stat-bar teal">
-                  <span style={{ width: `${lekcije.length ? Math.round((stats.zavrseneLekcije / lekcije.length) * 100) : 0}%` }} />
+
+              {lekcije.length > 0 ? (
+                <div className="top-cards">
+                  {lekcije.map((l) => {
+                    const zavrsena = zavrseneLekcije.some((z) => z.lekcija_id === l.id);
+                    return (
+                      <CourseCard
+                        key={l.id}
+                        id={l.id}
+                        badge={`Lekcija ${l.redoslijed}`}
+                        title={l.naziv}
+                        progress={zavrsena ? "1/1" : "0/1"}
+                        zavrsena={zavrsena}
+                        type={colorByRedoslijed[l.redoslijed] || "intro"}
+                      />
+                    );
+                  })}
                 </div>
-                <small>{stats.zavrseneLekcije} / {lekcije.length || 0} lekcija</small>
+              ) : (
+                <div className="empty-card">Lekcije trenutno nisu učitane.</div>
+              )}
+
+              <div className="lessons-section">
+                <h2>Sve lekcije</h2>
+                <LearningPath lekcije={lekcije} />
               </div>
-            </div>
+            </>
+          )}
 
-            <div className="dash-stat-card">
-              <div className="dash-stat-top">
-                <div className="dash-stat-icon orange"><Star size={18} /></div>
-                <p>Ukupni bodovi</p>
-              </div>
-              <h2>{stats.bodovi}</h2>
-              <div className="dash-stat-foot">
-                <small className="dash-stat-hint">Skupljeno kroz zadatke</small>
-              </div>
-            </div>
-
-            <div className="dash-stat-card">
-              <div className="dash-stat-top">
-                <div className="dash-stat-icon purple"><TrendingUp size={18} /></div>
-                <p>Trenutni nivo</p>
-              </div>
-              <h2>{stats.nivo}</h2>
-              <div className="dash-stat-foot">
-                <small className="dash-stat-hint">Samo nastavi tako!</small>
-              </div>
-            </div>
-          </section>
-
-          {activeTab !== "errors" && <div className="filter-row">
-            <button
-              onClick={() => setActiveTab("lessons")}
-              className={`filter-btn ${activeTab === "lessons" ? "active" : ""}`}
-            >
-              Lekcije
-            </button>
-
-            <button
-              onClick={() => setActiveTab("points")}
-              className={`filter-btn ${activeTab === "points" ? "active" : ""}`}
-            >
-              Moj napredak
-            </button>
-
-            <button
-              onClick={() => setActiveTab("current")}
-              className={`filter-btn ${activeTab === "current" ? "active" : ""}`}
-            >
-              Trenutna lekcija
-            </button>
-
-            <button
-              onClick={() => setActiveTab("errors")}
-              className={`filter-btn ${activeTab === "errors" ? "active" : ""}`}
-            >
-              Greške
-            </button>
-          </div>
-
-          <div className="tab-content" key={activeTab}>
-            {activeTab === "lessons" && (
-              <>
-                <div className="section-header">
-                  <h2>Odaberi lekciju</h2>
-                  <span>{lekcije.length} ukupno</span>
+          {activeTab === "current" && (
+            <div className="current-card">
+              <div className="current-card-left">
+                <div className="current-icon-circle">
+                  <BookOpen size={30} />
                 </div>
-
-                {lekcije.length > 0 ? (
-                  <div className="top-cards">
-                    {lekcije.map((l) => {
-                      const zavrsena = zavrseneLekcije.some((z) => z.lekcija_id === l.id);
-                      return (
-                        <CourseCard
-                          key={l.id}
-                          id={l.id}
-                          badge={`Lekcija ${l.redoslijed}`}
-                          title={l.naziv}
-                          progress={zavrsena ? "1/1" : "0/1"}
-                          zavrsena={zavrsena}
-                          type={colorByRedoslijed[l.redoslijed] || "intro"}
-                        />
-                      );
-                    })}
-                  </div>
+              </div>
+              <div className="current-card-right">
+                <span className="current-label">Trenutna lekcija</span>
+                <h2 className="current-title">{trenutnaLekcijaNaziv}</h2>
+                {trenutnaLekcija ? (
+                  <>
+                    <p className="current-desc">Nastavi gdje si stao i završi lekciju.</p>
+                    <button className="current-btn" onClick={otvoriTrenutnuLekciju}>
+                      <Play size={14} /> Nastavi lekciju <ArrowRight size={14} />
+                    </button>
+                  </>
                 ) : (
-                  <div className="empty-card">Lekcije trenutno nisu učitane.</div>
+                  <>
+                    <p className="current-desc">Kada započneš lekciju, prikazaće se ovdje.</p>
+                    <button className="current-btn" onClick={otvoriTrenutnuLekciju}>
+                      <Play size={14} /> Počni prvu lekciju <ArrowRight size={14} />
+                    </button>
+                  </>
                 )}
+              </div>
+            </div>
+          )}
 
-                <div className="lessons-section">
-                  <h2>Sve lekcije</h2>
-                  <LearningPath lekcije={lekcije} />
+          {activeTab === "errors" && (
+            <div className="errors-wrap">
+              <div className="errors-summary">
+                <div className="err-sum-card red">
+                  <div className="err-sum-icon"><AlertTriangle size={20} /></div>
+                  <div>
+                    <span className="err-sum-label">Ukupno grešaka</span>
+                    <h2 className="err-sum-value">{ukupnoGresaka || brojNetacnih}</h2>
+                  </div>
                 </div>
-              </>
-            )}
-
-            {activeTab === "points" && (
-              <div className="stats-box">
-                <h2>Moj napredak</h2>
-
-                <div className="stats-grid">
-                  <div className="stat-card blue">
-                    <span>Ukupni bodovi</span>
-                    <h2>{stats.bodovi}</h2>
+                <div className="err-sum-card amber">
+                  <div className="err-sum-icon"><Target size={20} /></div>
+                  <div>
+                    <span className="err-sum-label">Tipova grešaka</span>
+                    <h2 className="err-sum-value">{greske.length}</h2>
                   </div>
-
-                  <div className="stat-card orange">
-                    <span>Završene lekcije</span>
-                    <h2>{stats.zavrseneLekcije}</h2>
-                  </div>
-
-                  <div className="stat-card purple">
-                    <span>Nivo</span>
-                    <h2>{stats.nivo}</h2>
+                </div>
+                <div className="err-sum-card green">
+                  <div className="err-sum-icon"><CheckCircle2 size={20} /></div>
+                  <div>
+                    <span className="err-sum-label">Netačni pokušaji</span>
+                    <h2 className="err-sum-value">{brojNetacnih}</h2>
                   </div>
                 </div>
               </div>
-            )}
 
-            {activeTab === "errors" && (
-              <div className="errors-box">
-                <h2>Moje greške</h2>
-                {greske.length === 0 ? (
-                  <div className="empty-card">Nema zabilježenih grešaka. Odlično!</div>
-                ) : (
-                  <div className="errors-list">
-                    {greske.map((g) => (
-                      <div
-                        key={g.id}
-                        className="error-item"
-                        onClick={() => navigate(`/lekcije/${g.lekcija_id}#zadatak-${g.zadatak_redoslijed}`)}
-                        title={`Idi na: ${g.lekcija_naziv} — Zadatak ${g.zadatak_redoslijed}`}
-                      >
-                        <div className="error-badge">{g.tip_greske}</div>
-                        <div className="error-info">
-                          <p className="error-opis">{g.opis}</p>
-                          <div className="error-meta">
-                            <span className="error-lekcija">
-                              {g.lekcija_naziv} — Zadatak {g.zadatak_redoslijed}
-                            </span>
-                            <span className="error-datum">
-                              {new Date(g.datum).toLocaleDateString("bs-BA", {
-                                day: "2-digit", month: "2-digit", year: "numeric",
-                                hour: "2-digit", minute: "2-digit",
-                              })}
-                            </span>
-                          </div>
-                        </div>
+              <div className="section-header" style={{ marginTop: 22 }}>
+                <h2>Najčešće greške</h2>
+                <span>{greske.length} tipova</span>
+              </div>
+
+              {greske.length > 0 ? (
+                <div className="errors-grid">
+                  {greske.map((g, i) => (
+                    <div className="error-card" key={i}>
+                      <div className="error-card-head">
+                        <div className="error-icon-box"><AlertTriangle size={18} /></div>
+                        <span className="error-type">{g.tip_greske}</span>
+                        <span className="error-count">{g.broj}×</span>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === "current" && (
-              <div className="current-card">
-                <div className="current-card-left">
-                  <div className="current-icon-circle">
-                    <BookOpen size={30} />
-                  </div>
-                </div>
-                <div className="current-card-right">
-                  <span className="current-label">Trenutna lekcija</span>
-                  <h2 className="current-title">{trenutnaLekcijaNaziv}</h2>
-
-                  {trenutnaLekcija ? (
-                    <>
-                      <p className="current-desc">Nastavi gdje si stao i završi lekciju.</p>
-                      <button className="current-btn" onClick={otvoriTrenutnuLekciju}>
-                        <Play size={14} /> Nastavi lekciju <ArrowRight size={14} />
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <p className="current-desc">Kada započneš lekciju, prikazaće se ovdje.</p>
-                      <button className="current-btn" onClick={otvoriTrenutnuLekciju}>
-                        <Play size={14} /> Počni prvu lekciju <ArrowRight size={14} />
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {activeTab === "errors" && (
-              <div className="errors-wrap">
-                <div className="errors-summary">
-                  <div className="err-sum-card red">
-                    <div className="err-sum-icon"><AlertTriangle size={20} /></div>
-                    <div>
-                      <span className="err-sum-label">Ukupno grešaka</span>
-                      <h2 className="err-sum-value">{ukupnoGresaka || brojNetacnih}</h2>
+                      {g.opis && <p className="error-desc">{g.opis}</p>}
+                      {g.zadnji_put && (
+                        <span className="error-date">
+                          Posljednji put: {String(g.zadnji_put).slice(0, 10)}
+                        </span>
+                      )}
                     </div>
-                  </div>
-
-                  <div className="err-sum-card amber">
-                    <div className="err-sum-icon"><Target size={20} /></div>
-                    <div>
-                      <span className="err-sum-label">Tipova grešaka</span>
-                      <h2 className="err-sum-value">{greske.length}</h2>
-                    </div>
-                  </div>
-
-                  <div className="err-sum-card green">
-                    <div className="err-sum-icon"><CheckCircle2 size={20} /></div>
-                    <div>
-                      <span className="err-sum-label">Netačni pokušaji</span>
-                      <h2 className="err-sum-value">{brojNetacnih}</h2>
-                    </div>
-                  </div>
+                  ))}
                 </div>
-
-                <div className="section-header" style={{ marginTop: 22 }}>
-                  <h2>Najčešće greške</h2>
-                  <span>{greske.length} tipova</span>
+              ) : (
+                <div className="errors-empty">
+                  <div className="errors-empty-icon"><CheckCircle2 size={36} /></div>
+                  <h3>Nema zabilježenih grešaka</h3>
+                  <p>Odlično! Riješi zadatke u lekcijama — ako pogriješiš, ovdje ćeš vidjeti šta da ponoviš.</p>
                 </div>
+              )}
+            </div>
+          )}
 
-                {greske.length > 0 ? (
-                  <div className="errors-grid">
-                    {greske.map((g, i) => (
-                      <div className="error-card" key={i}>
-                        <div className="error-card-head">
-                          <div className="error-icon-box"><AlertTriangle size={18} /></div>
-                          <span className="error-type">{g.tip_greske}</span>
-                          <span className="error-count">{g.broj}×</span>
-                        </div>
-                        {g.opis && <p className="error-desc">{g.opis}</p>}
-                        {g.zadnji_put && (
-                          <span className="error-date">
-                            Posljednji put: {String(g.zadnji_put).slice(0, 10)}
-                          </span>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="errors-empty">
-                    <div className="errors-empty-icon"><CheckCircle2 size={36} /></div>
-                    <h3>Nema zabilježenih grešaka</h3>
-                    <p>Odlično! Riješi zadatke u lekcijama — ako pogriješiš, ovdje ćeš vidjeti šta da ponoviš.</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
         </main>
       </div>
     </div>
