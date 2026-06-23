@@ -43,8 +43,14 @@ import petlje from "../lessons/petlje";
 import promjenljive from "../lessons/promjenljive";
 import liste from "../lessons/liste";
 import stringovi from "../lessons/stringovi";
+import uslovi from "../lessons/uslovi";
+import funkcije from "../lessons/funkcije";
+import rjecnici from "../lessons/rjecnici";
+import skupoviTuple from "../lessons/skupovi_tuple";
+import moduli from "../lessons/moduli";
+import greske from "../lessons/greske";
 
-const lessonsByRedoslijed = { 1: uvod, 2: promjenljive, 3: liste, 4: petlje, 5: stringovi };
+const lessonsByRedoslijed = { 1: uvod, 2: promjenljive, 3: uslovi, 4: petlje, 5: liste, 6: stringovi, 7: funkcije, 8: skupoviTuple, 9: rjecnici, 10: moduli, 11: greske };
 function Lesson() {
   const navigate = useNavigate();
   const { id } = useParams();
@@ -111,7 +117,8 @@ const lesson = hardkodiranaLekcija || (dbLekcija
   useEffect(() => {
     setFinished(false);
     setLessonAlreadyFinished(false);
-    setMaxStep(0);
+    const savedMax = parseInt(localStorage.getItem(`lesson_progress_${id}`)) || 0;
+    setMaxStep(savedMax);
     setCurrentStep(0);
     setSelectedAnswers({});
     setTaskCodes({});
@@ -193,6 +200,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
         + (lesson.codingTasks?.length > 0 ? 1 : 0)
         + 1;
       setMaxStep(totalSteps - 1);
+      setFinished(true);
     }
   }, [lessonAlreadyFinished, lesson]);
 
@@ -288,7 +296,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
 
   const checkVjezbu = (blockIndex) => {
     const block = lesson.theoryBlocks[blockIndex];
-    const code = vjezbaKodovi[blockIndex] || "";
+    const code = vjezbaKodovi[blockIndex] !== undefined ? vjezbaKodovi[blockIndex] : (block.vjezbaSintakse.initialCode || "");
     const normalized = normalizeCode(code);
     const isCorrect = block.vjezbaSintakse.check(normalized);
     setVjezbaRezultati((prev) => ({
@@ -334,6 +342,8 @@ const lesson = hardkodiranaLekcija || (dbLekcija
   const isLastStep = currentStep === steps.length - 1;
 
   const canProceed = (() => {
+    if (lessonAlreadyFinished) return true;
+    if (currentStep < maxStep) return true;
     if (step.type === "goals") return true;
     if (step.type === "theory") {
       const block = lesson.theoryBlocks[step.index];
@@ -355,7 +365,11 @@ const lesson = hardkodiranaLekcija || (dbLekcija
     if (isLastStep) return;
     const next = currentStep + 1;
     setCurrentStep(next);
-    setMaxStep((m) => Math.max(m, next));
+    setMaxStep((m) => {
+      const newMax = Math.max(m, next);
+      localStorage.setItem(`lesson_progress_${id}`, newMax);
+      return newMax;
+    });
     if (mainRef.current) mainRef.current.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -470,19 +484,18 @@ const lesson = hardkodiranaLekcija || (dbLekcija
                         <textarea
                           className="code-input"
                           placeholder={block.vjezbaSintakse.placeholder}
-                          value={vjezbaKodovi[blockIndex] || ""}
-                          onChange={(e) =>
-                            setVjezbaKodovi((prev) => ({
-                              ...prev,
-                              [blockIndex]: e.target.value,
-                            }))
-                          }
+                          value={vjezbaKodovi[blockIndex] !== undefined ? vjezbaKodovi[blockIndex] : (block.vjezbaSintakse.initialCode || "")}
+                          onChange={(e) => {
+                            const initial = block.vjezbaSintakse.initialCode || "";
+                            const val = e.target.value.startsWith(initial) ? e.target.value : initial;
+                            setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: val }));
+                          }}
                           onKeyDown={(e) => {
                             const el = e.target;
                             const start = el.selectionStart;
                             const end = el.selectionEnd;
                             const code = el.value;
-                            const pairs = { "(": ")", '"': '"', "'": "'", "{": "}" };
+                            const pairs = { "(": ")", '"': '"', "'": "'", "{": "}", "[": "]" };
                             if (pairs[e.key]) {
                               e.preventDefault();
                               const newVal = code.substring(0, start) + e.key + pairs[e.key] + code.substring(end);
@@ -495,13 +508,28 @@ const lesson = hardkodiranaLekcija || (dbLekcija
                               const newVal = code.substring(0, start) + "    " + code.substring(end);
                               setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
                             }
+                            if (e.key === "Backspace" && start === end && code.substring(start - 4, start) === "    ") {
+                              e.preventDefault();
+                              const newVal = code.substring(0, start - 4) + code.substring(end);
+                              setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
+                              setTimeout(() => { el.selectionStart = start - 4; el.selectionEnd = start - 4; }, 0);
+                            }
                             if (e.key === "Enter") {
                               e.preventDefault();
                               const currentLine = code.substring(0, start).split("\n").pop();
                               const indent = currentLine.match(/^(\s*)/)[1];
                               const extraIndent = currentLine.trimEnd().endsWith(":") ? "    " : "";
-                              const newVal = code.substring(0, start) + "\n" + indent + extraIndent + code.substring(end);
-                              setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
+                              if (code[start - 1] === "{" && code[start] === "}") {
+                                const newVal = code.substring(0, start) + "\n" + indent + "    " + "\n" + indent + code.substring(end);
+                                const newPos = start + 1 + indent.length + 4;
+                                setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
+                                setTimeout(() => { el.selectionStart = newPos; el.selectionEnd = newPos; }, 0);
+                              } else {
+                                const newVal = code.substring(0, start) + "\n" + indent + extraIndent + code.substring(end);
+                                const newPos = start + 1 + indent.length + extraIndent.length;
+                                setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
+                                setTimeout(() => { el.selectionStart = newPos; el.selectionEnd = newPos; }, 0);
+                              }
                             }
                           }}
                         />
@@ -607,7 +635,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
                       {uradjeniZadaci.has(zadaciMapa[task.redoslijed]) && <CheckCircle2 size={18} style={{ color: "#23a455", marginRight: "8px", display: "inline" }} />}
                       {task.title}
                     </h3>
-                    <p>{task.description}</p>
+                    <p style={{ whiteSpace: "pre-wrap" }}>{task.description}</p>
 
                     <textarea
                       className="code-input"
@@ -618,7 +646,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
                         const start = el.selectionStart;
                         const end = el.selectionEnd;
                         const code = el.value;
-                        const pairs = { "(": ")", '"': '"', "'": "'", "{": "}" };
+                        const pairs = { "(": ")", '"': '"', "'": "'", "{": "}", "[": "]" };
 
                         if (pairs[e.key]) {
                           e.preventDefault();
@@ -635,15 +663,29 @@ const lesson = hardkodiranaLekcija || (dbLekcija
                           el.selectionEnd = start + 4;
                         }
 
+                        if (e.key === "Backspace" && start === end && code.substring(start - 4, start) === "    ") {
+                          e.preventDefault();
+                          el.value = code.substring(0, start - 4) + code.substring(end);
+                          el.selectionStart = start - 4;
+                          el.selectionEnd = start - 4;
+                        }
+
                         if (e.key === "Enter") {
                           e.preventDefault();
                           const currentLine = code.substring(0, start).split("\n").pop();
                           const indent = currentLine.match(/^(\s*)/)[1];
                           const extraIndent = currentLine.trimEnd().endsWith(":") ? "    " : "";
-                          el.value = code.substring(0, start) + "\n" + indent + extraIndent + code.substring(end);
-                          const newPos = start + 1 + indent.length + extraIndent.length;
-                          el.selectionStart = newPos;
-                          el.selectionEnd = newPos;
+                          if (code[start - 1] === "{" && code[start] === "}") {
+                            el.value = code.substring(0, start) + "\n" + indent + "    " + "\n" + indent + code.substring(end);
+                            const newPos = start + 1 + indent.length + 4;
+                            el.selectionStart = newPos;
+                            el.selectionEnd = newPos;
+                          } else {
+                            el.value = code.substring(0, start) + "\n" + indent + extraIndent + code.substring(end);
+                            const newPos = start + 1 + indent.length + extraIndent.length;
+                            el.selectionStart = newPos;
+                            el.selectionEnd = newPos;
+                          }
                         }
                       }}
                       placeholder="Ovdje upiši svoje rješenje..."

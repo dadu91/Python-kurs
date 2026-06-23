@@ -1,5 +1,5 @@
 const stringovi = {
-  badge: "Lekcija 5",
+  badge: "Lekcija 6",
   title: "Stringovi u Pythonu",
   heroClass: "intro-hero",
   description:
@@ -9,7 +9,7 @@ const stringovi = {
 
   goals: [
     { tekst: "Znaš šta je string i kako se kreira", blockIndex: 0 },
-    { tekst: "Umiješ da spajash stringove i ponavljaš ih", blockIndex: 1 },
+    { tekst: "Umiješ da spajаš stringove i ponavljaš ih", blockIndex: 1 },
     { tekst: "Koristiš metode: upper, lower, len, strip", blockIndex: 2 },
     { tekst: "Znaš kako funkcioniše f-string formatiranje", blockIndex: 3 },
   ],
@@ -73,23 +73,26 @@ print(linija)`,
       text: "Python ima ugrađene metode koje pozivamo sa tačkom iza stringa. Metoda je kao funkcija vezana za string. Najkorisnije su: upper(), lower(), strip() i len().",
       code: `tekst = "  zdravo  "
 
-print(tekst.upper())    # ZDRAVO
-print(tekst.lower())    # zdravo
-print(tekst.strip())    # zdravo  (bez razmaka)
-print(len("Python"))    # 6`,
+print(tekst.upper())
+print(tekst.lower())
+print(tekst.strip())
+print(len("Python"))`,
       codeObjasnjenje: [
-        'tekst.upper() — pretvara sva slova u velika',
-        'tekst.lower() — pretvara sva slova u mala',
-        'tekst.strip() — uklanja razmake sa početka i kraja stringa',
-        'len("Python") — vraća broj znakova u stringu, ovdje 6',
+        'tekst.upper() — pretvara sva slova u velika → "  ZDRAVO  "',
+        'tekst.lower() — pretvara sva slova u mala → "  zdravo  "',
+        'tekst.strip() — uklanja razmake sa početka i kraja → "zdravo"',
+        'len("Python") — vraća broj znakova u stringu → 6',
       ],
       vjezbaSintakse: {
-        uputstvo: 'Kreiraj promjenljivu ime = "petar" i ispiši je velikim slovima pomoću upper().',
+        uputstvo: 'Dat ti je username korisnika sa nepotrebnim razmacima. Očisti ga sa strip(), pa ispiši velikim slovima — kao što bi izgledalo na profilu.',
+        initialCode: 'korisnik = "  ana petrović  "\n',
         placeholder: "Ovdje upiši kod...",
-        hint: 'Treba ti: ime = "petar" i print(ime.upper()).',
+        hint: 'Treba ti: korisnik = korisnik.strip() i print(korisnik.upper()).',
         check: (code) =>
-          (code.includes('ime="petar"') || code.includes("ime='petar'")) &&
-          code.includes("ime.upper()"),
+          code.includes("korisnik") &&
+          code.includes("strip()") &&
+          code.includes("upper()") &&
+          code.includes("print("),
       },
     },
     {
@@ -107,14 +110,15 @@ print(poruka)`,
         'Rezultat: "Zdravo, Ana! Imaš 22 godina."',
       ],
       vjezbaSintakse: {
-        uputstvo: 'Kreiraj promjenljive ime = "Petar" i grad = "Banja Luka", pa ispiši f-string: "Petar živi u Banja Luka".',
+        uputstvo: 'Data ti je naziv proizvoda i cijena. Ispiši račun u obliku: "Proizvod: jabuka, Cijena: 1.5 E" koristeći f-string.',
+        initialCode: 'proizvod = "jabuka"\ncijena = 1.5\n',
         placeholder: "Ovdje upiši kod...",
-        hint: 'Treba ti: f"{ime} živi u {grad}"',
+        hint: 'Treba ti: print(f"Proizvod: {proizvod}, Cijena: {cijena} E")',
         check: (code) =>
           code.includes("f\"") &&
-          code.includes("{ime}") &&
-          code.includes("{grad}") &&
-          code.includes("print"),
+          code.includes("{proizvod}") &&
+          code.includes("{cijena}") &&
+          code.includes("print("),
       },
     },
   ],
@@ -171,17 +175,17 @@ print(f"Zovem se {ime} i imam {godine} godina.")`,
     },
     {
       redoslijed: 8,
-      title: "Zadatak 2: Broj znakova",
+      title: "Zvjezdani trougao",
       description:
-        'Kreiraj promjenljivu tekst = "Python je odličan" i ispiši koliko znakova ima koristeći len().',
-      solution: `tekst = "Python je odličan"
-print(len(tekst))`,
-      expectedOutput: `18`,
-      hint: "Treba ti len(tekst) unutar print().",
+        "Napiši program koji ispisuje trougao od zvjezdica sa 5 redova koristeći for petlju i množenje stringa. Izlaz treba izgledati ovako:\n*\n**\n***\n****\n*****",
+      solution: `for i in range(1, 6):
+    print("*" * i)`,
+      expectedOutput: `*\n**\n***\n****\n*****`,
+      hint: "Treba ti: for i in range(1, 6): i print(\"*\" * i). String pomnoži sa brojem da dobiješ više zvjezdica.",
       check: (code) =>
-        code.includes("tekst") &&
-        code.includes("len(tekst)") &&
-        code.includes("print"),
+        code.includes("range(") &&
+        code.includes("\"*\"*i") &&
+        code.includes("print("),
     },
   ],
 };

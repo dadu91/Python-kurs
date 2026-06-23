@@ -8,55 +8,39 @@ const promjenljive = {
   level: "Početnik",
 
  goals: [
-  { tekst: "Razumiješ šta je promjenljiva", blockIndex: 0 },
-  { tekst: "Znaš kako se dodjeljuje vrijednost", blockIndex: 1 },
-  { tekst: "Prepoznaješ različite tipove podataka", blockIndex: 2 },
-  { tekst: "Znaš da Python sam prepoznaje tip podatka", blockIndex: 3 },
+  { tekst: "Razumiješ šta je promjenljiva i tipove podataka", blockIndex: 0 },
+  { tekst: "Znaš kako se mijenja vrijednost promjenljive", blockIndex: 1 },
 ],
 
   theoryBlocks: [
     {
       title: "Šta je promjenljiva?",
-      text: "Promenljive služe za čuvanje podataka u memoriji. Daješ joj ime i u nju stavljaš vrijednost. Kad ti zatreba taj podatak, pozoveš je po imenu.",
+      text: "Promjenljive služe za čuvanje podataka u memoriji. Daješ joj ime i u nju stavljaš vrijednost. Kad ti zatreba taj podatak, pozoveš je po imenu. U Pythonu nema razlike kako se promjenljiva deklariše — tekst, broj, decimala, sve ide na isti način.",
       code: `ime = "Ana"
 godine = 20
 visina = 1.68
 student = True
 
 print(ime)
-print(godine)`,
-      vjezbaSintakse: null,
-    },
-    {
-      title: "Python sam prepoznaje tip podatka",
-      text: "Za razliku od nekih drugih jezika, u Pythonu ne moraš reći koji tip podatka čuvaš. Python to sam prepoznaje. U istu promjenljivu možeš staviti broj, tekst, decimalni broj ili logičku vrijednost.",
-      code: `x = 10          # int - cijeli broj
-x = "zdravo"    # str - tekst
-x = 3.14        # float - decimalni broj
-x = True        # bool - tačno/netačno
-
-print(type(x))  # ispisuje tip podatka`,
+print(godine)
+print(type(ime))`,
+      codeObjasnjenje: [
+        "ime = \"Ana\" — promjenljiva tipa string (tekst)",
+        "godine = 20 — promjenljiva tipa integer (cijeli broj)",
+        "visina = 1.68 — promjenljiva tipa float (decimalni broj)",
+        "student = True — promjenljiva tipa boolean (tačno/netačno)",
+        "print(type(ime)) — ispisuje tip podatka promjenljive ime → <class 'str'>",
+      ],
       vjezbaSintakse: {
-        uputstvo: "Napravi promjenljivu 'grad' i dodijeli joj vrijednost 'Sarajevo', pa je ispiši.",
+        uputstvo: "Napravi promjenljivu 'grad' sa nekim gradom i promjenljivu 'broj_stanovnika' sa brojem. Ispiši obje i ispiši tip promjenljive 'grad' koristeći type().",
         placeholder: "Ovdje upiši kod...",
-        hint: "Treba ti: grad = \"Sarajevo\" i ispod print(grad).",
+        hint: "Treba ti: grad = \"...\", broj_stanovnika = ..., print(grad), print(broj_stanovnika) i print(type(grad)).",
         check: (code) =>
-          code.includes("grad") && code.includes("sarajevo") && code.includes("print"),
+          code.includes("grad") &&
+          code.includes("broj_stanovnika") &&
+          code.includes("type(grad)") &&
+          code.includes("print("),
       },
-    },
-    {
-      title: "Tipovi podataka",
-      text: "Postoje četiri osnovna tipa podataka u Pythonu: int (cijeli brojevi), float (decimalni brojevi), str (tekst) i bool (tačno/netačno). Svaki tip se ponaša drugačije.",
-      code: `broj = 5          # int
-cijena = 9.99     # float
-naziv = "Python"  # str
-aktivan = False   # bool
-
-print(type(broj))    # <class 'int'>
-print(type(cijena))  # <class 'float'>
-print(type(naziv))   # <class 'str'>
-print(type(aktivan)) # <class 'bool'>`,
-      vjezbaSintakse: null,
     },
     {
       title: "Promjena vrijednosti",

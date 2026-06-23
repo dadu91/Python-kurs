@@ -6,7 +6,14 @@ INSERT INTO lekcija (naziv, redoslijed, opis) VALUES
 ('Promjenljive u Pythonu', 2, 'Šta su promjenljive, tipovi podataka i kako Python sam prepoznaje tip.'),
 ('Liste u Pythonu',        3, 'Šta su liste, kako se prave, kako pristupamo elementima i kako prolazimo kroz listu.'),
 ('Petlje u Pythonu',       4, 'For i while petlje, range(), prolazak kroz listu i najčešće greške u petljama.'),
-('Stringovi u Pythonu',    5, 'Šta su stringovi, kako se kreiraju, spajaju i koriste osnovne metode za rad sa tekstom.');
+('Stringovi u Pythonu',    5, 'Šta su stringovi, kako se kreiraju, spajaju i koriste osnovne metode za rad sa tekstom.'),
+('Uslovi u Pythonu',       6, 'Šta su uslovi, kako rade if, elif i else naredbe, operatori poređenja i logički operatori.'),
+('Funkcije u Pythonu',     7, 'Šta su funkcije, kako se definišu, kako rade parametri i return, i zašto su korisne.'),
+('Rječnici u Pythonu',     8, 'Šta su rječnici, kako čuvaju podatke u parovima ključ-vrijednost i kako ih koristiti.'),
+('Skupovi i Tuple',        9, 'Šta su tuple i skupovi, čime se razlikuju od lista i kada ih koristiti.'),
+('Moduli u Pythonu',      10, 'Šta su moduli, kako se uvoze i kako koristiti math i random module.'),
+('Rad sa greškama',       11, 'Kako hvatati i obrađivati greške pomoću try, except i finally.');
+
 
 
 -- ZADACI - Lekcija 1: Uvod
@@ -79,6 +86,92 @@ INSERT INTO zadatak (lekcija_id, redoslijed, tezina, tip) VALUES
 ((SELECT id FROM lekcija WHERE naziv = 'Stringovi u Pythonu'), 6, 'laka',    'quiz'),
 ((SELECT id FROM lekcija WHERE naziv = 'Stringovi u Pythonu'), 7, 'srednja', 'prakticni'),
 ((SELECT id FROM lekcija WHERE naziv = 'Stringovi u Pythonu'), 8, 'srednja', 'prakticni');
+
+
+
+-- ZADACI - Lekcija 6: Uslovi
+
+INSERT INTO zadatak (lekcija_id, redoslijed, tezina, tip) VALUES
+((SELECT id FROM lekcija WHERE naziv = 'Uslovi u Pythonu'),  1, 'laka',    'teorija'),
+((SELECT id FROM lekcija WHERE naziv = 'Uslovi u Pythonu'),  2, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Uslovi u Pythonu'),  3, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Uslovi u Pythonu'),  4, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Uslovi u Pythonu'),  5, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Uslovi u Pythonu'),  6, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Uslovi u Pythonu'),  7, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Uslovi u Pythonu'),  8, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Uslovi u Pythonu'),  9, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Uslovi u Pythonu'), 10, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Uslovi u Pythonu'), 11, 'srednja', 'prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Uslovi u Pythonu'), 12, 'srednja', 'prakticni');
+
+
+
+-- ZADACI - Lekcija 7: Funkcije
+
+INSERT INTO zadatak (lekcija_id, redoslijed, tezina, tip) VALUES
+((SELECT id FROM lekcija WHERE naziv = 'Funkcije u Pythonu'), 1, 'laka',    'teorija'),
+((SELECT id FROM lekcija WHERE naziv = 'Funkcije u Pythonu'), 2, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Funkcije u Pythonu'), 3, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Funkcije u Pythonu'), 4, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Funkcije u Pythonu'), 5, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Funkcije u Pythonu'), 6, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Funkcije u Pythonu'), 7, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Funkcije u Pythonu'), 8, 'srednja', 'prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Funkcije u Pythonu'), 9, 'srednja', 'prakticni');
+
+
+
+-- ZADACI - Lekcija 8: Rječnici
+
+INSERT INTO zadatak (lekcija_id, redoslijed, tezina, tip) VALUES
+((SELECT id FROM lekcija WHERE naziv = 'Rječnici u Pythonu'), 1, 'laka',    'teorija'),
+((SELECT id FROM lekcija WHERE naziv = 'Rječnici u Pythonu'), 2, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Rječnici u Pythonu'), 3, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Rječnici u Pythonu'), 4, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Rječnici u Pythonu'), 5, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Rječnici u Pythonu'), 6, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Rječnici u Pythonu'), 7, 'srednja', 'prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Rječnici u Pythonu'), 8, 'srednja', 'prakticni');
+
+
+-- ZADACI - Lekcija 9: Skupovi i Tuple
+
+INSERT INTO zadatak (lekcija_id, redoslijed, tezina, tip) VALUES
+((SELECT id FROM lekcija WHERE naziv = 'Skupovi i Tuple'), 1, 'laka',    'teorija'),
+((SELECT id FROM lekcija WHERE naziv = 'Skupovi i Tuple'), 2, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Skupovi i Tuple'), 3, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Skupovi i Tuple'), 4, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Skupovi i Tuple'), 5, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Skupovi i Tuple'), 6, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Skupovi i Tuple'), 7, 'srednja', 'prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Skupovi i Tuple'), 8, 'srednja', 'prakticni');
+
+
+-- ZADACI - Lekcija 10: Moduli
+
+INSERT INTO zadatak (lekcija_id, redoslijed, tezina, tip) VALUES
+((SELECT id FROM lekcija WHERE naziv = 'Moduli u Pythonu'), 1, 'laka',    'teorija'),
+((SELECT id FROM lekcija WHERE naziv = 'Moduli u Pythonu'), 2, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Moduli u Pythonu'), 3, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Moduli u Pythonu'), 4, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Moduli u Pythonu'), 5, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Moduli u Pythonu'), 6, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Moduli u Pythonu'), 7, 'srednja', 'prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Moduli u Pythonu'), 8, 'srednja', 'prakticni');
+
+
+-- ZADACI - Lekcija 11: Rad sa greškama
+
+INSERT INTO zadatak (lekcija_id, redoslijed, tezina, tip) VALUES
+((SELECT id FROM lekcija WHERE naziv = 'Rad sa greškama'), 1, 'laka',    'teorija'),
+((SELECT id FROM lekcija WHERE naziv = 'Rad sa greškama'), 2, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Rad sa greškama'), 3, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Rad sa greškama'), 4, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Rad sa greškama'), 5, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Rad sa greškama'), 6, 'laka',    'quiz'),
+((SELECT id FROM lekcija WHERE naziv = 'Rad sa greškama'), 7, 'srednja', 'prakticni'),
+((SELECT id FROM lekcija WHERE naziv = 'Rad sa greškama'), 8, 'srednja', 'prakticni');
 
 
 

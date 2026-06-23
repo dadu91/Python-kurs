@@ -10,6 +10,7 @@ const uvod = {
   goals: [
     { tekst: "Razumiješ šta je Python", blockIndex: 0 },
     { tekst: "Znaš čemu služi print()", blockIndex: 1 },
+    { tekst: "Znaš čemu služi input()", blockIndex: 2 },
     { tekst: "Umiješ da napišeš prvi program", blockIndex: 1 },
   ],
 
@@ -23,10 +24,10 @@ const uvod = {
         "Tekst koji želimo ispisati pišemo između navodnika unutar zagrade",
       ],
       vjezbaSintakse: {
-        uputstvo: 'Napiši naredbu koja ispisuje tekst "Zdravo, Python!" na ekran.',
+        uputstvo: "Ispiši svoje ime koristeći print naredbu.",
         placeholder: "Ovdje upiši kod...",
-        hint: 'Treba ti: print("Zdravo, Python!")',
-        check: (code) => code.includes('print("zdravo,python!")') || code.includes("print('zdravo,python!')"),
+        hint: 'Treba ti: print("Tvoje ime")',
+        check: (code) => code.includes("print("),
       },
     },
     {
@@ -42,33 +43,46 @@ print("Zdravo, moje ime je", ime)`,
         'print("Zdravo, moje ime je", ime) — ispisuje tekst i vrijednost promjenljive zajedno',
       ],
       vjezbaSintakse: {
-        uputstvo: 'Kreiraj promjenljivu ime = "Petar" i ispiši je naredbom print().',
+        uputstvo: "Napravi dvije promjenljive — 'ime' sa tvojim imenom i 'godine' sa tvojim godinama. Ispiši ih zajedno u jednoj rečenici.",
         placeholder: "Ovdje upiši kod...",
-        hint: 'Treba ti: ime = "Petar" i print(ime).',
+        hint: 'Treba ti: ime = "...", godine = ... i print("Moje ime je", ime, "i imam", godine, "godina.").',
         check: (code) =>
-          (code.includes('ime="petar"') || code.includes("ime='petar'")) &&
-          code.includes("print(ime)"),
+          code.includes("ime") &&
+          code.includes("godine") &&
+          code.includes("print("),
       },
+    },
+    {
+      title: "input() — unos od korisnika",
+      text: "input() je naredba koja zaustavlja program i čeka da korisnik nešto upiše. Ono što korisnik upiše može da se sačuva u promjenljivu i koristi dalje u programu. Napomena: u ovom kursu ne možeš testirati input() jer nemamo pravi terminal, ali važno je da znaš kako izgleda.",
+      code: `ime = input("Upiši svoje ime: ")
+print("Zdravo,", ime)`,
+      codeObjasnjenje: [
+        "input(\"Upiši svoje ime: \") — ispisuje poruku i čeka da korisnik upiše nešto",
+        "ime = ... — ono što korisnik upiše čuva se u promjenljivu ime",
+        "print(\"Zdravo,\", ime) — ispisuje pozdrav sa imenom koje je korisnik unio",
+      ],
+      vjezbaSintakse: null,
     },
   ],
 
   questions: [
     {
       redoslijed: 2,
-      question: "Koja naredba se koristi za ispis u Pythonu?",
-      answers: ["echo()", "print()", "write()"],
-      correct: 1,
-    },
-    {
-      redoslijed: 3,
       question: "Šta će ispisati kod: print('Python')?",
       answers: ["Python", "print", "Grešku"],
       correct: 0,
     },
     {
-      redoslijed: 4,
+      redoslijed: 3,
       question: "Tekst u Pythonu najčešće pišemo između:",
       answers: ["zagrada", "navodnika", "zareza"],
+      correct: 1,
+    },
+    {
+      redoslijed: 4,
+      question: "Šta radi input() u Pythonu?",
+      answers: ["Ispisuje tekst na ekran", "Čita unos od korisnika", "Pokreće program"],
       correct: 1,
     },
   ],
@@ -76,29 +90,26 @@ print("Zdravo, moje ime je", ime)`,
   codingTasks: [
     {
       redoslijed: 5,
-      title: "Zadatak 1: Ispiši svoje ime",
+      title: "Mini CV",
       description:
-        'Kreiraj promjenljivu ime i dodijeli joj svoje ime kao tekst. Zatim ispiši poruku "Zdravo, " zajedno sa tom promjenljivom.',
-      solution: `ime = "Petar"
-print("Zdravo,", ime)`,
-      expectedOutput: `Zdravo, Petar`,
-      hint: 'Treba ti: ime = "...", print("Zdravo,", ime).',
+        "Napravi promjenljive za ime, godine, grad i hobi. Svaku ispiši u zasebnom print-u kao na CV-u — svaka informacija u svom redu, npr:\nIme: Ana\nGodine: 20\nGrad: Podgorica\nHobi: fotografija",
+      solution: `ime = "Ana"
+godine = 20
+grad = "Podgorica"
+hobi = "fotografija"
+
+print("Ime:", ime)
+print("Godine:", godine)
+print("Grad:", grad)
+print("Hobi:", hobi)`,
+      expectedOutput: `Ime: Ana\nGodine: 20\nGrad: Podgorica\nHobi: fotografija`,
+      hint: "Napravi četiri promjenljive pa ispiši svaku u zasebnom print-u sa oznakom.",
       check: (code) =>
-        code.includes("ime=") && code.includes('print("zdravo,"') || code.includes("print('zdravo,'"),
-    },
-    {
-      redoslijed: 6,
-      title: "Zadatak 2: Ispiši tri linije",
-      description:
-        "Napiši program koji ispisuje tri različite linije teksta koristeći tri print() naredbe.",
-      solution: `print("Linija 1")
-print("Linija 2")
-print("Linija 3")`,
-      expectedOutput: `Linija 1
-Linija 2
-Linija 3`,
-      hint: "Treba ti tri odvojene print() naredbe, svaka sa različitim tekstom.",
-      check: (code) => (code.match(/print\(/g) || []).length >= 3,
+        code.includes("ime") &&
+        code.includes("godine") &&
+        code.includes("grad") &&
+        code.includes("hobi") &&
+        (code.match(/print\(/g) || []).length >= 4,
     },
   ],
 };

@@ -49,14 +49,14 @@ while x < 3:
         "x += 1 — povećavamo x za 1 nakon svakog ponavljanja",
       ],
       vjezbaSintakse: {
-        uputstvo: 'Napiši while petlju koja ispisuje "Python" 3 puta. Koristi promjenljivu x = 0 i povećavaj je za 1.',
+        uputstvo: "Napiši while petlju koja ispisuje brojeve od 1 do 5. Koristi promjenljivu broj = 1 i povećavaj je za 1 sve dok nije veća od 5.",
         placeholder: "Ovdje upiši kod...",
-        hint: "Treba ti: x = 0, while x < 3:, print(...) i x += 1.",
+        hint: "Treba ti: broj = 1, while broj <= 5:, print(broj) i broj += 1.",
         check: (code) =>
-          code.includes("x=0") &&
-          code.includes("whilex<3:") &&
+          code.includes("broj=1") &&
+          code.includes("while") &&
           code.includes("print(") &&
-          code.includes("x+=1"),
+          code.includes("broj+=1"),
       },
     },
     {
@@ -65,23 +65,25 @@ while x < 3:
       code: `for i in range(5):
     print(i)
 
-# Ispisuje: 0 1 2 3 4
-
 for i in range(1, 6):
     print(i)
 
-# Ispisuje: 1 2 3 4 5`,
+for i in range(10, 0, -2):
+    print(i)`,
       codeObjasnjenje: [
-        "for i in range(5) — i uzima vrijednosti 0, 1, 2, 3, 4 redom",
-        "print(i) — ispisuje trenutnu vrijednost i",
-        "range(1, 6) — generiše brojeve od 1 do 5, kraj se ne uključuje",
+        "range(5) — jedan parametar: generiše 0, 1, 2, 3, 4",
+        "range(1, 6) — dva parametra: generiše od 1 do 5, kraj se ne uključuje",
+        "range(10, 0, -2) — tri parametra: početak, kraj, korak — generiše 10, 8, 6, 4, 2",
+        "korak može biti negativan broj za odbrojavanje, ili npr. 2 za svaki drugi broj",
       ],
       vjezbaSintakse: {
-        uputstvo: "Napiši for petlju koja koristi range(1, 6) i ispisuje vrijednost i.",
+        uputstvo: "Napiši for petlju koja ispisuje kvadrate brojeva od 1 do 5. Kvadrat broja dobijamo sa i ** 2.",
         placeholder: "Ovdje upiši kod...",
-        hint: "Treba ti: for i in range(1, 6): i ispod print(i).",
+        hint: "Treba ti: for i in range(1, 6): i print(i ** 2).",
         check: (code) =>
-          code.includes("foriinrange(1,6):") && code.includes("print(i)"),
+          code.includes("range(") &&
+          code.includes("**2") &&
+          code.includes("print("),
       },
     },
     {
@@ -90,48 +92,47 @@ for i in range(1, 6):
       code: `voce = ["jabuka", "kruška", "šljiva"]
 
 for v in voce:
-    print(v)
-
-# Ispisuje:
-# jabuka
-# kruška
-# šljiva`,
+    print(v)`,
       codeObjasnjenje: [
         "voce = [...] — definišemo listu sa tri elementa",
         "for v in voce — v uzima svaki element liste redom",
-        "print(v) — ispisuje trenutni element",
+        "print(v) — ispisuje trenutni element: jabuka, pa kruška, pa šljiva",
       ],
       vjezbaSintakse: {
-        uputstvo: 'Data je lista voce = ["jabuka", "kruška", "šljiva"]. Napiši for petlju koja prolazi kroz listu i ispisuje svaki element.',
+        uputstvo: "Napravi listu 'ocjene' sa vrijednostima [2, 4, 5, 3, 1]. Prođi kroz listu i za svaku ocjenu ispiši 'Položio' ako je ocjena veća ili jednaka 2, ili 'Pao' ako nije.",
+        initialCode: "ocjene = [2, 4, 5, 3, 1]\n",
         placeholder: "Ovdje upiši kod...",
-        hint: 'Treba ti: voce = [...], for v in voce: i ispod print(v).',
+        hint: "Treba ti: for ocjena in ocjene:, if ocjena >= 2: print(\"Položio\") i else: print(\"Pao\").",
         check: (code) =>
-          code.includes("voce=") &&
-          code.includes("forvinvoce:") &&
-          code.includes("print(v)"),
+          code.includes("ocjene") &&
+          code.includes("for") &&
+          code.includes("inocjene:") &&
+          code.includes("if") &&
+          code.includes("print("),
       },
     },
     {
       title: "Najčešće greške kod petlji",
       text: "Početnici često zaborave dvotačku na kraju for/while linije, pogriješe uvlačenje koda (indentation) ili naprave while petlju koja se nikad ne završava jer zaborave povećati promjenljivu.",
-      code: `# Greška: fali dvotačka
-for i in range(5)
+      code: `for i in range(5)
     print(i)
 
-# Ispravno:
 for i in range(5):
     print(i)`,
       codeObjasnjenje: [
-        "for i in range(5) — fali dvotačka na kraju, Python ne zna gdje počinje tijelo petlje",
+        "for i in range(5) — fali dvotačka na kraju, Python javlja grešku",
         "for i in range(5): — ispravno, dvotačka označava početak bloka koda",
-        "print(i) — mora biti uvučeno (4 razmaka) da pripada petlji",
+        "print(i) — mora biti uvučeno (4 razmaka) da pripada petlji, inače Python ne zna šta je unutar petlje",
       ],
       vjezbaSintakse: {
-        uputstvo: "Ispravi grešku — napiši tačan kod: for i in range(5) print(i)",
+        uputstvo: "Ispravi grešku u ovom kodu — while petlja se nikad ne završava jer nešto fali:",
+        initialCode: `x = 0\nwhile x < 4:\n    print(x)\n`,
         placeholder: "Ovdje upiši ispravan kod...",
-        hint: "Poslije range(5) mora stajati dvotačka, a print(i) mora biti uvučen.",
+        hint: "Fali x += 1 unutar petlje — bez toga x ostaje 0 zauvijek.",
         check: (code) =>
-          code.includes("foriinrange(5):") && code.includes("print(i)"),
+          code.includes("while") &&
+          code.includes("x+=1") &&
+          code.includes("print("),
       },
     },
   ],
@@ -190,70 +191,55 @@ for i in range(5):
   codingTasks: [
     {
       redoslijed: 9,
-      title: "Zadatak 1: Prođi kroz listu brojeva",
+      title: "Tablica množenja",
       description:
-        "Data je lista brojeva: brojevi = [2, 4, 6, 8]. Napiši program koji pomoću for petlje prolazi kroz listu i ispisuje svaki broj.",
-      solution: `brojevi = [2, 4, 6, 8]
-
-for broj in brojevi:
-    print(broj)`,
-      expectedOutput: `2
-4
-6
-8`,
-      hint: "Treba ti lista brojevi = [2, 4, 6, 8], for broj in brojevi i print(broj).",
+        "Napiši program koji koristeći for petlju i range() ispisuje tablicu množenja za broj 5 — od 5x1 do 5x10. Izlaz treba izgledati ovako:\n5 x 1 = 5\n5 x 2 = 10\n5 x 3 = 15\n...\n5 x 10 = 50",
+      solution: `for i in range(1, 11):
+    print("5 x", i, "=", 5 * i)`,
+      expectedOutput: `5 x 1 = 5\n5 x 2 = 10\n5 x 3 = 15\n5 x 4 = 20\n5 x 5 = 25\n5 x 6 = 30\n5 x 7 = 35\n5 x 8 = 40\n5 x 9 = 45\n5 x 10 = 50`,
+      hint: "Treba ti: for i in range(1, 11): i print(\"5 *\", i, \"=\", 5 * i).",
       check: (code) =>
-        code.includes("brojevi=[2,4,6,8]") &&
-        code.includes("forbrojinbrojevi:") &&
-        code.includes("print(broj)"),
+        code.includes("range(") &&
+        code.includes("5*i") &&
+        code.includes("print("),
     },
     {
       redoslijed: 10,
-      title: "Zadatak 2: Ispiši samo parne brojeve",
+      title: "Parno ili neparno",
       description:
-        "Data je lista brojeva: brojevi = [10, 15, 22, 31, 44, 57, 68]. Napiši program koji pomoću for petlje prolazi kroz listu i ispisuje samo parne brojeve.",
-      solution: `brojevi = [10, 15, 22, 31, 44, 57, 68]
+        "Data ti je lista brojevi = [3, 8, 15, 22, 37, 44]. Prođi kroz listu i za svaki broj ispiši da li je parno ili neparno, npr:\n3 - Neparno\n8 - Parno",
+      solution: `brojevi = [3, 8, 15, 22, 37, 44]
 
 for broj in brojevi:
     if broj % 2 == 0:
-        print(broj)`,
-      expectedOutput: `10
-22
-44
-68`,
-      hint: "Treba ti for petlja, if uslov za parnost (% 2 == 0) i print(broj).",
+        print(broj, "- Parno")
+    else:
+        print(broj, "- Neparno")`,
+      expectedOutput: `3 - Neparno\n8 - Parno\n15 - Neparno\n22 - Parno\n37 - Neparno\n44 - Parno`,
+      hint: "Treba ti for petlja, if broj % 2 == 0 za provjeru parnosti i else za neparno.",
+      initialCode: "brojevi = [3, 8, 15, 22, 37, 44]\n",
       check: (code) =>
-        code.includes("brojevi=[10,15,22,31,44,57,68]") &&
-        code.includes("forbrojinbrojevi:") &&
-        code.includes("ifbroj%2==0:") &&
-        code.includes("print(broj)"),
+        code.includes("brojevi") &&
+        code.includes("for") &&
+        code.includes("%2==0") &&
+        code.includes("else") &&
+        code.includes("print("),
     },
     {
       redoslijed: 11,
-      title: "Zadatak 3: Prebroj parne brojeve (while petlja)",
+      title: "Odbrojavanje",
       description:
-        "Data je lista brojeva: brojevi = [12, 19, 24, 33, 40, 55, 72, 81]. Napiši program koji koristi while petlju da prođe kroz listu, broji parne brojeve i na kraju ispisuje njihov broj.",
-      solution: `brojevi = [12, 19, 24, 33, 40, 55, 72, 81]
-brojac = 0
-i = 0
+        "Napiši program koji odbroji od 10 do 1 koristeći for petlju i range() sa tri parametra, pa ispiši \"Kraj!\". Izlaz treba izgledati ovako:\n10\n9\n8\n...\n1\nKraj!",
+      solution: `for i in range(10, 0, -1):
+    print(i)
 
-while i < len(brojevi):
-    if brojevi[i] % 2 == 0:
-        brojac += 1
-    i += 1
-
-print(brojac)`,
-      expectedOutput: `4`,
-      hint: "Treba ti: i = 0, while i < len(brojevi):, provjera parnosti, brojac += 1, i += 1 i print(brojac).",
+print("Kraj!")`,
+      expectedOutput: `10\n9\n8\n7\n6\n5\n4\n3\n2\n1\nKraj!`,
+      hint: "Treba ti: for i in range(10, 0, -1): i print(i), pa print(\"Kraj!\") van petlje.",
       check: (code) =>
-        code.includes("brojevi=[12,19,24,33,40,55,72,81]") &&
-        code.includes("brojac=0") &&
-        code.includes("i=0") &&
-        code.includes("whilei<len(brojevi):") &&
-        code.includes("ifbrojevi[i]%2==0:") &&
-        code.includes("brojac+=1") &&
-        code.includes("i+=1") &&
-        code.includes("print("),
+        code.includes("range(10,0,-1)") &&
+        code.includes("print(i)") &&
+        code.includes("kraj!"),
     },
   ],
 };
