@@ -226,10 +226,13 @@ else:
       expectedOutput: `Uspjesno ste podigli 200 E.\nNovo stanje: 300 E.`,
       hint: "Koristi if da provjeriš ima li dovoljno novca, pa else za uspješno podizanje. Ne zaboravi da ažuriraš stanje prije ispisa.",
       check: (code) =>
-        code.includes("stanje") &&
-        code.includes("iznos") &&
-        code.includes("if") &&
+        code.includes("stanje=500") &&
+        code.includes("iznos=200") &&
+        code.includes("iznos>stanje") &&
         code.includes("else") &&
+        (code.includes("stanje-iznos") || code.includes("stanje-=iznos")) &&
+        code.includes("nedovoljnosredstava") &&
+        code.includes("novostanje") &&
         code.includes("print("),
     },
     {
@@ -253,6 +256,10 @@ else:
         code.includes("ima_clanska_karta") &&
         code.includes("and") &&
         code.includes("elif") &&
+        code.includes(">=18") &&
+        code.includes("ulazslobodan") &&
+        code.includes("mozetekupiticlanskukartu") &&
+        code.includes("zabranjenulaz") &&
         code.includes("print("),
     },
   ],

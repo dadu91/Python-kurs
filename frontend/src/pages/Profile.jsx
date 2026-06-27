@@ -22,10 +22,14 @@ function computeAchievements(stats) {
   return [
     { icon: "🏆", label: "Prva lekcija",    desc: "Završi prvu lekciju",         earned: stats.zavrseneLekcije >= 1 },
     { icon: "📚", label: "Marljivi učenik", desc: "Završi 3 lekcije",             earned: stats.zavrseneLekcije >= 3 },
+    { icon: "🔥", label: "Na pola puta",    desc: "Završi 6 lekcija",             earned: stats.zavrseneLekcije >= 6 },
     { icon: "⭐", label: "100 bodova",      desc: "Skupi 100 bodova",             earned: stats.bodovi >= 100 },
+    { icon: "💎", label: "500 bodova",      desc: "Skupi 500 bodova",             earned: stats.bodovi >= 500 },
     { icon: "⚡", label: "Nivo 3",          desc: "Dostigni nivo 3",              earned: stats.nivo >= 3 },
-    { icon: "🎯", label: "Oštar um",        desc: "90%+ tačnost na zadacima",     earned: tacnostPct >= 90 && ukupnoZadataka > 0 },
     { icon: "🐍", label: "Python majstor",  desc: "Dostigni nivo 5",              earned: stats.nivo >= 5 },
+    { icon: "🎯", label: "Oštar um",        desc: "90%+ tačnost na zadacima",     earned: tacnostPct >= 90 && ukupnoZadataka > 0 },
+    { icon: "✅", label: "Vrijedan",        desc: "50 tačnih zadataka",           earned: stats.tacni >= 50 },
+    { icon: "🎓", label: "Kurs završen",    desc: "Završi sve lekcije",           earned: stats.ukupnoLekcija > 0 && stats.zavrseneLekcije >= stats.ukupnoLekcija },
   ];
 }
 
@@ -37,7 +41,7 @@ function Profile() {
   const [avatar, setAvatar] = useState(localStorage.getItem("profileImage") || null);
   const [profile, setProfile] = useState({ name: "", username: "", email: "" });
   const [form, setForm]       = useState({ name: "", username: "", email: "", password: "" });
-  const [stats, setStats]     = useState({ bodovi: 0, zavrseneLekcije: 0, nivo: 1, tacni: 0, netacni: 0 });
+  const [stats, setStats]     = useState({ bodovi: 0, zavrseneLekcije: 0, nivo: 1, tacni: 0, netacni: 0, ukupnoLekcija: 0 });
   const [adminStats, setAdminStats] = useState({ korisnici: 0, lekcije: 0 });
   const [loading, setLoading] = useState(true);
 
@@ -82,6 +86,10 @@ function Profile() {
           fetch(`http://localhost:8000/zadatak_korisnik/tacni/po-korisnik/${k.id}`, { headers: { Authorization: `Bearer ${token}` } })
             .then((r) => r.ok ? r.json() : [])
             .then((d) => setStats((prev) => ({ ...prev, tacni: Array.isArray(d) ? d.length : 0 })))
+            .catch(() => {});
+          fetch("http://localhost:8000/lekcije/", { headers: { Authorization: `Bearer ${token}` } })
+            .then((r) => r.ok ? r.json() : [])
+            .then((d) => setStats((prev) => ({ ...prev, ukupnoLekcija: Array.isArray(d) ? d.length : 0 })))
             .catch(() => {});
         }
         setLoading(false);

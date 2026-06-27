@@ -27,6 +27,17 @@
   margin-bottom: 24px;
 }
 
+.auth-info {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  background: #fff4ed;
+  border: 1px solid #ffd2bd;
+  border-radius: 10px;
+  color: #c2410c;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
 .auth-switch {
   margin-top: 18px;
   text-align: center;

@@ -22,7 +22,15 @@
       "Bash(find _orig_zip -path \"*src/lessons/*\" -name \"*.js\")",
       "Bash(diff \"../_orig_zip/Python-kurs/frontend/src/pages/Lesson.jsx\" frontend/src/pages/Lesson.jsx)",
       "Bash(diff \"../_orig_zip/Python-kurs/frontend/src/pages/Lesson.css\" frontend/src/pages/Lesson.css)",
-      "Bash(git ls-remote *)"
+      "Bash(git ls-remote *)",
+      "Bash(npx eslint *)",
+      "Bash(grep -niE \"INSERT INTO lekcija|into \\\\`lekcija\\\\`\" \"python kurs seed.sql\")",
+      "PowerShell(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.LocalPort -in 8000,5173,5174,5175 } | Select-Object LocalPort, OwningProcess | Sort-Object LocalPort -Unique)",
+      "PowerShell(Get-Process -Name node,python,uvicorn -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue)",
+      "PowerShell(\"---PORTS---\")",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"http://localhost:8000/lekcije/\" -Method GET -TimeoutSec 5 -UseBasicParsing; \"STATUS: $\\($r.StatusCode\\)\" } catch { \"ERROR: $\\($_.Exception.Message\\)\"; if \\($_.Exception.Response\\) { \"HTTP: $\\([int]$_.Exception.Response.StatusCode\\)\" } })",
+      "Bash(git add *)"
     ]
   }
 }

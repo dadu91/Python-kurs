@@ -61,10 +61,10 @@ print(linija)`,
         placeholder: "Ovdje upiši kod...",
         hint: 'Treba ti: poruka = "Python" + " je zabavan" i print(poruka).',
         check: (code) =>
-          code.includes("poruka") &&
+          code.includes("poruka=") &&
           (code.includes('"python"+"jezabavan"') ||
-            code.includes('"python"+" jezabavan"') ||
-            code.includes("poruka=") ) &&
+            code.includes('"python+jezabavan"') ||
+            code.includes('"pythonjezabavan"')) &&
           code.includes("print(poruka)"),
       },
     },
@@ -183,7 +183,8 @@ print(f"Zovem se {ime} i imam {godine} godina.")`,
       expectedOutput: `*\n**\n***\n****\n*****`,
       hint: "Treba ti: for i in range(1, 6): i print(\"*\" * i). String pomnoži sa brojem da dobiješ više zvjezdica.",
       check: (code) =>
-        code.includes("range(") &&
+        code.includes("for") &&
+        code.includes("range(1,6)") &&
         code.includes("\"*\"*i") &&
         code.includes("print("),
     },

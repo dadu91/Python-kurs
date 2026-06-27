@@ -27,7 +27,7 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1440
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 30  # 30 dana
 
 
 def create_access_token(data: dict):

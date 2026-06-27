@@ -82,6 +82,7 @@ print(boje)`,
         hint: "Treba ti: import random, lista sa brojevima i random.choice(lista).",
         check: (code) =>
           code.includes("importrandom") &&
+          code.includes("[") &&
           code.includes("random.choice(") &&
           code.includes("print("),
       },

@@ -37,9 +37,9 @@ print(mjesovita)`,
         placeholder: "Ovdje upiši kod...",
         hint: "Treba ti: profil = [\"Ana\", 20, True] i print(profil).",
         check: (code) =>
-          code.includes("profil") &&
+          code.includes("profil=[") &&
           (code.includes("true") || code.includes("false")) &&
-          code.includes("print("),
+          code.includes("print(profil)"),
       },
     },
     {
@@ -115,9 +115,9 @@ print(ocjene)`,
         placeholder: "Ovdje upiši kod...",
         hint: "Treba ti: filmovi = [\"...\", \"...\", \"...\"], filmovi[2] = \"novi film\" i print(filmovi).",
         check: (code) =>
-          code.includes("filmovi") &&
-          code.includes("filmovi[2]") &&
-          code.includes("print("),
+          code.includes("filmovi=[") &&
+          code.includes("filmovi[2]=") &&
+          code.includes("print(filmovi)"),
       },
     },
     {
@@ -154,7 +154,7 @@ print(6 not in ocjene)`,
           code.includes("temperature") &&
           code.includes("max(") &&
           code.includes("min(") &&
-          code.includes("sort()") &&
+          (code.includes("sort()") || code.includes("sorted(")) &&
           code.includes("print("),
       },
     },
@@ -260,10 +260,10 @@ print(plejlista)`,
       expectedOutput: `False\n['Hotel California', 'Smells Like Teen Spirit', 'Purple Rain', 'Imagine', "Sweet Child O' Mine"]`,
       hint: "Koristi append() za dodavanje, 'in' za provjeru i indeks [0] za zamjenu.",
       check: (code) =>
-        code.includes("plejlista") &&
+        code.includes("plejlista=[") &&
         code.includes("append(") &&
         code.includes("inplejlista") &&
-        code.includes("plejlista[0]") &&
+        code.includes("plejlista[0]=") &&
         code.includes("print("),
     },
     {

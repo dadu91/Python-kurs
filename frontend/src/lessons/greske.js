@@ -152,6 +152,8 @@ finally:
         code.includes("try:") &&
         code.includes("exceptzerodivisionerror") &&
         code.includes("finally:") &&
+        code.includes("dijeljenjesanulomnijedozvoljeno") &&
+        code.includes("kalkulacijazavrsena") &&
         code.includes("print("),
     },
     {
@@ -171,8 +173,11 @@ finally:
       hint: "Koristi lista[10] unutar try bloka, except IndexError za grešku i finally za završnu poruku.",
       check: (code) =>
         code.includes("try:") &&
+        code.includes("[10]") &&
         code.includes("exceptindexerror") &&
         code.includes("finally:") &&
+        code.includes("indeksnepostoji") &&
+        code.includes("programzavrsen") &&
         code.includes("print("),
     },
   ],

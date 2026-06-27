@@ -55,10 +55,10 @@ print(osoba.get("email", "nema emaila"))`,
         placeholder: "Ovdje upiši kod...",
         hint: "Treba ti: auto = {\"marka\": \"...\", \"godina\": ...} i print(auto[\"marka\"]).",
         check: (code) =>
-          code.includes("auto") &&
+          code.includes("auto={") &&
           code.includes("marka") &&
           code.includes("godina") &&
-          code.includes("print("),
+          code.includes('print(auto["marka"]'),
       },
     },
     {
@@ -80,10 +80,9 @@ print(osoba)`,
         placeholder: "Ovdje upiši kod...",
         hint: "Treba ti: igrac = {\"ime\": \"...\"}, igrac[\"bodovi\"] = 100 i print(igrac).",
         check: (code) =>
-          code.includes("igrac") &&
-          code.includes("bodovi") &&
-          code.includes("100") &&
-          code.includes("print("),
+          code.includes("igrac={") &&
+          code.includes('igrac["bodovi"]=100') &&
+          code.includes("print(igrac)"),
       },
     },
     {
@@ -199,7 +198,10 @@ print(brojac)`,
         code.includes("vocke") &&
         code.includes("brojac") &&
         code.includes("for") &&
-        code.includes("print("),
+        code.includes("inbrojac") &&
+        code.includes("+=1") &&
+        code.includes("=1") &&
+        code.includes("print(brojac)"),
     },
   ],
 };

@@ -33,10 +33,14 @@ function Progress() {
   const badges = [
     { icon: "🏆", label: "Prva lekcija", desc: "Završi prvu lekciju", earned: zavrseneLekcije >= 1 },
     { icon: "📚", label: "Marljivi učenik", desc: "Završi 3 lekcije", earned: zavrseneLekcije >= 3 },
+    { icon: "🔥", label: "Na pola puta", desc: "Završi 6 lekcija", earned: zavrseneLekcije >= 6 },
     { icon: "⭐", label: "100 bodova", desc: "Skupi 100 bodova", earned: stats.bodovi >= 100 },
+    { icon: "💎", label: "500 bodova", desc: "Skupi 500 bodova", earned: stats.bodovi >= 500 },
     { icon: "⚡", label: "Nivo 3", desc: "Dostigni nivo 3", earned: stats.nivo >= 3 },
-    { icon: "🎯", label: "Oštar um", desc: "90%+ tačnost na zadacima", earned: tacnostPct >= 90 && ukupnoZadataka > 0 },
     { icon: "🐍", label: "Python majstor", desc: "Dostigni nivo 5", earned: stats.nivo >= 5 },
+    { icon: "🎯", label: "Oštar um", desc: "90%+ tačnost na zadacima", earned: tacnostPct >= 90 && ukupnoZadataka > 0 },
+    { icon: "✅", label: "Vrijedan", desc: "50 tačnih zadataka", earned: stats.tacni >= 50 },
+    { icon: "🎓", label: "Kurs završen", desc: "Završi sve lekcije", earned: ukupnoLekcija > 0 && zavrseneLekcije >= ukupnoLekcija },
   ];
 
   useEffect(() => {

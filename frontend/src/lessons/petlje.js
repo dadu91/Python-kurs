@@ -56,7 +56,7 @@ while x < 3:
           code.includes("broj=1") &&
           code.includes("while") &&
           code.includes("print(") &&
-          code.includes("broj+=1"),
+          (code.includes("broj+=1") || code.includes("broj=broj+1")),
       },
     },
     {
@@ -81,7 +81,8 @@ for i in range(10, 0, -2):
         placeholder: "Ovdje upiši kod...",
         hint: "Treba ti: for i in range(1, 6): i print(i ** 2).",
         check: (code) =>
-          code.includes("range(") &&
+          code.includes("for") &&
+          code.includes("range(1,6)") &&
           code.includes("**2") &&
           code.includes("print("),
       },
@@ -104,10 +105,14 @@ for v in voce:
         placeholder: "Ovdje upiši kod...",
         hint: "Treba ti: for ocjena in ocjene:, if ocjena >= 2: print(\"Položio\") i else: print(\"Pao\").",
         check: (code) =>
-          code.includes("ocjene") &&
+          code.includes("ocjene=[2,4,5,3,1]") &&
           code.includes("for") &&
           code.includes("inocjene:") &&
           code.includes("if") &&
+          code.includes(">=2") &&
+          code.includes("else") &&
+          code.includes("položio") &&
+          code.includes("pao") &&
           code.includes("print("),
       },
     },
@@ -131,7 +136,7 @@ for i in range(5):
         hint: "Fali x += 1 unutar petlje — bez toga x ostaje 0 zauvijek.",
         check: (code) =>
           code.includes("while") &&
-          code.includes("x+=1") &&
+          (code.includes("x+=1") || code.includes("x=x+1")) &&
           code.includes("print("),
       },
     },
@@ -199,7 +204,8 @@ for i in range(5):
       expectedOutput: `5 x 1 = 5\n5 x 2 = 10\n5 x 3 = 15\n5 x 4 = 20\n5 x 5 = 25\n5 x 6 = 30\n5 x 7 = 35\n5 x 8 = 40\n5 x 9 = 45\n5 x 10 = 50`,
       hint: "Treba ti: for i in range(1, 11): i print(\"5 *\", i, \"=\", 5 * i).",
       check: (code) =>
-        code.includes("range(") &&
+        code.includes("for") &&
+        code.includes("range(1,11)") &&
         code.includes("5*i") &&
         code.includes("print("),
     },
@@ -223,6 +229,8 @@ for broj in brojevi:
         code.includes("for") &&
         code.includes("%2==0") &&
         code.includes("else") &&
+        code.includes("parno") &&
+        code.includes("neparno") &&
         code.includes("print("),
     },
     {

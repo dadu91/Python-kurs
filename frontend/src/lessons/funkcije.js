@@ -166,8 +166,8 @@ print(rezultat)`,
       expectedOutput: `25`,
       hint: "Funkcija treba da koristi return, ne print. Rezultat čuvaj u promjenljivoj pa ispiši.",
       check: (code) =>
-        code.includes("defkvadr") &&
-        code.includes("return") &&
+        code.includes("defkvadrat(broj)") &&
+        (code.includes("returnbroj*broj") || code.includes("returnbroj**2")) &&
         code.includes("kvadrat(") &&
         code.includes("print("),
     },

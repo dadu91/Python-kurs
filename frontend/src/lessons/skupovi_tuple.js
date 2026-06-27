@@ -58,8 +58,8 @@ print(vocke)`,
         placeholder: "Ovdje upiši kod...",
         hint: "Treba ti: ocjene = [5, 4, 5, 3, 4], skup = set(ocjene) i print(skup).",
         check: (code) =>
-          code.includes("ocjene") &&
-          code.includes("set(") &&
+          code.includes("ocjene=[") &&
+          code.includes("set(ocjene)") &&
           code.includes("print("),
       },
     },
@@ -137,8 +137,8 @@ print("Samo u prvom:", samo_a)`,
       check: (code) =>
         code.includes("razred_a") &&
         code.includes("razred_b") &&
-        code.includes("&") &&
-        code.includes("-") &&
+        code.includes("razred_a&razred_b") &&
+        code.includes("razred_a-razred_b") &&
         code.includes("print("),
     },
     {
@@ -161,6 +161,7 @@ print("Srednja tacka:", srednja)`,
         code.includes("tacka_b") &&
         code.includes("[0]") &&
         code.includes("[1]") &&
+        code.includes("/2") &&
         code.includes("print("),
     },
   ],
