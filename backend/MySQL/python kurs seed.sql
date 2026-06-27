@@ -172,3 +172,20 @@ INSERT INTO greska (tip_greske, opis) VALUES
 -- ADMIN (sifra: Admin.12345)
 INSERT INTO korisnik (username, password, mail, uloga) VALUES
 ('Admin', '$2b$12$frdM2qj/WLqMO3IPmMWmsebHPDT/EaKj5pKl5pShfOI2h/JRtVzMy', 'admin@gmail.com', 'admin');
+
+
+ALTER TABLE lekcija
+ADD COLUMN sadrzaj TEXT NULL;
+
+ALTER TABLE lekcija
+ADD COLUMN ciljevi TEXT,
+ADD COLUMN primjer_koda TEXT,
+ADD COLUMN objasnjenje_koda TEXT,
+ADD COLUMN trajanje VARCHAR(50),
+ADD COLUMN nivo VARCHAR(50);
+
+ALTER TABLE korisnik
+ADD COLUMN last_login_at DATETIME NULL;
+
+ALTER TABLE korisnik
+ADD COLUMN ukupno_vrijeme INT(11) DEFAULT 0;

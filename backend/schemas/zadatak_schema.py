@@ -28,6 +28,7 @@ class ZadatakOut(BaseModel):
 
 class ZadatakCreate(BaseModel):
     lekcija_id: int
+    redoslijed: Optional[int] = 1
 
     naziv: str
     opis: Optional[str] = None
@@ -48,6 +49,7 @@ class ZadatakCreate(BaseModel):
 class ZadatakUpdate(BaseModel):
     naziv: Optional[str] = None
     opis: Optional[str] = None
+    redoslijed: Optional[int] = None
 
     odgovor_a: Optional[str] = None
     odgovor_b: Optional[str] = None

@@ -587,16 +587,15 @@
 }
 
 .code-objasnjenje-broj {
-  background: #fdba74;
-  color: white;
-  font-weight: 700;
-  font-size: 12px;
-  min-width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
+  background: #ffb86b;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 700;
   flex-shrink: 0;
 }
 

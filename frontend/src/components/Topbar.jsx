@@ -30,7 +30,26 @@ function Topbar() {
   const isAdmin = uloga === "admin";
   const isOnAdmin = location.pathname.startsWith("/admin");
 
-  const handleOdjava = () => {
+  const handleOdjava = async () => {
+    const token = localStorage.getItem("token");
+    const loginTime = Number(localStorage.getItem("loginTime"));
+
+    if (token && loginTime) {
+      const sekunde = Math.floor((Date.now() - loginTime) / 1000);
+
+      if (sekunde > 0) {
+        await fetch("http://localhost:8000/korisnik/vrijeme", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ sekunde }),
+        });
+      }
+    }
+
+    localStorage.removeItem("loginTime");
     localStorage.removeItem("token");
     localStorage.removeItem("uloga");
     localStorage.removeItem("profileImage");

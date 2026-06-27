@@ -3,6 +3,7 @@ from fastapi import HTTPException, status
 from repositories import korisnik_repository
 from utils.auth import create_access_token
 from utils.security import verify_password
+from datetime import datetime
 
 def login(db: Session, username: str, password: str):
     # 1. Nađi korisnika po usernameu
@@ -21,6 +22,11 @@ def login(db: Session, username: str, password: str):
             detail="Pogrešno korisničko ime ili lozinka",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    
+    korisnik.last_login_at = datetime.now()
+    db.commit()
+    db.refresh(korisnik)
+
     # 4. Generiši token i vrati ga
     access_token = create_access_token(data={"sub": korisnik.username})
     return {"access_token": access_token, "token_type": "bearer"}

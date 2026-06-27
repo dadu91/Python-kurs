@@ -10,6 +10,7 @@ class LekcijaBase(BaseModel):
     objasnjenje_koda: str | None = None
     trajanje: str | None = None
     nivo: str | None = None
+    sadrzaj: str | None = None
 
 
 class LekcijaCreate(LekcijaBase):
@@ -25,6 +26,7 @@ class LekcijaUpdate(BaseModel):
     objasnjenje_koda: str | None = None
     trajanje: str | None = None
     nivo: str | None = None
+    sadrzaj: str | None = None
 
 
 class LekcijaOut(LekcijaBase):

@@ -35,7 +35,31 @@ function Sidebar({ activeTab, setActiveTab }) {
       </div>
 
       <div className="logout">
-        <button className="side-icon" onClick={() => navigate("/login")}>
+        <button className="side-icon" onClick={async () => {
+          const token = localStorage.getItem("token");
+          const loginTime = Number(localStorage.getItem("loginTime"));
+
+          if (token && loginTime) {
+            const sekunde = Math.floor((Date.now() - loginTime) / 1000);
+
+            if (sekunde > 0) {
+              await fetch("http://localhost:8000/korisnik/vrijeme", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ sekunde }),
+              });
+            }
+          }
+
+          localStorage.removeItem("loginTime");
+          localStorage.removeItem("token");
+          localStorage.removeItem("uloga");
+          localStorage.removeItem("profileImage");
+          navigate("/login");
+        }}>
           <div className="icon-wrap">
             <LogOut size={20} />
           </div>

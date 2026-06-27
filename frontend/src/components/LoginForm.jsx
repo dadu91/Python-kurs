@@ -30,6 +30,7 @@ function LoginForm() {
       const data = await res.json();
       const token = data.access_token;
       localStorage.setItem("token", token);
+      localStorage.setItem("loginTime", Date.now());
       // Očisti staru sliku da novi korisnik ne vidi sliku prethodnog
       localStorage.removeItem("profileImage");
 
