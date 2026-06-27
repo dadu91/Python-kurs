@@ -14,3 +14,4 @@ class Lekcija(Base):
     objasnjenje_koda = Column(Text, nullable=True)
     trajanje = Column(String(50), nullable=True)
     nivo = Column(String(50), nullable=True)
+    sadrzaj = Column(Text, nullable=True)

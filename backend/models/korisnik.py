@@ -11,3 +11,5 @@ class Korisnik(Base):
     password = Column(String(100), nullable=False)
     uloga = Column(String(20), default="korisnik")
     datum_reg = Column(DateTime, server_default=func.now())
+    last_login_at = Column(DateTime, nullable=True)
+    ukupno_vrijeme = Column(Integer, default=0)

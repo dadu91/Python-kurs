@@ -14,8 +14,12 @@ class KorisnikCreate(KorisnikBase):
 # sema za prikaz
 class KorisnikOut(KorisnikBase):
     id: int
+    username: str
+    mail: str
     uloga: str
     datum_reg: datetime
+    last_login_at: Optional[datetime] = None
+    ukupno_vrijeme: int
 
     class Config:
         from_attributes = True #Ovo omogućava Pydanticu da čita SQLAlchemy modele
@@ -24,3 +28,6 @@ class KorisnikUpdate(BaseModel):
     username: Optional[str] = None
     mail: Optional[EmailStr] = None
     password: Optional[str] = None
+
+class VrijemeUpdate(BaseModel):
+    sekunde: int

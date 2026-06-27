@@ -60,6 +60,45 @@ function Lesson() {
   const [nextLessonId, setNextLessonId] = useState(null);
   const hardkodiranaLekcija = lessonsByRedoslijed[redoslijed];
 
+
+let parsedSadrzaj = {
+  oblasti: [],
+  miniProvjere: [],
+};
+
+try {
+  const parsed = dbLekcija?.sadrzaj ? JSON.parse(dbLekcija.sadrzaj) : null;
+
+  if (Array.isArray(parsed)) {
+    parsedSadrzaj = {
+      oblasti: parsed,
+      miniProvjere: [],
+    };
+  } else if (parsed) {
+    parsedSadrzaj = {
+      oblasti: parsed.oblasti || [],
+      miniProvjere: parsed.miniProvjere || [],
+    };
+  }
+} catch {
+  parsedSadrzaj = {
+    oblasti: [],
+    miniProvjere: [],
+  };
+}
+
+const adminTheoryBlocks = parsedSadrzaj.oblasti.map((oblast, index) => ({
+  title: oblast.naziv || `Oblast ${index + 1}`,
+  elementi: oblast.elementi || [],
+}));
+
+const adminQuestions = parsedSadrzaj.miniProvjere.map((p, index) => ({
+  redoslijed: index + 1,
+  question: p.pitanje || "",
+  answers: [p.a, p.b, p.c, p.d].filter(Boolean),
+  correct: Number(p.tacan),
+}));
+
 const lesson = hardkodiranaLekcija || (dbLekcija
   ? {
       badge: `Lekcija ${dbLekcija.redoslijed}`,
@@ -76,22 +115,12 @@ const lesson = hardkodiranaLekcija || (dbLekcija
           }))
         : [],
 
-      theoryBlocks: [
-        {
-          title: dbLekcija.naziv,
-          text: dbLekcija.opis || "",
-          code: dbLekcija.primjer_koda || "",
-          codeObjasnjenje: dbLekcija.objasnjenje_koda
-            ? dbLekcija.objasnjenje_koda.split("\n")
-            : [],
-        },
-      ],
-
-      questions: [],
-
+      theoryBlocks: adminTheoryBlocks,
+      questions: adminQuestions,
       codingTasks: [],
     }
   : null);
+
 
   const [activeTab, setActiveTab] = useState("lessons");
   const [selectedAnswers, setSelectedAnswers] = useState({});
@@ -332,8 +361,14 @@ const lesson = hardkodiranaLekcija || (dbLekcija
   // Build steps
   const steps = [
     { type: "goals", label: "Uvod" },
-    ...lesson.theoryBlocks.map((b, i) => ({ type: "theory", index: i, label: b.title })),
-    { type: "quiz", label: "Mini provjere" },
+    ...lesson.theoryBlocks.map((b, i) => ({
+      type: "theory",
+      index: i,
+      label: b.title,
+    })),
+    ...(lesson.questions.length > 0
+      ? [{ type: "quiz", label: "Mini provjere" }]
+      : []),
     ...(hasCodingTasks ? [{ type: "coding", label: "Kod zadaci" }] : []),
     { type: "finish", label: "Završi" },
   ];
@@ -453,111 +488,216 @@ const lesson = hardkodiranaLekcija || (dbLekcija
           )}
 
           {step.type === "theory" && (
-            <div className="theory-flow step-content">
-              {(() => {
-                const block = lesson.theoryBlocks[step.index];
-                const blockIndex = step.index;
-                return (
-                  <div className="theory-block lesson-panel">
-                    <div className="panel-title-row">
-                      <h2>{block.title}</h2>
-                      <Code2 size={22} />
-                    </div>
-                    <p>{block.text}</p>
-                    <pre className="mini-code">{block.code}</pre>
+  <div className="theory-flow step-content">
+    {(() => {
+      const block = lesson.theoryBlocks[step.index];
+      const blockIndex = step.index;
 
-                    {block.codeObjasnjenje && (
-                      <div className="code-objasnjenje">
-                        {block.codeObjasnjenje.map((linija, i) => (
-                          <div key={i} className="code-objasnjenje-red">
-                            <span className="code-objasnjenje-broj">{i + 1}</span>
-                            <span>{linija}</span>
-                          </div>
-                        ))}
+      return (
+        <div className="theory-block lesson-panel">
+          <div className="panel-title-row">
+            <h2>{block.title}</h2>
+            <Code2 size={22} />
+          </div>
+
+          {block.elementi ? (
+            block.elementi.map((el, i) => (
+              <div key={el.id || i} className="admin-content-block">
+                  {el.tip === "teorija" && (
+                    <>
+                      {el.naslov && <h3>{el.naslov}</h3>}
+                      <p>{el.tekst}</p>
+                    </>
+                  )}
+
+                  {el.tip === "kod" && (
+                    <>
+                      <pre className="mini-code">{el.kod}</pre>
+
+                      {el.objasnjenje && (
+                        <div className="code-objasnjenje">
+                          {(Array.isArray(el.objasnjenje)
+                            ? el.objasnjenje
+                            : (el.objasnjenje || "").split("\n")
+                          )
+                            .filter((red) => red.trim() !== "")
+                            .map((red, i) => (
+                              <div className="code-objasnjenje-red" key={i}>
+                                <span className="code-objasnjenje-broj">{i + 1}</span>
+                                <span>{red}</span>
+                              </div>
+                            ))}
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {el.tip === "vjezba" && (
+                    <div className="vjezba-sintakse">
+                      <h4>Vježba sintakse</h4>
+                      <p>{el.tekst}</p>
+
+                      <textarea
+                        className="code-input"
+                        placeholder="Ovdje upiši kod..."
+                        value={vjezbaKodovi[el.id] || ""}
+                        onChange={(e) =>
+                          setVjezbaKodovi((prev) => ({
+                            ...prev,
+                            [el.id]: e.target.value,
+                          }))
+                        }
+                      />
+
+                      <div className="code-actions">
+                        <button
+                          className="check-code-btn"
+                          onClick={() => {
+                            const unos = (vjezbaKodovi[el.id] || "").trim();
+                            const tacno = (el.rjesenje || "").trim();
+
+                            setVjezbaRezultati((prev) => ({
+                              ...prev,
+                              [el.id]: unos === tacno ? "correct" : "wrong",
+                            }));
+                          }}
+                        >
+                          Provjeri
+                        </button>
+                      </div>
+
+                      {vjezbaRezultati[el.id] === "correct" && (
+                        <div className="code-result correct-result">
+                          ✅ Tačno!
+                        </div>
+                      )}
+
+                      {vjezbaRezultati[el.id] === "wrong" && (
+                        <div className="code-result wrong-result">
+                          Nije tačno.
+                          {el.rjesenje && (
+                            <> Treba ti: <strong>{el.rjesenje}</strong></>
+                          )}
+                        </div>
+)}
+                    </div>
+                  )}
+
+                  {el.tip === "quiz" && (
+                    <article className="quiz-card">
+                      <h3>{el.pitanje}</h3>
+
+                      <div className="answer-list">
+                        {[el.a, el.b, el.c, el.d].map((odg, index) => {
+                          if (!odg) return null;
+
+                          const key = el.id;
+                          const selected = adminSelectedAnswers[key];
+                          const isSelected = selected === index;
+                          const isCorrect = Number(el.tacan) === index;
+
+                          let buttonClass = "answer-btn";
+                          if (selected !== undefined && isSelected && isCorrect) {
+                            buttonClass += " correct";
+                          }
+                          if (selected !== undefined && isSelected && !isCorrect) {
+                            buttonClass += " wrong";
+                          }
+
+                          return (
+                            <button
+                              key={index}
+                              className={buttonClass}
+                              onClick={() =>
+                                setAdminSelectedAnswers({
+                                  ...adminSelectedAnswers,
+                                  [key]: index,
+                                })
+                              }
+                            >
+                              {odg}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      {adminSelectedAnswers[el.id] !== undefined && (
+                        <p className="answer-feedback">
+                          {adminSelectedAnswers[el.id] === Number(el.tacan)
+                            ? "Tačno!"
+                            : "Nije tačno. Pokušaj ponovo."}
+                        </p>
+                      )}
+                    </article>
+                  )}
+                </div>
+              ))
+            ) : (
+              <>
+                <p>{block.text}</p>
+                <pre className="mini-code">{block.code}</pre>
+
+                {block.codeObjasnjenje && (
+                  <div className="code-objasnjenje">
+                    {block.codeObjasnjenje.map((linija, i) => (
+                      <div key={i} className="code-objasnjenje-red">
+                        <span className="code-objasnjenje-broj">{i + 1}</span>
+                        <span>{linija}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {block.vjezbaSintakse && (
+                  <div className="vjezba-sintakse">
+                    <h4>Vježba sintakse</h4>
+                    <p>{block.vjezbaSintakse.uputstvo}</p>
+
+                    <textarea
+                      className="code-input"
+                      placeholder={block.vjezbaSintakse.placeholder}
+                      value={
+                        vjezbaKodovi[blockIndex] !== undefined
+                          ? vjezbaKodovi[blockIndex]
+                          : block.vjezbaSintakse.initialCode || ""
+                      }
+                      onChange={(e) => {
+                        setVjezbaKodovi((prev) => ({
+                          ...prev,
+                          [blockIndex]: e.target.value,
+                        }));
+                      }}
+                    />
+
+                    <div className="code-actions">
+                      <button
+                        className="check-code-btn"
+                        onClick={() => checkVjezbu(blockIndex)}
+                      >
+                        Provjeri
+                      </button>
+                    </div>
+
+                    {vjezbaRezultati[blockIndex] === "correct" && (
+                      <div className="code-result correct-result">
+                        Tačno! Sintaksa je ispravna.
                       </div>
                     )}
 
-                    {block.vjezbaSintakse && (
-                      <div className="vjezba-sintakse">
-                        <h4>Vježba sintakse</h4>
-                        <p>{block.vjezbaSintakse.uputstvo}</p>
-                        <textarea
-                          className="code-input"
-                          placeholder={block.vjezbaSintakse.placeholder}
-                          value={vjezbaKodovi[blockIndex] !== undefined ? vjezbaKodovi[blockIndex] : (block.vjezbaSintakse.initialCode || "")}
-                          onChange={(e) => {
-                            const initial = block.vjezbaSintakse.initialCode || "";
-                            const val = e.target.value.startsWith(initial) ? e.target.value : initial;
-                            setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: val }));
-                          }}
-                          onKeyDown={(e) => {
-                            const el = e.target;
-                            const start = el.selectionStart;
-                            const end = el.selectionEnd;
-                            const code = el.value;
-                            const pairs = { "(": ")", '"': '"', "'": "'", "{": "}", "[": "]" };
-                            if (pairs[e.key]) {
-                              e.preventDefault();
-                              const newVal = code.substring(0, start) + e.key + pairs[e.key] + code.substring(end);
-                              setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
-                              setTimeout(() => { el.selectionStart = start + 1; el.selectionEnd = start + 1; }, 0);
-                              return;
-                            }
-                            if (e.key === "Tab") {
-                              e.preventDefault();
-                              const newVal = code.substring(0, start) + "    " + code.substring(end);
-                              setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
-                            }
-                            if (e.key === "Backspace" && start === end && code.substring(start - 4, start) === "    ") {
-                              e.preventDefault();
-                              const newVal = code.substring(0, start - 4) + code.substring(end);
-                              setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
-                              setTimeout(() => { el.selectionStart = start - 4; el.selectionEnd = start - 4; }, 0);
-                            }
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              const currentLine = code.substring(0, start).split("\n").pop();
-                              const indent = currentLine.match(/^(\s*)/)[1];
-                              const extraIndent = currentLine.trimEnd().endsWith(":") ? "    " : "";
-                              if (code[start - 1] === "{" && code[start] === "}") {
-                                const newVal = code.substring(0, start) + "\n" + indent + "    " + "\n" + indent + code.substring(end);
-                                const newPos = start + 1 + indent.length + 4;
-                                setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
-                                setTimeout(() => { el.selectionStart = newPos; el.selectionEnd = newPos; }, 0);
-                              } else {
-                                const newVal = code.substring(0, start) + "\n" + indent + extraIndent + code.substring(end);
-                                const newPos = start + 1 + indent.length + extraIndent.length;
-                                setVjezbaKodovi((prev) => ({ ...prev, [blockIndex]: newVal }));
-                                setTimeout(() => { el.selectionStart = newPos; el.selectionEnd = newPos; }, 0);
-                              }
-                            }
-                          }}
-                        />
-                        <div className="code-actions">
-                          <button
-                            className="check-code-btn"
-                            onClick={() => checkVjezbu(blockIndex)}
-                          >
-                            Provjeri
-                          </button>
-                        </div>
-                        {vjezbaRezultati[blockIndex] === "correct" && (
-                          <div className="code-result correct-result">
-                            Tačno! Sintaksa je ispravna.
-                          </div>
-                        )}
-                        {vjezbaRezultati[blockIndex] === "wrong" && (
-                          <div className="code-result wrong-result">
-                            Nije tačno. {block.vjezbaSintakse.hint}
-                          </div>
-                        )}
+                    {vjezbaRezultati[blockIndex] === "wrong" && (
+                      <div className="code-result wrong-result">
+                        Nije tačno. {block.vjezbaSintakse.hint}
                       </div>
                     )}
                   </div>
-                );
-              })()}
-            </div>
-          )}
+                )}
+              </>
+            )}
+          </div>
+        );
+      })()}
+    </div>
+  )}
 
           {step.type === "quiz" && (
             <section className="quiz-section step-content">

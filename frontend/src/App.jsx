@@ -7,6 +7,7 @@ import Progress from "./pages/Progress";
 import Settings from "./pages/Settings";
 import Lesson from "./pages/Lesson";
 import Admin from "./pages/Admin";
+import LessonForm from "./pages/LessonForm";
 
 function ProtectedRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -27,6 +28,8 @@ function App() {
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         <Route path="/lekcije/:id" element={<ProtectedRoute><Lesson /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+        <Route path="/admin/lekcije/nova" element={<LessonForm />} />
+        <Route path="/admin/lekcije/:id/izmjena" element={<LessonForm />} />
       </Routes>
     </BrowserRouter>
   );

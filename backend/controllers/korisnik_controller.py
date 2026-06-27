@@ -7,7 +7,7 @@ from utils.auth import get_current_user
 
 from database import get_db
 from services import korisnik_service
-from schemas.korisnik_schema import KorisnikOut, KorisnikCreate, KorisnikUpdate
+from schemas.korisnik_schema import KorisnikOut, KorisnikCreate, KorisnikUpdate, VrijemeUpdate
 
 router = APIRouter(prefix="/korisnik", tags=["Korisnik"])
 
@@ -44,3 +44,22 @@ def izbrisi_korisnika(user_id: int, db: Session = Depends(get_db), current_user:
         raise HTTPException(status_code=403, detail="Zabranjeno brisanje korisnika jer se SWT tokeni ne poklapaju.")
             
     korisnik_service.delete_korisnik(db, korisnik_service.get_korisnik_id(db,user_id))
+
+@router.post("/vrijeme")
+def dodaj_vrijeme(
+    podaci: VrijemeUpdate,
+    db: Session = Depends(get_db),
+    current_user: Korisnik = Depends(get_current_user)
+):
+    if podaci.sekunde <= 0:
+        return {"message": "Nema vremena za dodavanje"}
+
+    current_user.ukupno_vrijeme = (current_user.ukupno_vrijeme or 0) + podaci.sekunde
+
+    db.commit()
+    db.refresh(current_user)
+
+    return {
+        "message": "Vrijeme je ažurirano",
+        "ukupno_vrijeme": current_user.ukupno_vrijeme
+    }
