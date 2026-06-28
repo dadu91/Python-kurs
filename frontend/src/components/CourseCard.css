@@ -1,8 +1,43 @@
-.top-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 18px;
+.karusel-wrap {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
   margin-bottom: 20px;
+}
+
+.karusel-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  flex: 1;
+  min-width: 0;
+}
+
+.karusel-arrow {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  align-self: center;
+  border-radius: 50%;
+  border: 1px solid #e5e7eb;
+  background: white;
+  color: #374151;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.karusel-arrow:hover:not(:disabled) {
+  background: #f3f4f6;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.karusel-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
 }
 
 .course-card {

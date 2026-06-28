@@ -10,7 +10,9 @@ CREATE TABLE korisnik (
 	password VARCHAR(100) NOT NULL,
     mail VARCHAR(100) NOT NULL UNIQUE,
     uloga VARCHAR(20) DEFAULT 'korisnik',
-    datum_reg DATETIME DEFAULT CURRENT_TIMESTAMP
+    datum_reg DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_login_at DATETIME NULL,
+    ukupno_vrijeme INT DEFAULT 0
 );
 
 CREATE TABLE lekcija (
@@ -22,7 +24,8 @@ CREATE TABLE lekcija (
     primjer_koda TEXT,
     objasnjenje_koda TEXT,
     trajanje VARCHAR(50),
-    nivo VARCHAR(50)
+    nivo VARCHAR(50),
+    sadrzaj TEXT
 );
 
 CREATE TABLE zadatak (
@@ -80,22 +83,4 @@ CREATE TABLE zadatak_korisnik (
     FOREIGN KEY (greska_id) REFERENCES greska(id) ON DELETE SET NULL
 );
 
-select * from korisnik;
-select korisnik_id, zadatak_id
-from zadatak_korisnik, zadatak, korisnik
-where korisnik.id = zadatak_korisnik.korisnik_id and zadatak.id = zadatak_korisnik.zadatak_id and korisnik.id = 8;
-
-select * from zadatak;
-select * from zadatak;
-
-select * from zadatak_korisnik;
-select * from korisnik;
-
-SELECT * FROM zadatak_korisnik WHERE korisnik_id = 3;
-select * from korisnik where id = 1;
-
-DELETE FROM zadatak WHERE lekcija_id = (SELECT id FROM lekcija WHERE redoslijed = 3);
-DELETE FROM lekcija WHERE redoslijed = 3;
-
-SELECT id, redoslijed, tip FROM zadatak WHERE lekcija_id = (SELECT id FROM lekcija WHERE naziv = 'Promjenljive u Pythonu');
 

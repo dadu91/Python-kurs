@@ -53,22 +53,48 @@ def get_netacni_zadaci_by_korisnik(db: Session, korisnik_id: int):
         ZadatakKorisnik.tacno == False
     ).all()
 
-def get_greske_by_korisnik(db: Session, korisnik_id: int):
+def get_netacni_detalji(db: Session, korisnik_id: int):
     from sqlalchemy import func
-    from models.greska import Greska
     return (
         db.query(
-            Greska.tip_greske.label("tip_greske"),
-            Greska.opis.label("opis"),
-            func.count(ZadatakKorisnik.id).label("broj"),
-            func.max(ZadatakKorisnik.datum).label("zadnji_put"),
+            ZadatakKorisnik.id.label("id"),
+            ZadatakKorisnik.datum.label("datum"),
+            Zadatak.naziv.label("zadatak_naziv"),
+            Zadatak.tip.label("zadatak_tip"),
+            Zadatak.redoslijed.label("zadatak_redoslijed"),
+            Lekcija.id.label("lekcija_id"),
+            Lekcija.naziv.label("lekcija_naziv"),
         )
-        .join(Greska, ZadatakKorisnik.greska_id == Greska.id)
+        .join(Zadatak, ZadatakKorisnik.zadatak_id == Zadatak.id)
+        .join(Lekcija, Zadatak.lekcija_id == Lekcija.id)
         .filter(ZadatakKorisnik.korisnik_id == korisnik_id, ZadatakKorisnik.tacno == False)
-        .group_by(Greska.tip_greske, Greska.opis)
+        .order_by(ZadatakKorisnik.datum.desc())
+        .all()
+    )
+
+def get_netacni_by_lekcija(db: Session, korisnik_id: int):
+    from sqlalchemy import func
+    return (
+        db.query(
+            Lekcija.naziv.label("lekcija_naziv"),
+            func.count(ZadatakKorisnik.id).label("broj")
+        )
+        .join(Zadatak, ZadatakKorisnik.zadatak_id == Zadatak.id)
+        .join(Lekcija, Zadatak.lekcija_id == Lekcija.id)
+        .filter(ZadatakKorisnik.korisnik_id == korisnik_id, ZadatakKorisnik.tacno == False)
+        .group_by(Lekcija.naziv)
         .order_by(func.count(ZadatakKorisnik.id).desc())
         .all()
     )
+
+# DELETE
+def delete_netacni_by_korisnik_zadatak(db: Session, korisnik_id: int, zadatak_id: int):
+    db.query(ZadatakKorisnik).filter(
+        ZadatakKorisnik.korisnik_id == korisnik_id,
+        ZadatakKorisnik.zadatak_id == zadatak_id,
+        ZadatakKorisnik.tacno == False
+    ).delete()
+    db.commit()
 
 # POST
 def create_zadatak_korisnik(db: Session, zadatak_korisnik: ZadatakKorisnik):

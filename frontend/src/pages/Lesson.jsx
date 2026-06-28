@@ -1,6 +1,17 @@
 import "./Lesson.css";
 import { useState, useRef, useEffect } from "react";
 
+function getUsername() {
+  const token = localStorage.getItem("token");
+  if (!token) return "guest";
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.sub || "guest";
+  } catch {
+    return "guest";
+  }
+}
+
 function getKorisnikId() {
   const token = localStorage.getItem("token");
   if (!token) return null;
@@ -25,7 +36,7 @@ async function fetchKorisnikId(token) {
     return null;
   }
 }
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
   ArrowLeft,
   CheckCircle2,
@@ -52,9 +63,107 @@ import moduli from "../lessons/moduli";
 import greske from "../lessons/greske";
 
 const lessonsByRedoslijed = { 1: uvod, 2: promjenljive, 3: uslovi, 4: petlje, 5: liste, 6: stringovi, 7: funkcije, 8: skupoviTuple, 9: rjecnici, 10: moduli, 11: greske };
+
+const PAIRS = { "(": ")", "[": "]", "{": "}", '"': '"', "'": "'" };
+const CLOSING = new Set([")", "]", "}", '"', "'"]);
+
+function editorKeyDown(e) {
+  const el = e.target;
+  const start = el.selectionStart;
+  const end = el.selectionEnd;
+  const code = el.value;
+
+  // Skip over existing closing bracket instead of inserting a new one
+  if (CLOSING.has(e.key) && start === end && code[start] === e.key) {
+    // For quotes: only skip if the char right before is NOT already the same quote
+    // (prevents skipping when you're opening a new string)
+    if (e.key !== '"' && e.key !== "'") {
+      e.preventDefault();
+      el.selectionStart = start + 1;
+      el.selectionEnd = start + 1;
+      return;
+    }
+    // For quotes: skip if the immediately preceding non-space char opened a pair
+    if (code[start - 1] === e.key) {
+      e.preventDefault();
+      el.selectionStart = start + 1;
+      el.selectionEnd = start + 1;
+      return;
+    }
+  }
+
+  // Auto-close opening bracket / quote
+  if (PAIRS[e.key]) {
+    e.preventDefault();
+    if (start !== end) {
+      // Wrap selected text in brackets
+      const selected = code.substring(start, end);
+      el.value = code.substring(0, start) + e.key + selected + PAIRS[e.key] + code.substring(end);
+      el.selectionStart = start + 1;
+      el.selectionEnd = end + 1;
+    } else {
+      el.value = code.substring(0, start) + e.key + PAIRS[e.key] + code.substring(end);
+      el.selectionStart = start + 1;
+      el.selectionEnd = start + 1;
+    }
+    return;
+  }
+
+  // Backspace: delete both brackets if cursor is between a pair
+  if (e.key === "Backspace" && start === end && start > 0) {
+    const prev = code[start - 1];
+    const next = code[start];
+    if (prev in PAIRS && PAIRS[prev] === next) {
+      e.preventDefault();
+      el.value = code.substring(0, start - 1) + code.substring(start + 1);
+      el.selectionStart = start - 1;
+      el.selectionEnd = start - 1;
+      return;
+    }
+    // Delete 4-space indent block
+    if (code.substring(start - 4, start) === "    ") {
+      e.preventDefault();
+      el.value = code.substring(0, start - 4) + code.substring(end);
+      el.selectionStart = start - 4;
+      el.selectionEnd = start - 4;
+      return;
+    }
+  }
+
+  // Tab: insert 4 spaces
+  if (e.key === "Tab") {
+    e.preventDefault();
+    el.value = code.substring(0, start) + "    " + code.substring(end);
+    el.selectionStart = start + 4;
+    el.selectionEnd = start + 4;
+    return;
+  }
+
+  // Enter: auto-indent + extra indent after ':'
+  if (e.key === "Enter") {
+    e.preventDefault();
+    const currentLine = code.substring(0, start).split("\n").pop();
+    const indent = currentLine.match(/^(\s*)/)[1];
+    const extraIndent = currentLine.trimEnd().endsWith(":") ? "    " : "";
+    if (code[start - 1] === "{" && code[start] === "}") {
+      el.value = code.substring(0, start) + "\n" + indent + "    " + "\n" + indent + code.substring(end);
+      const newPos = start + 1 + indent.length + 4;
+      el.selectionStart = newPos;
+      el.selectionEnd = newPos;
+    } else {
+      el.value = code.substring(0, start) + "\n" + indent + extraIndent + code.substring(end);
+      const newPos = start + 1 + indent.length + extraIndent.length;
+      el.selectionStart = newPos;
+      el.selectionEnd = newPos;
+    }
+  }
+}
+
 function Lesson() {
   const navigate = useNavigate();
   const { id } = useParams();
+  const location = useLocation();
+  const lsPrefix = getUsername();
 
   const [redoslijed, setRedoslijed] = useState(null);
   const [dbLekcija, setDbLekcija] = useState(null);
@@ -138,6 +247,8 @@ const lesson = hardkodiranaLekcija || (dbLekcija
   const [zadaciMapa, setZadaciMapa] = useState({});
   const [zadaciIzBaze, setZadaciIzBaze] = useState([]);
   const [uradjeniZadaci, setUradjeniZadaci] = useState(new Set());
+  const [greskaRedoslijed, setGreskaRedoslijed] = useState(null);
+  const [greskaIspravljena, setGreskaIspravljena] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [maxStep, setMaxStep] = useState(0);
   const [lessonAlreadyFinished, setLessonAlreadyFinished] = useState(false);
@@ -162,7 +273,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
   useEffect(() => {
     setFinished(false);
     setLessonAlreadyFinished(false);
-    const savedMax = parseInt(localStorage.getItem(`lesson_progress_${id}`)) || 0;
+    const savedMax = parseInt(localStorage.getItem(`${lsPrefix}_lesson_progress_${id}`)) || 0;
     setMaxStep(savedMax);
     setCurrentStep(0);
     setTaskOutputs({});
@@ -170,7 +281,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
     // Vrati zapamćene odgovore na mini pitanja (da poslije refresha stoje zaključani — i tačni i netačni)
     let savedQuiz = {};
     try {
-      savedQuiz = JSON.parse(localStorage.getItem(`lesson_quiz_${id}`)) || {};
+      savedQuiz = JSON.parse(localStorage.getItem(`${lsPrefix}_lesson_quiz_${id}`)) || {};
     } catch {
       savedQuiz = {};
     }
@@ -179,12 +290,12 @@ const lesson = hardkodiranaLekcija || (dbLekcija
     let savedKod = {};
     let savedKodRes = {};
     try {
-      savedKod = JSON.parse(localStorage.getItem(`lesson_kod_${id}`)) || {};
+      savedKod = JSON.parse(localStorage.getItem(`${lsPrefix}_lesson_kod_${id}`)) || {};
     } catch {
       savedKod = {};
     }
     try {
-      savedKodRes = JSON.parse(localStorage.getItem(`lesson_kodres_${id}`)) || {};
+      savedKodRes = JSON.parse(localStorage.getItem(`${lsPrefix}_lesson_kodres_${id}`)) || {};
     } catch {
       savedKodRes = {};
     }
@@ -193,7 +304,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
     // Vrati zapamćene rezultate vježbi (da štrik/uzvičnik gore preživi refresh)
     let savedVjezbe = {};
     try {
-      savedVjezbe = JSON.parse(localStorage.getItem(`lesson_vjezbe_${id}`)) || {};
+      savedVjezbe = JSON.parse(localStorage.getItem(`${lsPrefix}_lesson_vjezbe_${id}`)) || {};
     } catch {
       savedVjezbe = {};
     }
@@ -216,9 +327,9 @@ const lesson = hardkodiranaLekcija || (dbLekcija
     let savedCpAns = {};
     let savedCpRes = {};
     let savedCpKod = {};
-    try { savedCpAns = JSON.parse(localStorage.getItem(`lesson_cp_ans_${id}`)) || {}; } catch { savedCpAns = {}; }
-    try { savedCpRes = JSON.parse(localStorage.getItem(`lesson_cp_res_${id}`)) || {}; } catch { savedCpRes = {}; }
-    try { savedCpKod = JSON.parse(localStorage.getItem(`lesson_cp_kod_${id}`)) || {}; } catch { savedCpKod = {}; }
+    try { savedCpAns = JSON.parse(localStorage.getItem(`${lsPrefix}_lesson_cp_ans_${id}`)) || {}; } catch { savedCpAns = {}; }
+    try { savedCpRes = JSON.parse(localStorage.getItem(`${lsPrefix}_lesson_cp_res_${id}`)) || {}; } catch { savedCpRes = {}; }
+    try { savedCpKod = JSON.parse(localStorage.getItem(`${lsPrefix}_lesson_cp_kod_${id}`)) || {}; } catch { savedCpKod = {}; }
     setCpAnswers(savedCpAns);
     setCpCodeResults(savedCpRes);
     setCpCodes(savedCpKod);
@@ -305,6 +416,45 @@ const lesson = hardkodiranaLekcija || (dbLekcija
     }
   }, [lessonAlreadyFinished, lesson]);
 
+  useEffect(() => {
+    const gotoStep = location.state?.gotoStep;
+    if (!lesson || !gotoStep) return;
+    const theoryCount = lesson.theoryBlocks?.length || 0;
+    const hasQuiz = (lesson.questions?.length || 0) > 0;
+    const hasCoding = (lesson.codingTasks?.length || 0) > 0;
+    let targetIndex = null;
+    if (gotoStep === "quiz" && hasQuiz) {
+      targetIndex = 1 + theoryCount;
+      // Resetuj pogrešne odgovore da korisnik može popraviti
+      setSelectedAnswers((prev) => {
+        const fixed = { ...prev };
+        lesson.questions.forEach((q, i) => {
+          if (fixed[i] !== undefined && fixed[i] !== q.correct) delete fixed[i];
+        });
+        try { localStorage.setItem(`${lsPrefix}_lesson_quiz_${id}`, JSON.stringify(fixed)); } catch {}
+        return fixed;
+      });
+    }
+    if (gotoStep === "coding" && hasCoding) targetIndex = 1 + theoryCount + (hasQuiz ? 1 : 0);
+    if (targetIndex !== null) {
+      setCurrentStep(targetIndex);
+      setMaxStep((prev) => Math.max(prev, targetIndex));
+
+      const red = location.state?.zadatakRedoslijed;
+      if (red != null) {
+        setGreskaRedoslijed(red);
+        setTimeout(() => {
+          const el = document.getElementById(`zadatak-${red}`);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.classList.add("zadatak-highlight");
+            setTimeout(() => el.classList.remove("zadatak-highlight"), 2500);
+          }
+        }, 400);
+      }
+    }
+  }, [lesson, location.state]);
+
   // Checkpoint = svake 2 lekcije (parne) ILI zadnja lekcija u kursu
   // Checkpoint (kontrolna provjera prethodne lekcije) je samo na parnim lekcijama (parovi 1-2, 3-4, ...).
   // Zadnja lekcija stoji sama — prikazuje samo svoje greške, bez povlačenja prethodne.
@@ -317,7 +467,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
       return;
     }
     try {
-      const raw = localStorage.getItem(`lesson_mistakes_${redoslijed - 1}`);
+      const raw = localStorage.getItem(`${lsPrefix}_lesson_mistakes_${redoslijed - 1}`);
       setPrevMistakeKeys(raw ? JSON.parse(raw) : []);
     } catch {
       setPrevMistakeKeys([]);
@@ -347,7 +497,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
   useEffect(() => {
     if (!redoslijed || finished) return;
     try {
-      localStorage.setItem(`lesson_mistakes_${redoslijed}`, JSON.stringify([...pogresnoUradjeni]));
+      localStorage.setItem(`${lsPrefix}_lesson_mistakes_${redoslijed}`, JSON.stringify([...pogresnoUradjeni]));
     } catch {
       /* ignore */
     }
@@ -371,6 +521,25 @@ const lesson = hardkodiranaLekcija || (dbLekcija
     }
   };
 
+  const obrisiNetacniZadatak = async (redoslijed) => {
+    const zadatakId = zadaciMapa[redoslijed];
+    if (!zadatakId) return;
+    const token = localStorage.getItem("token");
+    const korisnikId = await fetchKorisnikId(token);
+    if (!korisnikId) return;
+    fetch(`http://localhost:8000/zadatak_korisnik/netacni/${korisnikId}/${zadatakId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    }).catch(() => {});
+  };
+
+  const greskaIspravljenaPovratak = (redoslijed) => {
+    obrisiNetacniZadatak(redoslijed);
+    setGreskaRedoslijed(null);
+    setGreskaIspravljena(true);
+    setTimeout(() => navigate("/?tab=errors"), 1500);
+  };
+
   useEffect(() => {
     if (cursorPos.current !== null) {
       const { index, pos } = cursorPos.current;
@@ -389,13 +558,17 @@ const lesson = hardkodiranaLekcija || (dbLekcija
     const tacno = answerIndex === lesson.questions[questionIndex].correct;
     setSelectedAnswers((prev) => {
       const next = { ...prev, [questionIndex]: answerIndex };
-      try { localStorage.setItem(`lesson_quiz_${id}`, JSON.stringify(next)); } catch {}
+      try { localStorage.setItem(`${lsPrefix}_lesson_quiz_${id}`, JSON.stringify(next)); } catch {}
       return next;
     });
     if (!tacno) {
       setPogresnoUradjeni((prev) => new Set(prev).add(`quiz-${questionIndex}`));
     }
-    upisiZadatakKorisnik(lesson.questions[questionIndex].redoslijed, tacno);
+    const qRed = lesson.questions[questionIndex].redoslijed;
+    upisiZadatakKorisnik(qRed, tacno);
+    if (tacno && greskaRedoslijed === qRed) {
+      greskaIspravljenaPovratak(qRed);
+    }
   };
 
   const normalizeCode = (code) => {
@@ -434,8 +607,8 @@ const lesson = hardkodiranaLekcija || (dbLekcija
 
   // Zapamti kod zadatke (kod + rezultat) da poslije refresha ostane kao što je bilo — kao mini provjere
   const sacuvajKodStanje = (codes, results) => {
-    try { localStorage.setItem(`lesson_kod_${id}`, JSON.stringify(codes)); } catch { /* ignore */ }
-    try { localStorage.setItem(`lesson_kodres_${id}`, JSON.stringify(results)); } catch { /* ignore */ }
+    try { localStorage.setItem(`${lsPrefix}_lesson_kod_${id}`, JSON.stringify(codes)); } catch { /* ignore */ }
+    try { localStorage.setItem(`${lsPrefix}_lesson_kodres_${id}`, JSON.stringify(results)); } catch { /* ignore */ }
   };
 
   const checkTaskCode = (taskIndex) => {
@@ -456,6 +629,10 @@ const lesson = hardkodiranaLekcija || (dbLekcija
     });
     if (isCorrect) {
       upisiZadatakKorisnik(task.redoslijed, true);
+      if (greskaRedoslijed === task.redoslijed) {
+        obrisiNetacniZadatak(task.redoslijed);
+        setGreskaRedoslijed(null);
+      }
     }
   };
 
@@ -505,6 +682,9 @@ const lesson = hardkodiranaLekcija || (dbLekcija
         });
         if (isCorrect) {
           upisiZadatakKorisnik(task.redoslijed, true);
+          if (greskaRedoslijed === task.redoslijed) {
+            greskaIspravljenaPovratak(task.redoslijed);
+          }
         }
       }
     } catch {
@@ -521,7 +701,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
       const next = { ...prev, [blockIndex]: isCorrect ? "correct" : "wrong" };
       // Zapamti rezultate vježbi da preživi refresh (zeleni štrik / žuti uzvičnik gore)
       try {
-        localStorage.setItem(`lesson_vjezbe_${id}`, JSON.stringify(next));
+        localStorage.setItem(`${lsPrefix}_lesson_vjezbe_${id}`, JSON.stringify(next));
       } catch {
         /* ignore */
       }
@@ -538,7 +718,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
 
   // Zapamti stanje modala kontrolne provjere da preživi refresh
   const sacuvajCp = (kljuc, vrijednost) => {
-    try { localStorage.setItem(`lesson_cp_${kljuc}_${id}`, JSON.stringify(vrijednost)); } catch { /* ignore */ }
+    try { localStorage.setItem(`${lsPrefix}_lesson_cp_${kljuc}_${id}`, JSON.stringify(vrijednost)); } catch { /* ignore */ }
   };
 
   // --- Kontrolna provjera (modal): odgovor na kviz stavku ---
@@ -653,10 +833,10 @@ const lesson = hardkodiranaLekcija || (dbLekcija
     // pa očisti zapamćene greške da se ne ponavljaju na sljedećem checkpointu.
     if (redoslijed) {
       try {
-        localStorage.setItem(`lesson_mistakes_${redoslijed}`, JSON.stringify([]));
+        localStorage.setItem(`${lsPrefix}_lesson_mistakes_${redoslijed}`, JSON.stringify([]));
         // Na checkpointu (parna lekcija) riješene su i greške prethodne lekcije
         if (jeCheckpointLekcija) {
-          localStorage.setItem(`lesson_mistakes_${redoslijed - 1}`, JSON.stringify([]));
+          localStorage.setItem(`${lsPrefix}_lesson_mistakes_${redoslijed - 1}`, JSON.stringify([]));
         }
       } catch {
         /* ignore */
@@ -725,6 +905,17 @@ const lesson = hardkodiranaLekcija || (dbLekcija
   const isLastStep = currentStep === steps.length - 1;
 
   // Da li je korak POTPUNO tačan (za zeleni štrik); u suprotnom ide žuto "Dovrši"
+  const stepImaGresku = (s) => {
+    if (s.type === "theory") return vjezbaRezultati[s.index] === "wrong";
+    if (s.type === "quiz") {
+      return lesson.questions.some(
+        (q, i) => selectedAnswers[i] !== undefined && selectedAnswers[i] !== q.correct && !pitanjeVecTacno(q, i)
+      );
+    }
+    if (s.type === "coding") return lesson.codingTasks.some((t, i) => taskResults[i] === "wrong");
+    return false;
+  };
+
   const stepPotpunoTacan = (s) => {
     if (finished) return true; // lekcija završena → sve zeleno
     if (s.type === "goals") return true;
@@ -778,7 +969,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
     setCurrentStep(next);
     setMaxStep((m) => {
       const newMax = Math.max(m, next);
-      localStorage.setItem(`lesson_progress_${id}`, newMax);
+      localStorage.setItem(`${lsPrefix}_lesson_progress_${id}`, newMax);
       return newMax;
     });
     if (mainRef.current) mainRef.current.scrollTo({ top: 0, behavior: "smooth" });
@@ -795,6 +986,12 @@ const lesson = hardkodiranaLekcija || (dbLekcija
           <button className="back-btn" onClick={() => navigate("/")}>
             <ArrowLeft size={18} /> Nazad na lekcije
           </button>
+
+          {greskaIspravljena && (
+            <div className="greska-ispravljena-banner">
+              <CheckCircle2 size={20} /> Greška ispravljena! Vraćam te na listu grešaka...
+            </div>
+          )}
 
           <section className={`lesson-hero ${lesson.heroClass}`}>
             <div>
@@ -839,7 +1036,8 @@ const lesson = hardkodiranaLekcija || (dbLekcija
               if (i === currentStep) stanje = "active";
               else if (i > maxStep) stanje = "locked";
               else if (stepPotpunoTacan(s)) stanje = "done";
-              else stanje = "warn";
+              else if (stepImaGresku(s)) stanje = "warn";
+              else stanje = "visited";
 
               return (
                 <button
@@ -937,6 +1135,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
                             [el.id]: e.target.value,
                           }))
                         }
+                        onKeyDown={editorKeyDown}
                       />
 
                       <div className="code-actions">
@@ -1057,6 +1256,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
                           [blockIndex]: e.target.value,
                         }));
                       }}
+                      onKeyDown={editorKeyDown}
                     />
 
                     <div className="code-actions">
@@ -1101,11 +1301,13 @@ const lesson = hardkodiranaLekcija || (dbLekcija
 
               <div className="quiz-list">
                 {lesson.questions.map((item, questionIndex) => {
+                  const jeGreskaTask = greskaRedoslijed === item.redoslijed;
                   const quizDone = selectedAnswers[questionIndex] === item.correct || (uradjeniZadaci.has(zadaciMapa[item.redoslijed]) && selectedAnswers[questionIndex] === undefined);
+                  const quizPrikazanKaoDone = quizDone && !jeGreskaTask;
                   return (
-                  <article id={`zadatak-${item.redoslijed}`} className={`quiz-card ${quizDone ? "quiz-card-done" : ""}`} key={questionIndex}>
+                  <article id={`zadatak-${item.redoslijed}`} className={`quiz-card ${quizPrikazanKaoDone ? "quiz-card-done" : ""}`} key={questionIndex}>
                     <h3>
-                      {quizDone && <CheckCircle2 size={18} style={{ color: "#23a455", marginRight: "8px", display: "inline" }} />}
+                      {quizPrikazanKaoDone && <CheckCircle2 size={18} style={{ color: "#23a455", marginRight: "8px", display: "inline" }} />}
                       Pitanje {questionIndex + 1}: {item.question}
                     </h3>
 
@@ -1165,11 +1367,13 @@ const lesson = hardkodiranaLekcija || (dbLekcija
 
               <div className="coding-task-list">
                 {lesson.codingTasks.map((task, taskIndex) => {
+                  const jeGreskaTask = greskaRedoslijed === task.redoslijed;
                   const taskDone = taskResults[taskIndex] === "correct" || (uradjeniZadaci.has(zadaciMapa[task.redoslijed]) && taskResults[taskIndex] !== "wrong");
+                  const taskPrikazanKaoDone = taskDone && !jeGreskaTask;
                   return (
-                  <div id={`zadatak-${task.redoslijed}`} className={`code-checker-box ${taskDone ? "code-checker-done" : ""}`} key={taskIndex}>
+                  <div id={`zadatak-${task.redoslijed}`} className={`code-checker-box ${taskPrikazanKaoDone ? "code-checker-done" : ""}`} key={taskIndex}>
                     <h3>
-                      {taskDone && <CheckCircle2 size={18} style={{ color: "#23a455", marginRight: "8px", display: "inline" }} />}
+                      {taskPrikazanKaoDone && <CheckCircle2 size={18} style={{ color: "#23a455", marginRight: "8px", display: "inline" }} />}
                       {task.title}
                     </h3>
                     <p style={{ whiteSpace: "pre-wrap" }}>{task.description}</p>
@@ -1179,53 +1383,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
                       key={`code-${taskIndex}-${taskCodes[taskIndex] !== undefined ? "saved" : "empty"}`}
                       ref={(el) => (textareaRefs.current[taskIndex] = el)}
                       defaultValue={taskCodes[taskIndex] || ""}
-                      onKeyDown={(e) => {
-                        const el = e.target;
-                        const start = el.selectionStart;
-                        const end = el.selectionEnd;
-                        const code = el.value;
-                        const pairs = { "(": ")", '"': '"', "'": "'", "{": "}", "[": "]" };
-
-                        if (pairs[e.key]) {
-                          e.preventDefault();
-                          el.value = code.substring(0, start) + e.key + pairs[e.key] + code.substring(end);
-                          el.selectionStart = start + 1;
-                          el.selectionEnd = start + 1;
-                          return;
-                        }
-
-                        if (e.key === "Tab") {
-                          e.preventDefault();
-                          el.value = code.substring(0, start) + "    " + code.substring(end);
-                          el.selectionStart = start + 4;
-                          el.selectionEnd = start + 4;
-                        }
-
-                        if (e.key === "Backspace" && start === end && code.substring(start - 4, start) === "    ") {
-                          e.preventDefault();
-                          el.value = code.substring(0, start - 4) + code.substring(end);
-                          el.selectionStart = start - 4;
-                          el.selectionEnd = start - 4;
-                        }
-
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          const currentLine = code.substring(0, start).split("\n").pop();
-                          const indent = currentLine.match(/^(\s*)/)[1];
-                          const extraIndent = currentLine.trimEnd().endsWith(":") ? "    " : "";
-                          if (code[start - 1] === "{" && code[start] === "}") {
-                            el.value = code.substring(0, start) + "\n" + indent + "    " + "\n" + indent + code.substring(end);
-                            const newPos = start + 1 + indent.length + 4;
-                            el.selectionStart = newPos;
-                            el.selectionEnd = newPos;
-                          } else {
-                            el.value = code.substring(0, start) + "\n" + indent + extraIndent + code.substring(end);
-                            const newPos = start + 1 + indent.length + extraIndent.length;
-                            el.selectionStart = newPos;
-                            el.selectionEnd = newPos;
-                          }
-                        }
-                      }}
+                      onKeyDown={editorKeyDown}
                       placeholder="Ovdje upiši svoje rješenje..."
                     />
 
@@ -1425,7 +1583,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
                   // Zapamti greške ove lekcije za buduću kontrolnu provjeru (svake 2 lekcije)
                   if (redoslijed) {
                     localStorage.setItem(
-                      `lesson_mistakes_${redoslijed}`,
+                      `${lsPrefix}_lesson_mistakes_${redoslijed}`,
                       JSON.stringify(snapshot)
                     );
                   }
@@ -1620,6 +1778,7 @@ const lesson = hardkodiranaLekcija || (dbLekcija
                             ref={(el) => (cpCodeRefs.current[it.id] = el)}
                             defaultValue={cpCodes[it.id] !== undefined ? cpCodes[it.id] : (it.initial || "")}
                             placeholder="Ovdje upiši svoje rješenje..."
+                            onKeyDown={editorKeyDown}
                           />
                           <div className="code-actions">
                             <button className="check-code-btn" onClick={() => cpCheckCode(it.id, task)}>

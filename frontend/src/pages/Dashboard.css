@@ -380,7 +380,7 @@
 
 .errors-summary {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 14px;
 }
 
@@ -394,9 +394,85 @@
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.08);
 }
 
-.err-sum-card.red   { background: linear-gradient(135deg, #fb7185, #e11d48); }
-.err-sum-card.amber { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
-.err-sum-card.green { background: linear-gradient(135deg, #34d399, #0d9488); }
+.err-sum-card.clickable {
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.err-sum-card.clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+}
+.err-sum-card.active {
+  outline: 3px solid rgba(255, 255, 255, 0.6);
+}
+
+.err-sum-chevron {
+  margin-left: auto;
+  opacity: 0.8;
+}
+
+.err-sum-card.red      { background: linear-gradient(135deg, #fb7185, #e11d48); }
+.err-sum-card.dark-red { background: linear-gradient(135deg, #dc2626, #991b1b); }
+
+.analitika-panel {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 24px;
+  margin-top: 16px;
+}
+
+
+.analitika-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 18px;
+}
+
+.analitika-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.analitika-red {
+  display: grid;
+  grid-template-columns: 180px 1fr 40px;
+  align-items: center;
+  gap: 12px;
+}
+
+.analitika-naziv {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.analitika-bar-wrap {
+  background: #f3f4f6;
+  border-radius: 99px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.analitika-bar {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #fb7185, #e11d48);
+  min-width: 6px;
+  transition: width 0.4s ease;
+}
+
+.analitika-broj {
+  font-size: 13px;
+  font-weight: 700;
+  color: #e11d48;
+  text-align: right;
+}
 
 .err-sum-icon {
   width: 44px;
@@ -434,12 +510,30 @@
   border-left: 4px solid #f97316;
   border-radius: 16px;
   padding: 18px 20px;
+  cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .error-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-left-color: #e11d48;
+}
+
+.error-task-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.error-lekcija {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 .error-card-head {
@@ -496,6 +590,7 @@
   border-radius: 22px;
   padding: 44px 24px;
   text-align: center;
+  margin-top: 16px;
 }
 
 .errors-empty-icon {
